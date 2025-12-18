@@ -9,12 +9,12 @@ const FormularioCategoria = ({ valores, handleInputChange, onSubmit, erro, suces
 
             <div className="linha-formulario">
                 <div className="campo-formulario">
-                    <label htmlFor="nome">Nome da Categoria</label>
+                    <label htmlFor="name">Nome da Categoria</label>
                     <input
                         type="text"
-                        id="nome"
-                        name="nome"
-                        value={valores.nome}
+                        id="name"
+                        name="name"
+                        value={valores.name}
                         onChange={handleInputChange}
                         placeholder="Digite o nome da categoria"
                         required
@@ -22,16 +22,16 @@ const FormularioCategoria = ({ valores, handleInputChange, onSubmit, erro, suces
                 </div>
 
                 <div className="campo-formulario">
-                    <label htmlFor="tipo">Tipo</label>
+                    <label htmlFor="type">Tipo</label>
                     <select
-                        id="tipo"
-                        name="tipo"
-                        value={valores.tipo}
+                        id="type"
+                        name="type"
+                        value={valores.type}
                         onChange={handleInputChange}
                         required
                     >
-                        <option value="Recebimento">Recebimento</option>
-                        <option value="Pagamento">Pagamento</option>
+                        <option value="RECEIPT">Recebimentos</option>
+                        <option value="PAYMENT">Pagamentos</option>
                     </select>
                 </div>
             </div>

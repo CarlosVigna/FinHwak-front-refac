@@ -33,7 +33,7 @@ async function cadastrarCategoria(categoria) {
 const CadastroCategoria = () => {
     const [valores, setValores] = useState({
         name: '',
-        type: 'receipt', 
+        type: 'RECEIPT', 
     });
 
     const [erro, setErro] = useState("");
@@ -65,7 +65,7 @@ const CadastroCategoria = () => {
 
             setValores({
                 name: '',
-                type: 'receipt'
+                type: 'RECEIPT'
             });
             setErro("");
             setSucesso("Categoria cadastrada com sucesso!");
@@ -94,8 +94,8 @@ const CadastroCategoria = () => {
             type: "select",
             name: "type", 
             options: [
-                { value: "receipt", label: "Recebimentos" }, 
-                { value: "payment", label: "Pagamentos" }
+                { value: "RECEIPT", label: "Recebimentos" }, 
+                { value: "PAYMENT", label: "Pagamentos" }
             ]
         }
     ];
