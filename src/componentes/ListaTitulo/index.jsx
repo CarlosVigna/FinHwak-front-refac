@@ -12,7 +12,6 @@ const handleDelete = async (id) => {
         });
 
         if (response.ok) {
-            // Remove da lista visualmente sem precisar recarregar tudo
             setTitulos(prev => prev.filter(titulo => titulo.id !== id));
         } else {
             alert("Erro ao excluir lançamento.");
@@ -31,7 +30,6 @@ const fetchTitulos = async () => {
             return;
         }
 
-        // Endpoint novo: /bill (Traz tudo do usuário)
         const url = `${import.meta.env.VITE_API_URL}/bill`;
         
         const response = await fetch(url, {
@@ -47,14 +45,9 @@ const fetchTitulos = async () => {
 
         let data = await response.json();
 
-        // --- FILTRAGEM NO FRONTEND ---
-
-        // 1. Filtrar por Tipo (Recebimento/Pagamento)
-        // O botão do front manda 'recebimentos' ou 'pagamentos'
-        // O Back retorna category.type = 'receipt' ou 'payment'
+        
         if (tipoTransacao && tipoTransacao !== 'todos') {
             data = data.filter(titulo => {
-                // Proteção caso category seja nulo
                 const tipoCategoria = titulo.category?.type?.toLowerCase(); 
                 
                 if (tipoTransacao === 'recebimentos') return tipoCategoria === 'receipt';
@@ -63,18 +56,15 @@ const fetchTitulos = async () => {
             });
         }
 
-        // 2. Filtrar por Data (Maturity = Vencimento)
         if (filtroData.dataInicio || filtroData.dataFim) {
             data = data.filter(titulo => {
                 if (!titulo.maturity) return false;
 
-                // O Java manda '2025-01-01', o JS entende bem
                 const dataVencimento = new Date(titulo.maturity); 
-                // Zerar horas para comparar apenas datas
                 dataVencimento.setHours(0,0,0,0);
 
                 const dataInicio = filtroData.dataInicio ? new Date(filtroData.dataInicio) : null;
-                if(dataInicio) dataInicio.setHours(0,0,0,0); // Ajuste de fuso horário simples
+                if(dataInicio) dataInicio.setHours(0,0,0,0); 
 
                 const dataFim = filtroData.dataFim ? new Date(filtroData.dataFim) : null;
                 if(dataFim) dataFim.setHours(23,59,59,999);
@@ -102,10 +92,8 @@ useEffect(() => {
     fetchTitulos();
 }, [refresh, tipoTransacao, filtroData.dataInicio, filtroData.dataFim]);
 
-// Formatadores
 const formatarData = (dataISO) => {
     if (!dataISO) return '-';
-    // dataISO vem como '2025-12-31'
     const [ano, mes, dia] = dataISO.split('-');
     return `${dia}/${mes}/${ano}`;
 };
@@ -156,54 +144,57 @@ return (
                         </thead>
                         <tbody>
                             {titulos.map((titulo) => {
-                                // Define cor do valor baseado no tipo da categoria
-                                const isDespesa = titulo.category?.type?.toLowerCase() === 'payment';
-                                const classeValor = isDespesa ? 'valor-saida' : 'valor-entrada';
-                                
-                                return (
-                                    <tr key={titulo.id}>
-                                        <td data-label="Descrição">{titulo.description}</td>
-                                        
-                                        <td data-label="Categoria">
-                                            {titulo.category ? titulo.category.name : '-'}
-                                        </td>
-                                        
-                                        <td data-label="Vencimento">
-                                            {formatarData(titulo.maturity)}
-                                        </td>
-                                        
-                                        <td data-label="Valor" className={classeValor}>
-                                            {formatarValor(titulo.value)}
-                                        </td>
-                                        
-                                        <td data-label="Status">
-                                            <span className={`badge-status ${getStatusClass(titulo.status)}`}>
-                                                {titulo.status === 'PAID' || titulo.status === 'RECEIVED' ? <FaCheckCircle /> : 
-                                                 titulo.status === 'PENDING' ? <FaClock /> : null}
-                                                {' '}
-                                                {traduzirStatus(titulo.status)}
-                                            </span>
-                                        </td>
-                                        
-                                        <td data-label="Ações" className="coluna-acoes">
-                                            <button 
-                                                className="btn-acao btn-editar" 
-                                                onClick={() => onEdit(titulo)}
-                                                title="Editar"
-                                            >
-                                                <FaEdit />
-                                            </button>
-                                            <button 
-                                                className="btn-acao btn-excluir" 
-                                                onClick={() => handleDelete(titulo.id)}
-                                                title="Excluir"
-                                            >
-                                                <FaTrash />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
+                                    const tipoCategoria = titulo.category?.type?.toLowerCase();
+                                    const isDespesa = tipoCategoria === 'payment';
+                                    const classeValor = isDespesa ? 'valor-saida' : 'valor-entrada';
+
+                                    return (
+                                        <tr key={titulo.id}>
+                                            <td data-label="Descrição">
+                                                {titulo.description}
+                                            </td>
+
+                                            <td data-label="Categoria">
+                                                {titulo.category?.name || '-'}
+                                            </td>
+
+                                            <td data-label="Vencimento">
+                                                {formatarData(titulo.maturity)}
+                                            </td>
+
+                                            <td data-label="Valor" className={classeValor}>
+                                                {formatarValor(titulo.totalAmount)}
+                                            </td>
+
+                                            <td data-label="Status">
+                                                <span className={`badge-status ${getStatusClass(titulo.status)}`}>
+                                                    {(titulo.status === 'PAID' || titulo.status === 'RECEIVED') && <FaCheckCircle />}
+                                                    {titulo.status === 'PENDING' && <FaClock />}
+                                                    {' '}
+                                                    {traduzirStatus(titulo.status)}
+                                                </span>
+                                            </td>
+
+                                            <td data-label="Ações" className="coluna-acoes">
+                                                <button
+                                                    className="btn-acao btn-editar"
+                                                    onClick={() => onEdit(titulo)}
+                                                    title="Editar"
+                                                >
+                                                    <FaEdit />
+                                                </button>
+
+                                                <button
+                                                    className="btn-acao btn-excluir"
+                                                    onClick={() => handleDelete(titulo.id)}
+                                                    title="Excluir"
+                                                >
+                                                    <FaTrash />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                         </tbody>
                     </table>
                 </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import FormularioCategoria from '../../componentes/FormularioCategoria';
 import ListaCategorias from '../ListaCategorias';
 import './cadastroCategoria.css';
@@ -30,15 +30,62 @@ async function cadastrarCategoria(categoria) {
     }
 }
 
+async function buscarContas() {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/account`, {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao buscar contas');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Erro ao buscar contas:", error);
+        throw error;
+    }
+}
+
 const CadastroCategoria = () => {
     const [valores, setValores] = useState({
         name: '',
-        type: 'RECEIPT', 
+        type: 'RECEIPT',
+        accountId: '', 
     });
 
+    const [contas, setContas] = useState([]); 
     const [erro, setErro] = useState("");
     const [refresh, setRefresh] = useState(false);
     const [sucesso, setSucesso] = useState("");
+    const [carregandoContas, setCarregandoContas] = useState(true);
+
+    useEffect(() => {
+        const carregarContas = async () => {
+            try {
+                const contasData = await buscarContas();
+                setContas(contasData);
+                
+                if (contasData.length > 0) {
+                    setValores(prev => ({
+                        ...prev,
+                        accountId: contasData[0].id
+                    }));
+                }
+            } catch (error) {
+                setErro("Erro ao carregar contas. Por favor, crie uma conta primeiro.");
+            } finally {
+                setCarregandoContas(false);
+            }
+        };
+
+        carregarContas();
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -51,21 +98,31 @@ const CadastroCategoria = () => {
     const handleCadastro = async (e) => {
         e.preventDefault();
 
-        const { name, type } = valores;
+        const { name, type, accountId } = valores;
 
         if (!name) {
             setErro("O nome da categoria é obrigatório.");
             return;
         }
 
-        const novaCategoria = { name, type };
+        if (!accountId) {
+            setErro("Você precisa selecionar uma conta.");
+            return;
+        }
+
+        const novaCategoria = { 
+            name, 
+            type, 
+            accountId: parseInt(accountId) 
+        };
 
         try {
             await cadastrarCategoria(novaCategoria);
 
             setValores({
                 name: '',
-                type: 'RECEIPT'
+                type: 'RECEIPT',
+                accountId: contas.length > 0 ? contas[0].id : ''
             });
             setErro("");
             setSucesso("Categoria cadastrada com sucesso!");
@@ -82,23 +139,19 @@ const CadastroCategoria = () => {
         }
     };
 
-    const camposCadastro = [
-        { 
-            label: "Nome:", 
-            placeholder: "Digite o nome da categoria", 
-            type: "text", 
-            name: "name"  
-        },
-        {
-            label: "Tipo:",
-            type: "select",
-            name: "type", 
-            options: [
-                { value: "RECEIPT", label: "Recebimentos" }, 
-                { value: "PAYMENT", label: "Pagamentos" }
-            ]
-        }
-    ];
+    if (carregandoContas) {
+        return <div className="loading">Carregando contas...</div>;
+    }
+
+    if (contas.length === 0) {
+        return (
+            <div className="erro-container">
+                <h2>Nenhuma conta encontrada</h2>
+                <p>Você precisa criar uma conta antes de cadastrar categorias.</p>
+                <a href="/cadastro-conta" className="botao-criar-conta">Criar Conta</a>
+            </div>
+        );
+    }
 
     return (
         <div className="cadastro-categoria-vertical">
@@ -107,7 +160,7 @@ const CadastroCategoria = () => {
                     valores={valores}
                     handleInputChange={handleInputChange}
                     onSubmit={handleCadastro}
-                    campos={camposCadastro} 
+                    contas={contas} 
                     erro={erro}
                     sucesso={sucesso}
                 />
