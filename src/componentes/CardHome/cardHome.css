@@ -1,47 +1,235 @@
+/* ==================== bodyHome.css ==================== */
+
+.card-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 80px 25px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+    min-height: 60vh;
+    position: relative;
+}
+
+/* Decoração de fundo sutil */
+.card-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: radial-gradient(ellipse at top, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.card-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 35px;
+    width: 100%;
+    max-width: 1400px;
+    position: relative;
+    z-index: 1;
+}
+
+/* ==================== cardHome.css ==================== */
+
 .card-home {
-    background-color: #ffffff;
-    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    margin: 10px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
-    max-width: 450px;
+    box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.08),
+        0 2px 8px rgba(0, 0, 0, 0.04);
+    width: 100%;
+    max-width: none; /* REMOVIDO max-width fixo */
+    margin: 0;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Borda gradiente no hover */
+.card-home::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    padding: 2px;
+    background: linear-gradient(135deg, #10b981, #06b6d4, #3b82f6);
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.card-home:hover::before {
+    opacity: 1;
+}
+
+/* Glow effect no hover */
+.card-home::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 24px;
+    background: radial-gradient(circle at center, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s;
+    z-index: -1;
+}
+
+.card-home:hover::after {
+    opacity: 1;
 }
 
 .card-home:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    transform: translateY(-12px) scale(1.03);
+    box-shadow: 
+        0 25px 60px rgba(16, 185, 129, 0.2),
+        0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .card-img-top {
-    width: 35%;
-    height: 160px;
-    object-fit: cover;
-    border-bottom: 2px solid #eee;
-    margin-bottom: 15px;
-    margin-top: 15px;
+    width: 70%;
+    height: auto;
+    max-height: 140px;
+    object-fit: contain;
+    border: none;
+    margin: 30px auto 20px;
     display: block;
-    margin-left: auto;
-    margin-right: auto;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
+}
+
+.card-home:hover .card-img-top {
+    transform: scale(1.1) rotate(2deg);
+    filter: drop-shadow(0 8px 20px rgba(16, 185, 129, 0.3));
 }
 
 .card-body {
-    padding: 20px;
+    padding: 25px;
+    color: #334155;
+    background: linear-gradient(to bottom, transparent, rgba(248, 250, 252, 0.5));
+    transition: all 0.4s ease;
+    position: relative;
+    flex: 1; /* Faz o body ocupar espaço restante */
+    display: flex;
+    flex-direction: column;
 }
 
 .card-title {
-    font-weight: 600;
-    color: #222;
-    font-size: 1.35rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0f172a;
     margin-bottom: 12px;
-    letter-spacing: 0.5px;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    transition: all 0.4s ease;
+}
+
+/* Gradiente no título ao hover */
+.card-home:hover .card-title {
+    background: linear-gradient(135deg, #059669, #0891b2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transform: translateX(3px);
 }
 
 .card-text {
-    color: #666;
-    font-size: 1rem;
+    font-size: 0.95rem;
+    color: #64748b;
     line-height: 1.7;
-    letter-spacing: 0.5px;
-    margin-top: 12px;
+    letter-spacing: 0.3px;
+    transition: color 0.3s ease;
+    flex: 1;
+}
+
+.card-home:hover .card-text {
+    color: #475569;
+}
+
+/* Indicador de hover - setinha */
+.card-home:hover .card-body::after {
+    content: '→';
+    position: absolute;
+    bottom: 20px;
+    right: 25px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    background: linear-gradient(135deg, #10b981, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: arrow-bounce 1s ease infinite;
+}
+
+@keyframes arrow-bounce {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(5px); }
+}
+
+/* Efeito de destaque no hover do body */
+.card-home:hover .card-body {
+    background: linear-gradient(
+        to bottom, 
+        rgba(16, 185, 129, 0.03),
+        rgba(6, 182, 212, 0.03)
+    );
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 1200px) {
+    .card-wrapper {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .card-container {
+        padding: 50px 15px;
+    }
+    
+    .card-wrapper {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+    }
+}
+
+@media (max-width: 600px) {
+    .card-wrapper {
+        grid-template-columns: 1fr; /* Uma coluna em mobile */
+        gap: 20px;
+    }
+    
+    .card-img-top {
+        width: 60%;
+        max-height: 120px;
+        margin: 25px auto 15px;
+    }
+    
+    .card-body {
+        padding: 20px;
+    }
+    
+    .card-title {
+        font-size: 1.3rem;
+    }
+    
+    .card-text {
+        font-size: 0.9rem;
+    }
 }

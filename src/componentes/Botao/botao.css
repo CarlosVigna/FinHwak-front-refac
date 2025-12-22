@@ -1,235 +1,308 @@
 :root {
-    --primary-color: #b4e6e7; 
-    --primary-dark: #dee7e7;  
-    --secondary-color: #28a745; 
-    --secondary-dark: #218838;  
-    --hover-color: #ECF0F1;
-    --text-color: #121414;      
-    --hover-scale: 1.05;        
-    --transition-speed: 0.3s;   
-    
+    --primary-gradient: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --secondary-gradient: linear-gradient(135deg, #64748b 0%, #475569 100%);
+    --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    --text-color: #ffffff;
+    --shadow-color: rgba(16, 185, 129, 0.3);
 }
 
-button, .botao-padrao {
-    display: inline-block;
-    padding: 14px 28px;
-    font-size: 16px;
-    border-radius: 6px;
+/* BOTÃO BASE */
+button, 
+.botao-padrao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 12px;
     border: none;
     color: var(--text-color);
-    background-color: var(--primary-color);
+    background: var(--primary-gradient);
     cursor: pointer;
-    transition: background-color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    font-weight: bold;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px var(--shadow-color);
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 0.3px;
 }
 
+/* Efeito de brilho ao passar o mouse */
+button::before,
+.botao-padrao::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+button:hover::before,
+.botao-padrao:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+button:hover,
+.botao-padrao:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px var(--shadow-color);
+}
+
+button:active,
+.botao-padrao:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px var(--shadow-color);
+}
+
+button:focus,
+.botao-padrao:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+}
+
+/* VARIANTES DE BOTÕES */
+
+/* Botão de Card */
 .botao-card {
-    background-color: var(--primary-color);
+    background: var(--primary-gradient);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
 }
 
 .botao-card:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
 }
 
-.botao-salvar, .botao-procurar, .botao-enviar, .botao-cadastrar, .botao-login {
-    background-color: var(--primary-color);
-}
-
-.botao-salvar:hover, .botao-procurar:hover, .botao-enviar:hover, .botao-cadastrar:hover, .botao-login:hover {
-    background-color: var(--primary-dark);
-    transform: scale(var(--hover-scale));
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
-
-.botao-enviar-cadastro {
-    background-color: var(--secondary-color);
-    color: #fff;
-    padding: 12px 30px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1.3rem;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.botao-enviar-cadastro:hover {
-    background-color: var(--secondary-dark);
-    transform: scale(var(--hover-scale));
-}
-
-button:active, 
-.botao-padrao:active, 
-.botao-salvar:active, 
-.botao-procurar:active, 
-.botao-enviar:active, 
-.botao-cadastrar:active, 
-.botao-login:active, 
-.botao-enviar-cadastro:active {
-    transform: scale(1);
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-}
-
-button:focus, 
-.botao-padrao:focus, 
-.botao-salvar:focus, 
-.botao-procurar:focus, 
-.botao-enviar:focus, 
-.botao-cadastrar:focus, 
-.botao-login:focus, 
-.botao-enviar-cadastro:focus {
-    outline: none;
-    box-shadow: 0 0 0 4px rgba(1, 153, 161, 0.5);
-}
-
-@media (max-width: 768px) {
-    button, .botao-padrao {
-        width: 100%;
-        padding: 16px;
-        font-size: 18px;
-    }
-}
-
-button:active, 
-.botao-padrao:active {
-    transform: scale(0.95); 
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-}
-
-.botao-padrao {
-    background-color: var(--primary-color);
-    transition: background-color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
-}
-
-.botao-padrao:hover {
-    background-color: #028090;
-    transform: scale(1.05);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-.botao-padrao:active {
-    transform: scale(1);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.botao-enviar {
-    background-color: #007bff;
-}
-
-
-.botao-container {
-    display: flex;
-    gap: 16px;
-    text-decoration: none;
-}
-
-.botao-login {
-    background-color: #0199a1; 
-    font-size: 16px; 
-    padding: 12px 24px;
-    text-decoration: none; 
-}
-
-.botao-login:hover {
-    background-color: #085659; 
-    text-decoration: none;
-}
-
-.botao-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-  }
-  
-  .botao-enviar-cadastro {
-    background-color: #2694dd;
-    color: white;
-    padding: 12px 30px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1.3rem;
-    transition: background-color 0.3s ease;
-  }
-  
-  .botao-enviar-cadastro:hover {
-    background-color: #2980b9;
-  }
-  
-  .botao-container .botao-login {
-    background-color: #0199a1;
-    color: #fff;
-    padding: 12px 30px;
-    font-size: 1.2rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .botao-container .botao-login:hover {
-    background-color: #017a80;
-  }
-
-  .botao-container {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-}
-
-.botao-container .botao-padrao {
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    border: none;
-}
-
-.botao-padrao.botao-salvar {
-    background-color: #0199a1;
-    color: #fff;
-}
-
-.botao-padrao.botao-salvar:hover {
-    background-color: #017c7d;
-}
-
-.botao-padrao.botao-sair {
-    background-color: #ccc;
-    color: #333;
-}
-
-.botao-padrao.botao-sair:hover {
-    background-color: #aaa;
-}
-
-.button-primary {
-    background-color: var(--primary-color);
-    color: var(--text-color);
-    padding: 12px 24px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color var(--transition-speed), transform var(--transition-speed);
-    font-size: 1rem;
-    font-weight: bold;
-}
-
-.button-primary:hover {
-    background-color: var(--hover-color);
-    transform: scale(var(--hover-scale));
-}
-
+/* Botão Salvar */
 .botao-salvar {
-    background-color: #28a745;
-    color: #fff;
+    background: var(--success-gradient);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
 }
 
 .botao-salvar:hover {
-    background-color: #218838;
-    transform: scale(var(--hover-scale));
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+}
+
+/* Botão Procurar */
+.botao-procurar {
+    background: var(--primary-gradient);
+}
+
+/* Botão Enviar */
+.botao-enviar {
+    background: var(--primary-gradient);
+    padding: 14px 32px;
+    font-size: 16px;
+}
+
+/* Botão Cadastrar */
+.botao-cadastrar {
+    background: var(--primary-gradient);
+}
+
+/* Botão Login */
+.botao-login {
+    background: var(--primary-gradient);
+    font-size: 15px;
+    padding: 12px 24px;
+}
+
+/* Botão de Envio de Cadastro (Principal) */
+.botao-enviar-cadastro {
+    background: var(--success-gradient);
+    color: var(--text-color);
+    padding: 14px 36px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 700;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.botao-enviar-cadastro:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4);
+}
+
+/* Botão Sair/Secundário */
+.botao-sair {
+    background: var(--secondary-gradient);
+    box-shadow: 0 4px 12px rgba(100, 116, 139, 0.25);
+}
+
+.botao-sair:hover {
+    box-shadow: 0 8px 20px rgba(100, 116, 139, 0.35);
+}
+
+/* BOTÕES ESPECÍFICOS DE FORMULÁRIO */
+
+/* Container de Botões */
+.botao-container {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 24px;
+    flex-wrap: wrap;
+}
+
+/* Botão Primário (formulários) */
+.button-primary {
+    background: var(--primary-gradient);
+    color: var(--text-color);
+    padding: 12px 28px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);
+}
+
+.button-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.35);
+}
+
+/* ESTADOS ESPECIAIS */
+
+/* Botão Disabled */
+button:disabled,
+.botao-padrao:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+button:disabled:hover::before,
+.botao-padrao:disabled:hover::before {
+    width: 0;
+    height: 0;
+}
+
+/* Botão Loading */
+button.loading,
+.botao-padrao.loading {
+    position: relative;
+    color: transparent;
+    pointer-events: none;
+}
+
+button.loading::after,
+.botao-padrao.loading::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* BOTÕES DE AÇÃO (Card) */
+
+.botao-entrar {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.botao-entrar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+}
+
+.botao-editar {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.botao-editar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(59, 130, 246, 0.35);
+}
+
+.botao-excluir {
+    background: var(--danger-gradient);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+.botao-excluir:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(239, 68, 68, 0.35);
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 768px) {
+    button, 
+    .botao-padrao {
+        width: 100%;
+        padding: 14px 20px;
+        font-size: 15px;
+    }
+
+    .botao-container {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .botao-enviar-cadastro {
+        width: 100%;
+        padding: 16px;
+        font-size: 1rem;
+    }
+}
+
+/* ANIMAÇÃO DE ENTRADA */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+button,
+.botao-padrao {
+    animation: fadeInUp 0.4s ease-out;
 }
