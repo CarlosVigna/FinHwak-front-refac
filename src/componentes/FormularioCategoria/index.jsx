@@ -1,31 +1,13 @@
 import React from 'react';
 import './formularioCategoria.css';
 
-const FormularioCategoria = ({ valores, handleInputChange, onSubmit, erro, sucesso, contas }) => {
+const FormularioCategoria = ({ valores, handleInputChange, onSubmit, erro, sucesso }) => {
     return (
         <form className="formulario-horizontal" onSubmit={onSubmit}>
             {erro && <div className="error-message">{erro}</div>}
             {sucesso && <div className="success-message">{sucesso}</div>}
 
             <div className="linha-formulario">
-                <div className="campo-formulario">
-                    <label htmlFor="accountId">Conta</label>
-                    <select
-                        id="accountId"
-                        name="accountId"
-                        value={valores.accountId}
-                        onChange={handleInputChange}
-                        required
-                    >
-                        <option value="">Selecione uma conta</option>
-                        {contas && contas.map(conta => (
-                            <option key={conta.id} value={conta.id}>
-                                {conta.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
                 <div className="campo-formulario">
                     <label htmlFor="name">Nome da Categoria</label>
                     <input

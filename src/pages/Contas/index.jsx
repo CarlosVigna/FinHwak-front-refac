@@ -9,13 +9,11 @@ const Contas = () => {
     const [sucesso, setSucesso] = useState("");
     const navigate = useNavigate();
 
-    // 1. Busca as contas (GET /account)
     useEffect(() => {
         const fetchContas = async () => {
             try {
                 const token = localStorage.getItem('token');
                 
-                // Mudança de endpoint: /contas -> /account
                 const response = await fetch(`${import.meta.env.VITE_API_URL}/account`, {
                     method: 'GET',
                     headers: {
@@ -29,7 +27,6 @@ const Contas = () => {
                 }
 
                 const data = await response.json();
-                // O data agora é uma lista de objetos com { id, name, photoUrl }
                 setContas(data);
             } catch (error) {
                 setErro('Erro ao carregar contas: ' + error.message);
@@ -41,9 +38,15 @@ const Contas = () => {
     }, []);
 
     const handleEntrar = (idConta) => {
-        console.log('Entrando na conta com ID:', idConta);
-        // Salva o ID para usar nas transações
-        localStorage.setItem('id', idConta); 
+        console.log('🔑 Entrando na conta com ID:', idConta);
+        
+        // ✅ SALVA o accountId no localStorage
+        localStorage.setItem('accountId', idConta);
+        
+        // ✅ Verifica se salvou
+        const verificacao = localStorage.getItem('accountId');
+        console.log('✅ AccountId salvo no localStorage:', verificacao);
+        
         navigate('/cadastroTitulo');
     };
 
@@ -56,7 +59,6 @@ const Contas = () => {
         navigate('/criar-conta');
     };
 
-    // 2. Exclusão (DELETE /account/{id})
     const handleExcluir = async (idConta) => {
         const userConfirmed = window.confirm("ATENÇÃO: Excluir esta conta também removerá todos os títulos associados a ela. Deseja continuar?");
         if (!userConfirmed) return;
@@ -75,7 +77,6 @@ const Contas = () => {
                 }
             });
 
-          
             if (response.status === 204) {
                 setContas(prevContas => prevContas.filter(conta => conta.id !== idConta));
                 setSucesso('Conta e seus títulos foram excluídos com sucesso');
