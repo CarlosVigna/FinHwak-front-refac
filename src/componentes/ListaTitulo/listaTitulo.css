@@ -1,0 +1,78 @@
+/* ===== LISTA TÍTULO COMPONENTE - Apenas Estrutura ===== */
+/* 
+   CSS MÍNIMO - Apenas layout/estrutura.
+   Customize cores, bordas, sombras no CSS da página que usa este componente.
+*/
+
+.lista-titulo-container {
+    width: 100%;
+}
+
+.tabela-responsiva {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.tabela-titulos {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabela-titulos th,
+.tabela-titulos td {
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.coluna-acoes {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-acao {
+    padding: 0.5rem;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+}
+
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.mensagem-erro {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.lista-vazia {
+    padding: 2rem;
+    text-align: center;
+}
+
+/* Responsivo - tabela vira cards */
+@media (max-width: 768px) {
+    .tabela-titulos thead {
+        display: none;
+    }
+
+    .tabela-titulos tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+    }
+
+    .tabela-titulos td {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem;
+    }
+
+    .tabela-titulos td::before {
+        content: attr(data-label);
+        font-weight: bold;
+    }
+}

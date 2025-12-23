@@ -1,106 +1,47 @@
+/* ===== CAMPO TEXTO - CSS MÍNIMO BASE ===== */
+/* 
+   Este CSS contém apenas estilos estruturais básicos.
+   Personalize cores, bordas e efeitos nas classes onde importar o componente.
+*/
+
+.campo-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
 .campo-texto label {
-    display: block; 
-    margin-bottom: 12px; 
-    font-weight: bold; 
-    color: #085659;
-    font-size: 1rem;
+  font-weight: 500;
+  font-size: 0.875rem;
 }
 
 .campo-texto input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #ffffff;
-    color: #000000;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    font-size: 1rem;
-}
-
-.campo-texto h1 {
-    color: rgb(255, 255, 255);
-}
-
-.campo-texto input:hover,
-.campo-texto input:focus {
-    border-color: #0199a1; 
-    outline: none; 
-}
-
-.campo-texto input:focus {
-    border-color: #0199a1;
-    outline: none;
-}
-
-input[type="email"],
-input[type="password"],
-input[type="password"] {
   width: 100%;
-  padding: 14px;
-  margin: 8px 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #ffffff;
-  color: #000000;
-  transition: border-color 0.3s ease;
+  padding: 0.75rem;
   font-size: 1rem;
+  font-family: inherit;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background: white;
+  color: inherit;
+  transition: border-color 0.2s ease;
 }
 
-input[type="email"]:focus,
-input[type="password"]:focus,
-input[type="password"]:focus {
-  border-color: #0199a1;
+.campo-texto input:focus {
   outline: none;
+  border-color: currentColor;
 }
 
-input[type="text"] {
-  width: 100% !important;
-  padding: 14px !important;
-  margin: 8px 0 !important;
-  border: 1px solid #ccc !important;
-  border-radius: 4px !important;
-  background-color: #ffffff !important;
-  color: #000000 !important;
-  transition: border-color 0.3s ease !important;
-  font-size: 1rem !important;
+.campo-texto input::placeholder {
+  color: #9ca3af;
 }
 
-input[type="text"]:focus {
-  border-color: #0199a1 !important;
-  outline: none !important;
+/* Estados de validação - opcional */
+.campo-texto.error input {
+  border-color: #ef4444;
 }
 
-input[type="text"]:hover {
-  border-color: #0199a1 !important;
-  outline: none !important;
-}
-
-input::placeholder {
-  color: #aaa;
-}
-
-
-.titulo-contas {
-  color: #085659;
-  font-size: 28px; 
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 20px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.input-error {
-    border-color: red;
-}
-
-.input-success {
-    border-color: green;
-}
-
-.no-inner-shadow {
-  box-shadow: none !important;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+.campo-texto.success input {
+  border-color: #22c55e;
 }

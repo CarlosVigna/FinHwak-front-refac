@@ -3,8 +3,8 @@ import Botao from '../Botao';
 import './card.css';
 import imagemPadrao from '../../assets/imagens/conta-padrao.png';
 
-const Card = ({ conta, onEntrar, onEditar, onExcluir }) => {
-    
+const Card = ({ conta, onEntrar, onEditar, onExcluir, className }) => {
+
     const handleImageError = (e) => {
         e.target.src = imagemPadrao;
     };
@@ -17,7 +17,7 @@ const Card = ({ conta, onEntrar, onEditar, onExcluir }) => {
     };
 
     return (
-        <div className='card'>
+        <div className={`card ${className || ''}`}>
             <div className="card-header">
                 <img
                     className='imagem-card'
@@ -29,7 +29,7 @@ const Card = ({ conta, onEntrar, onEditar, onExcluir }) => {
             </div>
 
             <div className="card-content">
-              
+
                 <div className="info-proprietario">
                     <strong>Proprietário:</strong>
                     <p>{getOwnerName()}</p>

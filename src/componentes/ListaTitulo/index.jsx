@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FaEdit, FaTrash, FaCheckCircle, FaClock, FaExclamationCircle } from 'react-icons/fa';
+import './listaTitulo.css';
 
 const ListaTitulo = ({ tipoTransacao, filtroData, onEdit, refresh }) => {
     const [titulos, setTitulos] = useState([]);
@@ -30,7 +31,7 @@ const ListaTitulo = ({ tipoTransacao, filtroData, onEdit, refresh }) => {
     const fetchTitulos = async () => {
         try {
             const token = localStorage.getItem('token');
-            
+
             if (!token) {
                 setError('Usuário não autenticado.');
                 return;
@@ -52,7 +53,7 @@ const ListaTitulo = ({ tipoTransacao, filtroData, onEdit, refresh }) => {
 
             if (tipoTransacao && tipoTransacao !== 'todos') {
                 data = data.filter(titulo => {
-                    const tipoCategoria = titulo.category?.type?.toLowerCase(); 
+                    const tipoCategoria = titulo.category?.type?.toLowerCase();
                     if (tipoTransacao === 'recebimentos') return tipoCategoria === 'receipt';
                     if (tipoTransacao === 'pagamentos') return tipoCategoria === 'payment';
                     return true;
@@ -64,13 +65,13 @@ const ListaTitulo = ({ tipoTransacao, filtroData, onEdit, refresh }) => {
                     if (!titulo.maturity) return false;
 
                     const dataVencimento = new Date(titulo.maturity);
-                    dataVencimento.setHours(0,0,0,0);
+                    dataVencimento.setHours(0, 0, 0, 0);
 
                     const dataInicio = filtroData.dataInicio ? new Date(filtroData.dataInicio) : null;
-                    if (dataInicio) dataInicio.setHours(0,0,0,0);
+                    if (dataInicio) dataInicio.setHours(0, 0, 0, 0);
 
                     const dataFim = filtroData.dataFim ? new Date(filtroData.dataFim) : null;
-                    if (dataFim) dataFim.setHours(23,59,59,999);
+                    if (dataFim) dataFim.setHours(23, 59, 59, 999);
 
                     if (dataInicio && dataFim) return dataVencimento >= dataInicio && dataVencimento <= dataFim;
                     if (dataInicio) return dataVencimento >= dataInicio;

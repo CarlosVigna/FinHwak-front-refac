@@ -8,17 +8,21 @@ const ListaTitulo = ({ onEdit, refresh, tipoTransacao }) => {
     const [error, setError] = useState(null);
     const [filterStartDate, setFilterStartDate] = useState('');
     const [filterEndDate, setFilterEndDate] = useState('');
-    
+
     const fetchTitulos = async () => {
         try {
             const token = localStorage.getItem('token');
-            
+            const accountId = localStorage.getItem('accountId');
+
             if (!token) {
                 setError('Token não encontrado.');
                 return;
             }
 
-            const url = `${import.meta.env.VITE_API_URL}/bill`;
+            let url = `${import.meta.env.VITE_API_URL}/bill`;
+            if (accountId) {
+                url += `?accountId=${accountId}`;
+            }
 
             const response = await fetch(url, {
                 headers: {
@@ -32,7 +36,7 @@ const ListaTitulo = ({ onEdit, refresh, tipoTransacao }) => {
             }
 
             const data = await response.json();
-            console.log('Títulos recebidos:', data); 
+            console.log('Títulos recebidos:', data);
             setTitulos(data);
         } catch (error) {
             setError(error.message);
@@ -48,7 +52,7 @@ const ListaTitulo = ({ onEdit, refresh, tipoTransacao }) => {
         if (window.confirm('Tem certeza que deseja excluir este item?')) {
             try {
                 const token = localStorage.getItem('token');
-                
+
                 const response = await fetch(`${import.meta.env.VITE_API_URL}/bill/${id}`, {
                     method: 'DELETE',
                     headers: {
@@ -77,17 +81,17 @@ const ListaTitulo = ({ onEdit, refresh, tipoTransacao }) => {
 
     const filteredData = titulos.filter((item) => {
         const itemVenc = new Date(item.maturity);
-        if(itemVenc) itemVenc.setHours(0,0,0,0);
-        
+        if (itemVenc) itemVenc.setHours(0, 0, 0, 0);
+
         const startDate = filterStartDate ? new Date(filterStartDate) : null;
-        if(startDate) startDate.setHours(0,0,0,0);
-        
+        if (startDate) startDate.setHours(0, 0, 0, 0);
+
         const endDate = filterEndDate ? new Date(filterEndDate) : null;
-        if(endDate) endDate.setHours(23,59,59,999);
+        if (endDate) endDate.setHours(23, 59, 59, 999);
 
         const dateMatch = (!startDate || itemVenc >= startDate) && (!endDate || itemVenc <= endDate);
 
-   
+
         let typeMatch = true;
         const catType = item.category?.type?.toLowerCase();
 
@@ -115,8 +119,8 @@ const ListaTitulo = ({ onEdit, refresh, tipoTransacao }) => {
     };
 
     const traduzirTipo = (type) => {
-        if(type?.toLowerCase() === 'receipt') return 'Recebimento';
-        if(type?.toLowerCase() === 'payment') return 'Pagamento';
+        if (type?.toLowerCase() === 'receipt') return 'Recebimento';
+        if (type?.toLowerCase() === 'payment') return 'Pagamento';
         return type;
     }
 
@@ -165,35 +169,35 @@ const ListaTitulo = ({ onEdit, refresh, tipoTransacao }) => {
                     {filteredData.map((item) => (
                         <tr key={item.id}>
                             <td>{item.id}</td>
-                            
+
                             <td>{item.description}</td>
-                            
+
                             <td>{traduzirTipo(item.category?.type)}</td>
-                            
+
                             <td>{new Date(item.emission).toLocaleDateString('pt-BR')}</td>
                             <td>{new Date(item.maturity).toLocaleDateString('pt-BR')}</td>
-                            
+
                             <td>{item.category?.name}</td>
-                            
+
                             <td className={item.category?.type?.toLowerCase() === 'payment' ? 'valor-saida' : 'valor-entrada'}>
                                 {formatarValor(item.value)}
                             </td>
-                            
+
                             <td>{item.parcelNumber}</td>
-                            
+
                             <td>{traduzirStatus(item.status)}</td>
-                            
+
                             <td>
                                 <FontAwesomeIcon
                                     icon={faEdit}
+                                    className="action-icon edit"
                                     onClick={() => handleEdit(item.id)}
-                                    style={{ cursor: 'pointer', marginRight: '10px', color: '#fff' }}
                                     title="Editar"
                                 />
                                 <FontAwesomeIcon
                                     icon={faTrash}
+                                    className="action-icon delete"
                                     onClick={() => handleDelete(item.id)}
-                                    style={{ cursor: 'pointer', color: '#ff4444' }}
                                     title="Excluir"
                                 />
                             </td>

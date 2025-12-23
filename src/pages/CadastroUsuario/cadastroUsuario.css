@@ -1,36 +1,196 @@
+/* ===== CADASTRO USUÁRIO - Final Spacing Adjustment (Vertical Reduced) ===== */
+
+:root {
+    --primary: #10b981;
+    --primary-hover: #059669;
+    --secondary: #06b6d4;
+    --surface: #ffffff;
+    --radius: 12px;
+}
+
+/* Container Principal */
 .container-cadastro {
     display: flex;
-    flex-direction: column; 
     justify-content: center;
+    align-items: flex-start;
+    min-height: 65vh;
+    padding: 20px;
+    padding-top: 3rem;
+
+    /* Fundo Cinza Claro (Light Mode) */
+    background-color: #f1f5f9;
+
+    font-family: 'Inter', sans-serif;
+}
+
+/* Card do Formulário */
+.cadastro-usuario {
+    background: var(--surface);
+    padding: 3rem 4rem;
+    border-radius: var(--radius);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+    width: 100%;
+    /* Largura mantida 920px */
+    max-width: 920px;
+
+    transition: transform 0.3s ease;
+    border: none;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.cadastro-usuario:hover {
+    transform: translateY(-5px);
+}
+
+/* Header */
+.cadastro-usuario .header {
+    text-align: center;
+    margin-bottom: 1.25rem;
+    /* Reduzido de 2.5rem */
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    height: auto;
-    min-height: 80vh;
-    background: linear-gradient(135deg, #5f5f5f, #a3a3a3);
-    background-color: #f0f4f8;
-    padding: 40px;
-    border-radius: 8px;
-    background-size: cover; 
+}
+
+.cadastro-usuario .header::before {
+    content: '';
+    display: block;
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #e0f2fe 0%, #dcfce7 100%);
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%230f766e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z' /%3E%3C/svg%3E");
+    background-size: 32px;
+    background-repeat: no-repeat;
     background-position: center;
-    box-sizing: border-box;
-    
+    border: 1px solid #e2e8f0;
+}
+
+.cadastro-usuario .header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+/* Grid System */
+.cadastro-usuario .campos-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* 2 Colunas base */
+    column-gap: 3rem;
+    row-gap: 1.25rem;
+    /* VERTICAL REDUZIDO (era 2rem ou 2.5rem) */
+}
+
+/* --- LAYOUT HÍBRIDO (Estilo Referência) --- */
+/* 1. Nome (Full Width) */
+.cadastro-usuario .campos-container>div:nth-child(1) {
+    grid-column: 1 / -1;
+}
+
+/* 2. Email (Full Width) */
+.cadastro-usuario .campos-container>div:nth-child(2) {
+    grid-column: 1 / -1;
+}
+
+/* 3. Senha (Half) | 4. Confirmar (Half) - Padrão */
+
+.cadastro-usuario .campo-texto {
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.cadastro-usuario label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #111827;
+    margin-left: 2px;
+}
+
+.cadastro-usuario input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background-color: #fff;
+    transition: all 0.2s ease;
+    outline: none;
+    color: #1f2937;
+}
+
+.cadastro-usuario input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Botão */
+.cadastro-usuario .botao-container {
+    margin-top: 2rem;
+    width: 100%;
+}
+
+.cadastro-usuario button {
+    width: 100%;
+    padding: 0.875rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cadastro-usuario button:hover {
+    opacity: 0.95;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
 }
 
 .erro-mensagem,
-.sucesso-mensagem { 
-    margin-top: 20px;
+.sucesso-mensagem {
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
     text-align: center;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    grid-column: 1 / -1;
 }
 
 .erro-mensagem {
-    color: #dc3545;  
-    font-weight: bold;
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fee2e2;
 }
 
 .sucesso-mensagem {
-    color: #28a745;  
-    font-weight: bold;
+    background-color: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
 }
 
+/* Responsivo */
+@media (max-width: 768px) {
+    .cadastro-usuario {
+        padding: 2rem;
+    }
 
+    .cadastro-usuario .campos-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
 
-
+    .cadastro-usuario .campos-container>div:nth-child(n) {
+        grid-column: span 1;
+    }
+}

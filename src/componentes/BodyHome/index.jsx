@@ -1,5 +1,5 @@
-import './bodyHome.css';  
-import CardHome from '../CardHome'; 
+import './bodyHome.css';
+import CardHome from '../CardHome';
 
 const BodyHome = () => {
   const cardsData = [

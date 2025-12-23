@@ -13,7 +13,7 @@ const Contas = () => {
         const fetchContas = async () => {
             try {
                 const token = localStorage.getItem('token');
-                
+
                 const response = await fetch(`${import.meta.env.VITE_API_URL}/account`, {
                     method: 'GET',
                     headers: {
@@ -39,14 +39,14 @@ const Contas = () => {
 
     const handleEntrar = (idConta) => {
         console.log('🔑 Entrando na conta com ID:', idConta);
-        
+
         // ✅ SALVA o accountId no localStorage
         localStorage.setItem('accountId', idConta);
-        
+
         // ✅ Verifica se salvou
         const verificacao = localStorage.getItem('accountId');
         console.log('✅ AccountId salvo no localStorage:', verificacao);
-        
+
         navigate('/cadastroTitulo');
     };
 
@@ -68,7 +68,7 @@ const Contas = () => {
 
         try {
             const token = localStorage.getItem('token');
-            
+
             const response = await fetch(`${import.meta.env.VITE_API_URL}/account/${idConta}`, {
                 method: 'DELETE',
                 headers: {
@@ -80,7 +80,7 @@ const Contas = () => {
             if (response.status === 204) {
                 setContas(prevContas => prevContas.filter(conta => conta.id !== idConta));
                 setSucesso('Conta e seus títulos foram excluídos com sucesso');
-                return; 
+                return;
             }
 
             if (!response.ok) {
@@ -103,13 +103,14 @@ const Contas = () => {
             <h1 className="titulo-contas">Minhas Contas</h1>
 
             {erro && <div className="erro-mensagem">{erro}</div>}
-            {sucesso && <div className="sucesso-mensagem" style={{color: 'green', textAlign:'center', marginBottom: '10px'}}>{sucesso}</div>}
-            
+            {sucesso && <div className="sucesso-mensagem" style={{ color: 'green', textAlign: 'center', marginBottom: '10px' }}>{sucesso}</div>}
+
             <div className="cards-container">
                 {contas.length > 0 ? (
                     contas.map(conta => (
                         <Card
                             key={conta.id}
+                            className="conta-card"
                             conta={conta}
                             onEntrar={handleEntrar}
                             onEditar={handleEditar}
@@ -124,7 +125,7 @@ const Contas = () => {
             </div>
 
             <div className="botao-criar-conta-container">
-                <button 
+                <button
                     className="botao-nova-conta"
                     onClick={handleCriarConta}
                 >

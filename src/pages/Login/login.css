@@ -1,18 +1,174 @@
-.container-login {    
-    display: flex;
-    flex-direction: column; 
-    justify-content: center; 
-    align-items: center;
-    height: 100%; 
-    min-height: 80vh; 
-    max-width: 100%;
-    padding: 40px; 
-    background: linear-gradient(to bottom, #1a1a1a, #333333);
+/* ===== LOGIN PAGE - Width Adjustment (+20px) ===== */
+
+:root {
+    --primary: #10b981;
+    --primary-hover: #059669;
+    --secondary: #06b6d4;
+    --surface: #ffffff;
+    --radius: 12px;
 }
 
-.erro-mensagem {
-    margin-top: 20px; 
-    color: #dc3545;
-    font-weight: bold;
+/* Container Principal */
+.container-login {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 65vh;
+    padding: 20px;
+    padding-top: 3rem;
+
+    /* Fundo Cinza Claro (Light Mode) */
+    background-color: #f1f5f9;
+
+    font-family: 'Inter', sans-serif;
+}
+
+/* Card do Formulário */
+.login-form {
+    background: var(--surface);
+    padding: 3rem 4rem;
+    /* Respiro lateral mantido */
+    border-radius: var(--radius);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+    width: 100%;
+    /* Largura Ajustada: 450px + 20px = 470px */
+    max-width: 470px;
+
+    transition: transform 0.3s ease;
+    border: none;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.login-form:hover {
+    transform: translateY(-5px);
+}
+
+/* Header com Logo */
+.login-form .header {
     text-align: center;
+    margin-bottom: 1.25rem;
+    /* Reduzido de 2rem */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-form .header::before {
+    content: '';
+    display: block;
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #e0f2fe 0%, #dcfce7 100%);
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%230f766e'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' /%3E%3C/svg%3E");
+    background-size: 32px;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: 1px solid #e2e8f0;
+}
+
+.login-form .header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    margin-bottom: 0.5rem;
+}
+
+.login-form .header::after {
+    content: 'Insira suas credenciais para acessar sua conta.';
+    display: block;
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-weight: 400;
+}
+
+/* Campos */
+.login-form .campos-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.login-form .campo-texto {
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.login-form label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #111827;
+    margin-left: 0;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background-color: #fff;
+    transition: all 0.2s ease;
+    outline: none;
+    color: #1f2937;
+}
+
+.login-form input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.login-form input::placeholder {
+    color: #9ca3af;
+}
+
+/* Botão */
+.login-form .botao-container {
+    margin-top: 2rem;
+    width: 100%;
+}
+
+.login-form button {
+    width: 100%;
+    padding: 0.875rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.login-form button:hover {
+    opacity: 0.95;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+/* Mensagens */
+.erro-mensagem {
+    background-color: #fef2f2;
+    color: #dc2626;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    border: 1px solid #fee2e2;
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+    .login-form {
+        padding: 2rem 1.5rem;
+    }
 }

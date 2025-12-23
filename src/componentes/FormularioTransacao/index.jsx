@@ -95,7 +95,7 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
         try {
             const token = localStorage.getItem('token');
             const accountId = localStorage.getItem('accountId');
-            
+
             if (!token) throw new Error('Usuário não autenticado. Faça login novamente.');
             if (!accountId) throw new Error('Conta não identificada. Selecione uma conta novamente.');
 
@@ -243,22 +243,22 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
             <div className="linha-formulario">
                 <div className="campo-formulario">
                     <label>Emissão</label>
-                    <input 
-                        type="date" 
-                        name="emission" 
-                        value={valores.emission} 
-                        onChange={handleInputChange} 
+                    <input
+                        type="date"
+                        name="emission"
+                        value={valores.emission}
+                        onChange={handleInputChange}
                         required
                     />
                 </div>
 
                 <div className="campo-formulario">
                     <label>Vencimento</label>
-                    <input 
-                        type="date" 
-                        name="maturity" 
-                        value={valores.maturity} 
-                        onChange={handleInputChange} 
+                    <input
+                        type="date"
+                        name="maturity"
+                        value={valores.maturity}
+                        onChange={handleInputChange}
                         required
                     />
                 </div>
