@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { useAuth, AuthProvider } from './pages/Login/authContext';
-import PrivateRoute from './pages/Login/privateRoute'; 
+import PrivateRoute from './pages/Login/privateRoute';
 import MenuHome from './componentes/MenuHome';
 import Banner from './componentes/Banner';
 import Footer from './componentes/Footer';
@@ -20,14 +20,15 @@ import ContasPagar from './pages/ContasPagar';
 import Sobre from './pages/Sobre';
 import ContasRecebidas from './pages/ContasRecebidas';
 import ContasPagas from './pages/ContasPagas';
+import ContasPendentes from './pages/ContasPendentes';
 
 function App() {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    
-    if (!isAuthenticated) {}
+
+    if (!isAuthenticated) { }
   }, [isAuthenticated]);
 
   return (
@@ -44,7 +45,7 @@ function App() {
           <Route path="/sobre" element={<Sobre />} />
 
 
-          
+
           <Route path="/contas" element={<PrivateRoute><Contas /></PrivateRoute>} />
           <Route path="/cadastroTitulo" element={<PrivateRoute><CadastroTitulo /></PrivateRoute>} />
           <Route path="/listaTitulo" element={<PrivateRoute><ListaTitulo /></PrivateRoute>} />
@@ -56,8 +57,9 @@ function App() {
           <Route path="/relContasPagar" element={<PrivateRoute><ContasPagar /></PrivateRoute>} />
           <Route path="/relRecebimentos" element={<PrivateRoute><ContasRecebidas /></PrivateRoute>} />
           <Route path="/relPagamentos" element={<PrivateRoute><ContasPagas /></PrivateRoute>} />
+          <Route path="/contas-pendentes" element={<PrivateRoute><ContasPendentes /></PrivateRoute>} />
 
-          
+
 
 
         </Routes>

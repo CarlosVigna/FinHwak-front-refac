@@ -103,10 +103,13 @@ function MenuHome({ scrollToCadastro }) {
                         <li style={{ "--i": 4 }} className={isActive('/cadastroTitulo') ? 'active' : ''}>
                             <Link to="/cadastroTitulo" onClick={handleLinkClick}>Cadastro de Títulos</Link>
                         </li>
-                        <li style={{ "--i": 5 }} className={isActive('/cadastrarCategoria') ? 'active' : ''}>
+                        <li style={{ "--i": 5 }} className={isActive('/contas-pendentes') ? 'active' : ''}>
+                            <Link to="/contas-pendentes" onClick={handleLinkClick}>Contas Pendentes</Link>
+                        </li>
+                        <li style={{ "--i": 6 }} className={isActive('/cadastrarCategoria') ? 'active' : ''}>
                             <Link to="/cadastrarCategoria" onClick={handleLinkClick}>Cadastro Categoria</Link>
                         </li>
-                        <li style={{ "--i": 6 }} className={`dropdown ${isActive('/rel') ? 'active' : ''} ${isDropdownOpen ? 'open' : ''}`}>
+                        <li style={{ "--i": 7 }} className={`dropdown ${isActive('/rel') ? 'active' : ''} ${isDropdownOpen ? 'open' : ''}`}>
                             <Link to="#"
                                 className="dropdown-toggle"
                                 onClick={(e) => {
@@ -119,16 +122,16 @@ function MenuHome({ scrollToCadastro }) {
                                 Relatórios
                             </Link>
                             <ul className="dropdown-content" role="menu">
-                                <li style={{ "--i": 7 }} className={isActive('/relContasReceber') ? 'active' : ''}>
+                                <li style={{ "--i": 8 }} className={isActive('/relContasReceber') ? 'active' : ''}>
                                     <Link to="/relContasReceber" onClick={handleDropdownItemClick}>Contas a Receber</Link>
                                 </li>
-                                <li style={{ "--i": 8 }} className={isActive('/relContasPagar') ? 'active' : ''}>
+                                <li style={{ "--i": 9 }} className={isActive('/relContasPagar') ? 'active' : ''}>
                                     <Link to="/relContasPagar" onClick={handleDropdownItemClick}>Contas a Pagar</Link>
                                 </li>
-                                <li style={{ "--i": 9 }} className={isActive('/relRecebimentos') ? 'active' : ''}>
+                                <li style={{ "--i": 10 }} className={isActive('/relRecebimentos') ? 'active' : ''}>
                                     <Link to="/relRecebimentos" onClick={handleDropdownItemClick}>Recebimentos</Link>
                                 </li>
-                                <li style={{ "--i": 10 }} className={isActive('/relPagamentos') ? 'active' : ''}>
+                                <li style={{ "--i": 11 }} className={isActive('/relPagamentos') ? 'active' : ''}>
                                     <Link to="/relPagamentos" onClick={handleDropdownItemClick}>Pagamentos</Link>
                                 </li>
                             </ul>
