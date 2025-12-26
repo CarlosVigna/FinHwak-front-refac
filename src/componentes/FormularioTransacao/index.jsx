@@ -99,6 +99,7 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
             if (!token) throw new Error('Usuário não autenticado. Faça login novamente.');
             if (!accountId) throw new Error('Conta não identificada. Selecione uma conta novamente.');
 
+            // ✅ Payload compatível com BillRequestDTO do backend
             const payload = {
                 description: valores.description,
                 emission: valores.emission,
@@ -130,6 +131,7 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
             }
 
             setSucesso(tituloParaEditar ? 'Atualizado com sucesso!' : 'Cadastrado com sucesso!');
+            
             if (!tituloParaEditar) {
                 setValores({
                     description: '',
@@ -150,7 +152,6 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
             setErro(error.message);
         }
     };
-
 
     const categoriasFiltradas = categorias.filter(cat => {
         if (!valores.type) return true;

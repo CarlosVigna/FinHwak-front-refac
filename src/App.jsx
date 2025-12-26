@@ -10,7 +10,6 @@ import Login from './pages/Login';
 import Contas from './pages/Contas';
 import CadastroTitulo from './pages/CadastroTitulo';
 import BodyHome from './componentes/BodyHome';
-import ListaTitulo from './pages/ListaTitulo';
 import CadastroCategoria from './pages/CadastroCategoria';
 import CriarConta from './pages/CriarConta';
 import EditarConta from './pages/EditarConta';
@@ -48,7 +47,6 @@ function App() {
 
           <Route path="/contas" element={<PrivateRoute><Contas /></PrivateRoute>} />
           <Route path="/cadastroTitulo" element={<PrivateRoute><CadastroTitulo /></PrivateRoute>} />
-          <Route path="/listaTitulo" element={<PrivateRoute><ListaTitulo /></PrivateRoute>} />
           <Route path="/cadastrarCategoria" element={<PrivateRoute><CadastroCategoria /></PrivateRoute>} />
           <Route path="/criar-conta" element={<PrivateRoute><CriarConta /></PrivateRoute>} />
           <Route path="/editar-conta/:id" element={<PrivateRoute><EditarConta /></PrivateRoute>} />

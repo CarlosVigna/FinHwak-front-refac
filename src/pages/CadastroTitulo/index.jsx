@@ -1,16 +1,38 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import FormularioTransacao from '../../componentes/FormularioTransacao';
-import ListaTitulo from '../ListaTitulo';
+import ListaTitulo from '../../componentes/ListaTitulo';
 import './cadastroTitulo.css';
 
 const CadastroTitulo = () => {
     const [tituloParaEditar, setTituloParaEditar] = useState(null);
     const [refreshList, setRefreshList] = useState(false);
     const [tipoTransacao, setTipoTransacao] = useState('todos');
+    const [accountId, setAccountId] = useState(null);
     const [filtroData, setFiltroData] = useState({
         dataInicio: '',
         dataFim: ''
     });
+
+    // ✅ Monitora mudanças no accountId do localStorage
+    useEffect(() => {
+        const currentAccountId = localStorage.getItem('accountId');
+        console.log('🔑 Account ID atual:', currentAccountId);
+        setAccountId(currentAccountId);
+    }, []);
+
+    // ✅ Polling para detectar mudança de conta
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const currentAccountId = localStorage.getItem('accountId');
+            if (currentAccountId !== accountId) {
+                console.log('🔄 Conta mudou de', accountId, 'para', currentAccountId);
+                setAccountId(currentAccountId);
+                setRefreshList(prev => !prev);
+            }
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [accountId]);
 
     const handleEdit = useCallback((titulo) => {
         console.log('Iniciando edição do título:', titulo);
@@ -67,6 +89,8 @@ const CadastroTitulo = () => {
                     </button>
                 </div>
                 <ListaTitulo
+                    key={accountId} // ✅ Force re-render quando conta mudar
+                    accountId={accountId} // ✅ Passa o accountId como prop
                     onEdit={handleEdit}
                     refresh={refreshList}
                     tipoTransacao={tipoTransacao}
