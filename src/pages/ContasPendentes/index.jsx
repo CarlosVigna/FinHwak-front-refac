@@ -18,13 +18,15 @@ const ContasPendentes = () => {
                 throw new Error('Usuário não autenticado.');
             }
 
-            // Fetch genericamente (similar a ListaTitulo) ou filtrado se a API suportar
-            // A API existente parece buscar tudo e filtrar no front em alguns casos, 
-            // mas ListaTitulo usa /bill?accountId=...
-            let url = `${import.meta.env.VITE_API_URL}/bill`;
-            if (accountId) {
-                url += `?accountId=${accountId}`;
+            if (!accountId) {
+                throw new Error('Nenhuma conta selecionada. Volte e selecione uma conta.');
             }
+
+            // --- CORREÇÃO AQUI ---
+            // URL Correta: /bill/account/{id}
+            const url = `${import.meta.env.VITE_API_URL}/bill/account/${accountId}`;
+            
+            console.log('🌐 Buscando contas pendentes na URL:', url);
 
             const response = await fetch(url, {
                 headers: {
@@ -33,30 +35,26 @@ const ContasPendentes = () => {
                 }
             });
 
-            console.log('Status da resposta:', response.status);
-
             if (!response.ok) {
-                throw new Error('Falha ao carregar contas pendentes.');
+                const text = await response.text();
+                throw new Error(text || 'Falha ao carregar contas pendentes.');
             }
 
             const data = await response.json();
-            console.log('Dados brutos recebidos:', data);
-
-            // Filtrar apenas: Pagamentos (Type=PAYMENT ou Payment) E Pendentes (Status=PENDING)
+            
+            // Filtrar apenas: Pagamentos (Type=PAYMENT) E Pendentes (Status=PENDING)
             const pendentes = data.filter(item => {
+                // Tenta pegar o tipo da categoria OU do item (caso venha plano)
                 const type = item.category?.type || item.type;
                 const status = item.status;
 
-                console.log(`Item ID ${item.id} - Tipo: ${type}, Status: ${status}`);
-
                 const isPayment = type?.toUpperCase() === 'PAYMENT';
                 const isPending = status?.toUpperCase() === 'PENDING';
+                
                 return isPayment && isPending;
             });
 
-            console.log('Dados filtrados (Pendentes):', pendentes);
-
-            // Ordenar por vencimento (mais recentes/atrasadas primeiro)
+            // Ordenar por vencimento (mais antigas/atrasadas primeiro)
             pendentes.sort((a, b) => new Date(a.maturity) - new Date(b.maturity));
 
             setContas(pendentes);
@@ -74,7 +72,8 @@ const ContasPendentes = () => {
     }, []);
 
     const handleDarBaixa = async (conta) => {
-        if (!window.confirm(`Confirma o pagamento de "${conta.description}"? \nValor: ${formatCurrency(conta.installmentAmount || conta.value)}`)) {
+        const valorFormatado = formatCurrency(conta.installmentAmount || conta.value);
+        if (!window.confirm(`Confirma o pagamento de "${conta.description}"?\nValor: ${valorFormatado}`)) {
             return;
         }
 
@@ -82,22 +81,19 @@ const ContasPendentes = () => {
             const token = localStorage.getItem('token');
             const accountId = localStorage.getItem('accountId');
 
-            // Construir payload completo conforme FormularioTransacao
-            // Precisamos garantir que todos os campos obrigatórios estejam presentes.
-            // A API parece exigir o objeto completo no PUT.
-
+            // Monta o payload mantendo os dados originais, apenas mudando o status
             const payload = {
                 id: conta.id,
                 description: conta.description,
-                emission: conta.emission, // Assumindo formato ISO do backend
+                emission: conta.emission,
                 maturity: conta.maturity,
                 installmentAmount: Number(conta.installmentAmount || conta.value),
                 installmentCount: Number(conta.installmentCount || 1),
                 periodicity: conta.periodicity || 'MONTHLY',
-                status: 'PAID', // Mudando status para PAGO
+                status: 'PAID', // <--- MUDANÇA DE STATUS AQUI
                 categoryId: Number(conta.category?.id || conta.categoryId),
-                accountId: Number(accountId || conta.accountId),
-                type: 'PAYMENT' // Garante que mantém como pagamento
+                accountId: Number(accountId), // Usa o ID da conta atual
+                type: 'PAYMENT'
             };
 
             const response = await fetch(`${import.meta.env.VITE_API_URL}/bill/${conta.id}`, {
@@ -114,9 +110,9 @@ const ContasPendentes = () => {
                 throw new Error(errData.message || 'Erro ao dar baixa na conta.');
             }
 
-            // Sucesso: remover da lista localmente para feedback instantâneo
+            // Sucesso: remove da lista visualmente
             setContas(prev => prev.filter(c => c.id !== conta.id));
-            alert('Conta marcada como paga com sucesso!');
+            alert('Conta paga com sucesso!');
 
         } catch (err) {
             console.error(err);
@@ -124,7 +120,7 @@ const ContasPendentes = () => {
         }
     };
 
-    // Utilitários de Formatação
+    // Utilitários
     const formatCurrency = (value) => {
         if (value === undefined || value === null) return 'R$ 0,00';
         return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -132,13 +128,18 @@ const ContasPendentes = () => {
 
     const formatDate = (dateString) => {
         if (!dateString) return '-';
-        return new Date(dateString).toLocaleDateString('pt-BR');
+        // Corrige bug de fuso horário adicionando 'T12:00:00' se for só data
+        const data = new Date(dateString.includes('T') ? dateString : dateString + 'T12:00:00');
+        return data.toLocaleDateString('pt-BR');
     };
 
     const getStatusVencimento = (maturityDate) => {
         const hoje = new Date();
         hoje.setHours(0, 0, 0, 0);
-        const vencimento = new Date(maturityDate);
+        
+        // Garante a conversão correta da string de data
+        const dataString = maturityDate.includes('T') ? maturityDate : maturityDate + 'T12:00:00';
+        const vencimento = new Date(dataString);
         vencimento.setHours(0, 0, 0, 0);
 
         if (vencimento < hoje) return { label: 'Vencida', class: 'vencida', icon: faExclamationTriangle };
@@ -154,16 +155,16 @@ const ContasPendentes = () => {
             </div>
 
             <div className="tabela-card">
-                {error && <div className="alert alert-danger">{error}</div>}
+                {error && <div className="mensagem-erro">{error}</div>}
 
                 {loading ? (
-                    <div style={{ textAlign: 'center', padding: '2rem' }}>Carregando...</div>
+                    <div style={{ textAlign: 'center', padding: '2rem' }}>⏳ Carregando contas...</div>
                 ) : (
                     <div className="table-container">
                         {contas.length === 0 ? (
                             <div className="empty-state">
-                                <FontAwesomeIcon icon={faInbox} />
-                                <p>Nenhuma conta pendente encontrada.</p>
+                                <FontAwesomeIcon icon={faInbox} size="3x" style={{ marginBottom: '10px', color: '#ccc' }} />
+                                <p>Tudo em dia! Nenhuma conta pendente.</p>
                             </div>
                         ) : (
                             <table className="table">
@@ -190,8 +191,7 @@ const ContasPendentes = () => {
                                                 </td>
                                                 <td>
                                                     <span className={`status-badge ${statusInfo.class}`}>
-                                                        {statusInfo.icon && <FontAwesomeIcon icon={statusInfo.icon} />}
-                                                        {statusInfo.label}
+                                                        {statusInfo.icon && <FontAwesomeIcon icon={statusInfo.icon} />} {statusInfo.label}
                                                     </span>
                                                 </td>
                                                 <td>
@@ -201,7 +201,7 @@ const ContasPendentes = () => {
                                                         title="Marcar como paga"
                                                     >
                                                         <FontAwesomeIcon icon={faCheckCircle} />
-                                                        <span>Dar Baixa</span>
+                                                        <span> Pagar</span>
                                                     </button>
                                                 </td>
                                             </tr>

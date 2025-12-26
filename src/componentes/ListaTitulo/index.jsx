@@ -9,6 +9,7 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
 
     console.log("DEBUG: AccountID recebido:", accountId);
     console.log("DEBUG: Token:", localStorage.getItem('token'));
+    
     // Deleta um título
     const handleDelete = useCallback(async (id) => {
         if (!window.confirm("Tem certeza que deseja excluir este lançamento?")) return;
@@ -70,7 +71,6 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
         }
     }, [accountId]);
 
-    // Atualiza quando accountId, refresh, tipoTransacao ou filtroData mudarem
     useEffect(() => {
         fetchTitulos();
     }, [fetchTitulos, refresh, tipoTransacao, filtroData.dataInicio, filtroData.dataFim]);
@@ -95,6 +95,15 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
             case 'RECEIVED': return 'Recebido';
             default: return status;
         }
+    };
+
+    // NOVA FUNÇÃO: Traduz o tipo de transação
+    const traduzirTipo = (type) => {
+        if (!type) return '-';
+        const tipoNormalizado = type.toUpperCase();
+        if (tipoNormalizado === 'PAYMENT') return 'Pagamento';
+        if (tipoNormalizado === 'RECEIPT') return 'Recebimento';
+        return type;
     };
 
     const getStatusClass = (status) => {
@@ -126,6 +135,7 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
                             <tr>
                                 <th>ID</th>
                                 <th>Descrição</th>
+                                <th>Tipo</th> {/* Coluna Nova */}
                                 <th>Categoria</th>
                                 <th>Vencimento</th>
                                 <th>Valor</th>
@@ -138,10 +148,20 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
                             {titulos.map(titulo => {
                                 const tipoCategoria = titulo.category?.type?.toLowerCase();
                                 const isDespesa = tipoCategoria === 'payment';
+                                
                                 return (
                                     <tr key={titulo.id}>
                                         <td>#{titulo.id}</td>
                                         <td>{titulo.description}</td>
+                                        
+                                        {/* Célula Nova: Tipo */}
+                                        <td style={{ 
+                                            color: isDespesa ? '#d32f2f' : '#2e7d32', 
+                                            fontWeight: 'bold' 
+                                        }}>
+                                            {traduzirTipo(titulo.category?.type)}
+                                        </td>
+
                                         <td>{titulo.category?.name || '-'}</td>
                                         <td>{formatarData(titulo.maturity)}</td>
                                         <td className={isDespesa ? 'valor-saida' : 'valor-entrada'}>
