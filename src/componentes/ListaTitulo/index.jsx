@@ -8,7 +8,7 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
     const [loading, setLoading] = useState(false);
 
     console.log("DEBUG: AccountID recebido:", accountId);
-    console.log("DEBUG: Token:", localStorage.getItem('token'));
+    console.log("DEBUG: Tipo Transação:", tipoTransacao);
     
     // Deleta um título
     const handleDelete = useCallback(async (id) => {
@@ -73,7 +73,27 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
 
     useEffect(() => {
         fetchTitulos();
-    }, [fetchTitulos, refresh, tipoTransacao, filtroData.dataInicio, filtroData.dataFim]);
+    }, [fetchTitulos, refresh]);
+
+    // ✅ FILTRO CORRIGIDO - Filtra por tipo de transação
+    const titulosFiltrados = titulos.filter(titulo => {
+        if (tipoTransacao === 'todos') return true;
+        
+        const tipoCategoria = titulo.category?.type?.toLowerCase();
+        
+        if (tipoTransacao === 'recebimentos') {
+            return tipoCategoria === 'receipt';
+        }
+        
+        if (tipoTransacao === 'pagamentos') {
+            return tipoCategoria === 'payment';
+        }
+        
+        return true;
+    });
+
+    console.log('📊 Títulos totais:', titulos.length);
+    console.log('📊 Títulos filtrados:', titulosFiltrados.length);
 
     // Funções auxiliares
     const formatarData = (dataISO) => {
@@ -97,7 +117,6 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
         }
     };
 
-    // NOVA FUNÇÃO: Traduz o tipo de transação
     const traduzirTipo = (type) => {
         if (!type) return '-';
         const tipoNormalizado = type.toUpperCase();
@@ -121,7 +140,7 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
         <div className="lista-titulo-container">
             {error && <div className="mensagem-erro"><FaExclamationCircle /> {error}</div>}
 
-            {titulos.length === 0 && !error ? (
+            {titulosFiltrados.length === 0 && !error ? (
                 <div className="lista-vazia">
                     <p>Nenhum lançamento encontrado para os filtros selecionados.</p>
                     <p style={{ fontSize: '0.9em', color: '#666' }}>
@@ -135,7 +154,7 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
                             <tr>
                                 <th>ID</th>
                                 <th>Descrição</th>
-                                <th>Tipo</th> {/* Coluna Nova */}
+                                <th>Tipo</th>
                                 <th>Categoria</th>
                                 <th>Vencimento</th>
                                 <th>Valor</th>
@@ -145,36 +164,33 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
                             </tr>
                         </thead>
                         <tbody>
-                            {titulos.map(titulo => {
+                            {titulosFiltrados.map(titulo => {
                                 const tipoCategoria = titulo.category?.type?.toLowerCase();
                                 const isDespesa = tipoCategoria === 'payment';
                                 
                                 return (
                                     <tr key={titulo.id}>
-                                        <td>#{titulo.id}</td>
-                                        <td>{titulo.description}</td>
-                                        
-                                        {/* Célula Nova: Tipo */}
-                                        <td style={{ 
+                                        <td data-label="ID">#{titulo.id}</td>
+                                        <td data-label="Descrição">{titulo.description}</td>
+                                        <td data-label="Tipo" style={{ 
                                             color: isDespesa ? '#d32f2f' : '#2e7d32', 
                                             fontWeight: 'bold' 
                                         }}>
                                             {traduzirTipo(titulo.category?.type)}
                                         </td>
-
-                                        <td>{titulo.category?.name || '-'}</td>
-                                        <td>{formatarData(titulo.maturity)}</td>
-                                        <td className={isDespesa ? 'valor-saida' : 'valor-entrada'}>
+                                        <td data-label="Categoria">{titulo.category?.name || '-'}</td>
+                                        <td data-label="Vencimento">{formatarData(titulo.maturity)}</td>
+                                        <td data-label="Valor" className={isDespesa ? 'valor-saida' : 'valor-entrada'}>
                                             {formatarValor(titulo.installmentAmount)}
                                         </td>
-                                        <td>{titulo.currentInstallment || 1}/{titulo.installmentCount || 1}</td>
-                                        <td>
+                                        <td data-label="Parcela">{titulo.currentInstallment || 1}/{titulo.installmentCount || 1}</td>
+                                        <td data-label="Status">
                                             <span className={`badge-status ${getStatusClass(titulo.status)}`}>
                                                 {(titulo.status === 'PAID' || titulo.status === 'RECEIVED') && <FaCheckCircle />}
                                                 {titulo.status === 'PENDING' && <FaClock />} {traduzirStatus(titulo.status)}
                                             </span>
                                         </td>
-                                        <td className="coluna-acoes">
+                                        <td data-label="Ações" className="coluna-acoes">
                                             <button className="btn-acao btn-editar" onClick={() => onEdit(titulo)} title="Editar">
                                                 <FaEdit />
                                             </button>
