@@ -47,7 +47,7 @@ const Contas = () => {
         const verificacao = localStorage.getItem('accountId');
         console.log('✅ AccountId salvo no localStorage:', verificacao);
 
-        navigate('/cadastroTitulo');
+        navigate('/dashboard');
     };
 
     const handleEditar = (idConta) => {

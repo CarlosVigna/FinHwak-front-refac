@@ -20,6 +20,7 @@ import Sobre from './pages/Sobre';
 import ContasRecebidas from './pages/ContasRecebidas';
 import ContasPagas from './pages/ContasPagas';
 import ContasPendentes from './pages/ContasPendentes';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   const { isAuthenticated } = useAuth();
@@ -46,6 +47,7 @@ function App() {
 
 
           <Route path="/contas" element={<PrivateRoute><Contas /></PrivateRoute>} />
+          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/cadastroTitulo" element={<PrivateRoute><CadastroTitulo /></PrivateRoute>} />
           <Route path="/cadastrarCategoria" element={<PrivateRoute><CadastroCategoria /></PrivateRoute>} />
           <Route path="/criar-conta" element={<PrivateRoute><CriarConta /></PrivateRoute>} />

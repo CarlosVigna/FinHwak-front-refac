@@ -1,0 +1,215 @@
+/* Traffic Light Styles */
+
+.traffic-light {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease-out 0.2s forwards;
+}
+
+.traffic-light-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1.5rem 0;
+}
+
+.traffic-light-sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.traffic-section {
+    border-radius: 8px;
+    padding: 1.25rem;
+    border: 2px solid;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease-out forwards;
+    transition: all 0.3s ease;
+}
+
+.traffic-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.traffic-section-red {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border-color: var(--danger);
+}
+
+.traffic-section-yellow {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-color: var(--warning);
+}
+
+.traffic-section-green {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    border-color: var(--success);
+}
+
+.traffic-section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.traffic-icon {
+    font-size: 1.5rem;
+}
+
+.traffic-icon-red {
+    color: var(--danger);
+}
+
+.traffic-icon-yellow {
+    color: var(--warning);
+}
+
+.traffic-icon-green {
+    color: var(--success);
+}
+
+.traffic-section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.traffic-badge {
+    background: white;
+    color: var(--text-primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.625rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.traffic-section-body {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+/* Scrollbar */
+.traffic-section-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.traffic-section-body::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+}
+
+.traffic-section-body::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.traffic-empty {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    padding: 1rem 0;
+    margin: 0;
+}
+
+.traffic-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.traffic-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+}
+
+.traffic-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.traffic-item:last-child {
+    margin-bottom: 0;
+}
+
+.traffic-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.traffic-item-description {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.traffic-item-date {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.traffic-item-value {
+    font-size: 0.875rem;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    color: var(--danger);
+    white-space: nowrap;
+    margin-left: 1rem;
+}
+
+.traffic-item-more {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.5rem;
+    font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .traffic-light {
+        padding: 1.25rem;
+    }
+
+    .traffic-light-sections {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .traffic-section {
+        padding: 1rem;
+    }
+
+    .traffic-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .traffic-item-value {
+        margin-left: 0;
+    }
+}

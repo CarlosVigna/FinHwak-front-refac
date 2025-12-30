@@ -1,0 +1,82 @@
+/* Annual Chart Styles */
+
+.annual-chart {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease-out 0.5s forwards;
+}
+
+.annual-chart-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1.5rem 0;
+}
+
+.annual-chart-container {
+    width: 100%;
+    min-height: 350px;
+}
+
+.annual-chart-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+.annual-chart-empty p {
+    margin: 0;
+}
+
+/* Custom Tooltip */
+.annual-tooltip {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.annual-tooltip-label {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+}
+
+.annual-tooltip-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+    margin: 0.25rem 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .annual-chart {
+        padding: 1.25rem;
+    }
+
+    .annual-chart-container {
+        min-height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .annual-chart-title {
+        font-size: 1.1rem;
+    }
+
+    .annual-chart-container {
+        min-height: 250px;
+    }
+}

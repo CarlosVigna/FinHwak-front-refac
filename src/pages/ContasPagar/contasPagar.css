@@ -1,235 +1,113 @@
-.rel-pagar-container {
-    padding: 20px;
-    background-color: #ffebee;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: auto;
-    margin: 0 auto;
-}
+/* Estilo Unificado para Relatórios Modernos */
 
-.relatorio-box {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
-}
-
-.titulo-contas-pagar {
-    text-align: center;
+.titulo-relatorio-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
     margin-bottom: 20px;
 }
 
-.titulo-contas-pagar h1 {
-    color: #2c3e50;
-    font-size: 2.5rem;
-}
-
-.filter-rel-container {
-    margin: 0 auto;
-    margin-bottom: 25px;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    width: 36%;
-    background-color: #ffffff;
-    padding: 15px;
+.container-filtro-moderno {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    background: var(--surface-alt);
+    padding: 1.5rem;
     border-radius: 8px;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border);
 }
 
-.filter-rel-container label {
-    font-weight: bold;
-    color: rgb(49, 48, 48);
-}
-
-.rel-table-hover {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    background-color: #ffffff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.rel-table-hover th,
-.rel-table-hover td {
-    padding: 12px;
-    text-align: left;
-    border: 1px solid #ddd;
-}
-
-.rel-table-hover th {
-    background-color: #e53935;
-    color: #ffffff;
-    font-weight: bold;
-    font-size: 1.1em;
-}
-
-.rel-table-hover td {
-    padding: 12px;
-    text-align: left;
-    border: 1px solid #ddd;
-    color: #333333;
-    font-weight: 500;
-}
-
-.rel-table-hover tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
-
-.rel-table-hover tr:nth-child(odd) {
-    background-color: #ffffff;
-}
-
-.rel-table-hover tr:hover {
-    background-color: #ffebee;
-    transition: background-color 0.2s ease;
-}
-
-.rel-table-hover tr td {
-    border-bottom: 1px solid #eaeaea;
-}
-
-.cabecalho-container {
+.grupo-campo {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.grupo-campo label {
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.grupo-campo input,
+.grupo-campo select {
+    height: 44px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 12px;
+    background: var(--surface);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.totalizador-relatorio {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 20px;
     border-radius: 8px;
-    color: #2c3e50;
-    font-size: 1.1em;
-    margin-top: 20px;
-    width: 100%;
+    color: white;
+    box-shadow: var(--shadow);
 }
 
-.cabecalho-container p {
-    margin: 5px 0;
+/* Cores específicas para o Totalizador */
+.color-entrada {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
 }
 
-.cabecalho-container strong {
-    font-size: 1.2em;
-    display: block;
-    margin-bottom: 10px;
+.color-saida {
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
 }
 
-.cabecalho-container span {
-    margin-left: 5px;
+.totalizador-relatorio strong {
+    font-size: 1.6rem;
 }
 
-.totalizador-container {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    background-color: #e53935;
-    padding: 20px;
-    border-radius: 4px;
-    color: #ffffff;
-    font-weight: bold;
-    font-size: 1.5em;
-    margin-top: 20px;
-    width: 100%;
+.loading-container {
+    padding: 50px;
+    text-align: center;
+    color: var(--text-secondary);
 }
 
-.totalizador-container span {
-    margin-left: 5px;
-}
-
-
-@media screen and (max-width: 768px) {
-
-    .rel-receber-container,
-    .rel-recebidas-container,
-    .rel-pagar-container,
-    .rel-pagas-container {
-        padding: 10px;
-        margin: 10px;
+/* Responsividade igual ao seu ListaTitulo */
+@media (max-width: 768px) {
+    .container-filtro-moderno {
+        grid-template-columns: 1fr;
     }
 
-    .titulo-contas-receber h1,
-    .titulo-contas-recebidas h1,
-    .titulo-contas-pagar h1,
-    .titulo-contas-pagas h1 {
-        font-size: 1.8rem;
-        margin-bottom: 15px;
+    .tabela-titulos thead {
+        display: none;
     }
 
-    .filter-rel-container {
-        width: 100%;
-        flex-direction: column;
-        padding: 12px;
-        gap: 8px;
-    }
-
-    .filter-rel-container input[type="date"] {
-        width: 100%;
-        height: 40px;
-        font-size: 16px;
-    }
-
-    .relatorio-box {
-        padding: 10px;
-        margin-top: 15px;
-    }
-
-    .cabecalho-container {
-        padding: 12px;
-        font-size: 0.9em;
-    }
-
-    .rel-table-hover {
+    .tabela-titulos tbody tr {
         display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: white;
+        overflow: hidden;
     }
 
-    .rel-table-hover th,
-    .rel-table-hover td {
-        padding: 8px;
-        font-size: 0.9em;
+    .tabela-titulos td {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border-light);
+        text-align: right;
     }
 
-    .totalizador-container {
-        padding: 15px;
-        font-size: 1.2em;
-        flex-direction: column;
-        align-items: flex-end;
-    }
-}
-
-@media screen and (max-width: 480px) {
-
-    .rel-receber-container,
-    .rel-recebidas-container,
-    .rel-pagar-container,
-    .rel-pagas-container {
-        padding: 8px;
-        margin: 5px;
-    }
-
-    .titulo-contas-receber h1,
-    .titulo-contas-recebidas h1,
-    .titulo-contas-pagar h1,
-    .titulo-contas-pagas h1 {
-        font-size: 1.5rem;
-    }
-
-    .filter-rel-container {
-        padding: 8px;
-    }
-
-    .cabecalho-container {
-        padding: 8px;
-        font-size: 0.85em;
-    }
-
-    .rel-table-hover th,
-    .rel-table-hover td {
-        padding: 6px;
-        font-size: 0.85em;
-    }
-
-    .totalizador-container {
-        padding: 12px;
-        font-size: 1.1em;
+    .tabela-titulos td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        margin-right: 10px;
+        text-align: left;
     }
 }
