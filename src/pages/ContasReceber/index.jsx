@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { FaClock, FaFilter, FaFileInvoiceDollar } from 'react-icons/fa';
+import React, { useEffect, useState, useCallback } from 'react';
+import { FaClock, FaExclamationTriangle, FaFilter } from 'react-icons/fa';
 import './contasReceber.css';
 
 const ContasReceber = () => {
@@ -8,166 +8,193 @@ const ContasReceber = () => {
     const [filterStartDate, setFilterStartDate] = useState('');
     const [filterEndDate, setFilterEndDate] = useState('');
     const [filterCategoria, setFilterCategoria] = useState('');
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [sortBy, setSortBy] = useState(null);
-    const [sortOrder, setSortOrder] = useState('asc');
-    const [loading, setLoading] = useState(true);
 
-    const fetchDados = async () => {
+    // 1. Busca os Títulos (Bills) - Rota que já está funcionando
+    const fetchDados = useCallback(async () => {
+        const token = localStorage.getItem('token');
+        const idConta = localStorage.getItem('accountId');
+
+        if (!idConta || idConta === "null") {
+            setError("ID da conta não encontrado. Verifique se há uma conta selecionada.");
+            return;
+        }
+
         setLoading(true);
         try {
-            const token = localStorage.getItem('token');
-            const idConta = localStorage.getItem('id'); // Verifique se no seu sistema é 'id' ou 'accountId'
-
-            if (!token || !idConta) {
-                setError('Sessão expirada. Faça login novamente.');
-                return;
-            }
-
-            // Usando a rota de "bills" que você enviou na segunda classe
             const response = await fetch(`${import.meta.env.VITE_API_URL}/bill/account/${idConta}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 }
             });
 
-            if (!response.ok) throw new Error('Erro ao buscar lançamentos');
+            if (!response.ok) {
+                throw new Error(`Erro ao buscar lançamentos (${response.status})`);
+            }
 
             const data = await response.json();
 
-            // Filtrando apenas RECEBIMENTOS (receipt) que estão PENDENTES
-            const pendentes = data.filter(item =>
+            // Filtro rigoroso: Apenas contas do tipo RECEBIMENTOS que estão a receber
+            const receber = data.filter(item =>
                 item.category?.type?.toLowerCase() === 'receipt' &&
                 item.status === 'PENDING'
             );
 
-            setDados(pendentes);
+            setDados(receber);
             setError(null);
-        } catch (error) {
-            console.error('Erro:', error);
-            setError(error.message);
+        } catch (err) {
+            console.error("Erro Fetch Dados:", err);
+            setError("Falha ao carregar a lista de contas a receber.");
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const fetchCategorias = async () => {
+    // 2. Busca as Categorias - Ajustada para ser mais resiliente
+    const fetchCategorias = useCallback(async () => {
+        const token = localStorage.getItem('token');
+        const idConta = localStorage.getItem('accountId');
+
+        if (!token || !idConta || idConta === "null") return;
+
         try {
-            const token = localStorage.getItem('token');
-            const idConta = localStorage.getItem('id');
+            // Revisa se seu backend espera "tipo" ou "type", e "contaId" ou "accountId"
+            // Tentei manter o seu padrão, mas com tratamento de erro isolado
             const response = await fetch(`${import.meta.env.VITE_API_URL}/categorias/tipo?tipo=Recebimento&contaId=${idConta}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
             });
+
             if (response.ok) {
                 const data = await response.json();
                 setCategorias(data);
+            } else {
+                console.warn(`Aviso: Falha ao carregar categorias (${response.status}). Verifique as permissões da rota.`);
             }
-        } catch (err) { console.error("Erro categorias:", err); }
-    };
+        } catch (err) {
+            console.error("Erro Fetch Categorias:", err);
+        }
+    }, []);
 
+    // Inicialização
     useEffect(() => {
         fetchDados();
         fetchCategorias();
-    }, []);
+    }, [fetchDados, fetchCategorias]);
 
-    const handleSort = (column) => {
-        if (sortBy === column) {
-            setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-        } else {
-            setSortBy(column);
-            setSortOrder('asc');
-        }
-    };
-
-    // Filtros de tela
+    // 3. Lógica de Filtro em tela
     const filteredData = dados.filter((item) => {
         const itemVenc = new Date(item.maturity);
         const startDate = filterStartDate ? new Date(filterStartDate) : null;
         const endDate = filterEndDate ? new Date(filterEndDate) : null;
 
-        const categoriaMatch = !filterCategoria || item.category?.name === filterCategoria;
         const dateMatch = (!startDate || itemVenc >= startDate) && (!endDate || itemVenc <= endDate);
+        const catMatch = !filterCategoria || item.category?.name === filterCategoria;
 
-        return dateMatch && categoriaMatch;
+        return dateMatch && catMatch;
     });
 
-    const totalValor = filteredData.reduce((total, item) => total + Number(item.installmentAmount), 0);
+    const totalValor = filteredData.reduce((acc, item) => acc + Number(item.installmentAmount), 0);
 
-    const formatarMoeda = (valor) => {
+    // Formatação de Moeda
+    const formatCurrency = (valor) => {
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
     };
 
     return (
-        <div className='cadastro-titulo-vertical'> {/* Reutilizando container pai do cadastro */}
+        <div className='cadastro-titulo-vertical'>
             <div className='historico-container'>
+
                 <div className='titulo-relatorio-header'>
-                    <FaFileInvoiceDollar size={30} color="var(--primary)" />
-                    <h2 className="historico-titulo">Relatório de Contas à Receber</h2>
+                    <FaExclamationTriangle size={30} color="#ef4444" />
+                    <h2 className="historico-titulo">Relatório de Contas a Receber</h2>
                 </div>
 
                 <div className='container-filtro-moderno'>
                     <div className="grupo-campo">
                         <label>Data Inicial</label>
-                        <input type="date" value={filterStartDate} onChange={(e) => setFilterStartDate(e.target.value)} />
+                        <input
+                            type="date"
+                            value={filterStartDate}
+                            onChange={(e) => setFilterStartDate(e.target.value)}
+                        />
                     </div>
                     <div className="grupo-campo">
                         <label>Data Final</label>
-                        <input type="date" value={filterEndDate} onChange={(e) => setFilterEndDate(e.target.value)} />
+                        <input
+                            type="date"
+                            value={filterEndDate}
+                            onChange={(e) => setFilterEndDate(e.target.value)}
+                        />
                     </div>
                     <div className="grupo-campo">
                         <label>Categoria</label>
-                        <select value={filterCategoria} onChange={(e) => setFilterCategoria(e.target.value)}>
-                            <option value="">Todas</option>
-                            {categorias.map(cat => <option key={cat.id} value={cat.nome}>{cat.nome}</option>)}
+                        <select
+                            value={filterCategoria}
+                            onChange={(e) => setFilterCategoria(e.target.value)}
+                        >
+                            <option value="">Todas as Categorias</option>
+                            {categorias.map(cat => (
+                                <option key={cat.id} value={cat.nome}>{cat.nome}</option>
+                            ))}
                         </select>
                     </div>
                 </div>
 
+                {error && <div className="mensagem-erro-relatorio">{error}</div>}
+
                 {loading ? (
-                    <div className="loading-container">⏳ Carregando lançamentos...</div>
+                    <div className="loading-placeholder">⏳ Carregando dados do servidor...</div>
                 ) : (
                     <div className="tabela-responsiva">
-                        <div className="info-geracao">
-                            <span><strong>Período:</strong> {filterStartDate || '...'} até {filterEndDate || '...'}</span>
-                            <span><strong>Gerado em:</strong> {new Date().toLocaleString('pt-BR')}</span>
-                        </div>
-
                         <table className="tabela-titulos">
                             <thead>
                                 <tr>
-                                    <th onClick={() => handleSort('id')}>ID</th>
-                                    <th onClick={() => handleSort('description')}>Descrição</th>
-                                    <th onClick={() => handleSort('maturity')}>Vencimento</th>
-                                    <th onClick={() => handleSort('category')}>Categoria</th>
-                                    <th onClick={() => handleSort('installmentAmount')}>Valor (R$)</th>
+                                    <th>ID</th>
+                                    <th>Descrição</th>
+                                    <th>Vencimento</th>
+                                    <th>Categoria</th>
+                                    <th>Valor</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredData.map((item) => (
-                                    <tr key={item.id}>
-                                        <td data-label="ID">#{item.id}</td>
-                                        <td data-label="Descrição">{item.description}</td>
-                                        <td data-label="Vencimento">{new Date(item.maturity).toLocaleDateString('pt-BR')}</td>
-                                        <td data-label="Categoria">{item.category?.name}</td>
-                                        <td data-label="Valor" className="valor-entrada">
-                                            {formatarMoeda(item.installmentAmount)}
-                                        </td>
-                                        <td data-label="Status">
-                                            <span className="badge-status status-pendente">
-                                                <FaClock /> Pendente
-                                            </span>
+                                {filteredData.length > 0 ? (
+                                    filteredData.map((item) => (
+                                        <tr key={item.id}>
+                                            <td data-label="ID">#{item.id}</td>
+                                            <td data-label="Descrição">{item.description}</td>
+                                            <td data-label="Vencimento">{new Date(item.maturity).toLocaleDateString('pt-BR')}</td>
+                                            <td data-label="Categoria">{item.category?.name || '-'}</td>
+                                            <td data-label="Valor" className="valor-saida">
+                                                {formatCurrency(item.installmentAmount)}
+                                            </td>
+                                            <td data-label="Status">
+                                                <span className="badge-status status-pendente">
+                                                    <FaClock /> Pendente
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="6" style={{ textAlign: 'center', padding: '30px', color: '#666' }}>
+                                            Nenhuma conta a receber encontrada para este período.
                                         </td>
                                     </tr>
-                                ))}
+                                )}
                             </tbody>
                         </table>
 
-                        <div className="totalizador-relatorio">
-                            <span>Total à Receber no Período</span>
-                            <strong>{formatarMoeda(totalValor)}</strong>
+                        <div className="totalizador-relatorio color-saida">
+                            <span>Total a Receber</span>
+                            <strong>{formatCurrency(totalValor)}</strong>
                         </div>
                     </div>
                 )}
