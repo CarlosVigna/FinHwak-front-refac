@@ -99,3 +99,63 @@
         justify-content: flex-end;
     }
 }
+
+/* Edição rápida de status */
+.badge-status{ cursor: pointer; user-select: none; }
+.badge-status:focus{ outline: 2px solid rgba(16,185,129,0.5); outline-offset: 2px; }
+
+.status-modal-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 16px;
+}
+
+.status-modal{
+  width: min(420px, 100%);
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  padding: 16px;
+}
+
+.status-modal h4{
+  margin: 0 0 12px 0;
+  font-size: 1.05rem;
+}
+
+.status-modal-row select{
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.status-modal-actions{
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+
+.status-modal-actions button{
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.status-modal-actions .btn-secundario{
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+.status-modal-actions .btn-primario{
+  background: #10b981;
+  color: #fff;
+}

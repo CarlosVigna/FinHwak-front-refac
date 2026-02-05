@@ -7,9 +7,13 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
+    // ✅ ADICIONADO: estados que estavam faltando (era isso que causava statusEdit is not defined)
+    const [statusEdit, setStatusEdit] = useState({ open: false, id: null, value: 'PENDING', type: null });
+    const [savingStatus, setSavingStatus] = useState(false);
+
     console.log("DEBUG: AccountID recebido:", accountId);
     console.log("DEBUG: Tipo Transação:", tipoTransacao);
-    
+
     // Deleta um título
     const handleDelete = useCallback(async (id) => {
         if (!window.confirm("Tem certeza que deseja excluir este lançamento?")) return;
@@ -75,20 +79,14 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
         fetchTitulos();
     }, [fetchTitulos, refresh]);
 
-    // ✅ FILTRO CORRIGIDO - Filtra por tipo de transação
+    // Filtra por tipo de transação
     const titulosFiltrados = titulos.filter(titulo => {
         if (tipoTransacao === 'todos') return true;
-        
+
         const tipoCategoria = titulo.category?.type?.toLowerCase();
-        
-        if (tipoTransacao === 'recebimentos') {
-            return tipoCategoria === 'receipt';
-        }
-        
-        if (tipoTransacao === 'pagamentos') {
-            return tipoCategoria === 'payment';
-        }
-        
+
+        if (tipoTransacao === 'recebimentos') return tipoCategoria === 'receipt';
+        if (tipoTransacao === 'pagamentos') return tipoCategoria === 'payment';
         return true;
     });
 
@@ -98,7 +96,8 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
     // Funções auxiliares
     const formatarData = (dataISO) => {
         if (!dataISO) return '-';
-        const [ano, mes, dia] = dataISO.split('-');
+        const [ano, mes, dia] = String(dataISO).split('-');
+        if (!ano || !mes || !dia) return String(dataISO);
         return `${dia}/${mes}/${ano}`;
     };
 
@@ -119,7 +118,7 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
 
     const traduzirTipo = (type) => {
         if (!type) return '-';
-        const tipoNormalizado = type.toUpperCase();
+        const tipoNormalizado = String(type).toUpperCase();
         if (tipoNormalizado === 'PAYMENT') return 'Pagamento';
         if (tipoNormalizado === 'RECEIPT') return 'Recebimento';
         return type;
@@ -131,6 +130,90 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
             case 'RECEIVED': return 'status-pago';
             case 'PENDING': return 'status-pendente';
             default: return '';
+        }
+    };
+
+    // ===== Status inline (modal)
+
+    const getStatusOptions = (billType) => {
+        const t = String(billType || '').toUpperCase();
+        if (t === 'PAYMENT') return [
+            { value: 'PENDING', label: 'Pendente' },
+            { value: 'PAID', label: 'Pago' },
+        ];
+        if (t === 'RECEIPT') return [
+            { value: 'PENDING', label: 'Pendente' },
+            { value: 'RECEIVED', label: 'Recebido' },
+        ];
+        return [
+            { value: 'PENDING', label: 'Pendente' },
+            { value: 'PAID', label: 'Pago' },
+            { value: 'RECEIVED', label: 'Recebido' },
+        ];
+    };
+
+    const abrirEdicaoStatus = (titulo) => {
+        const billType = titulo.category?.type ? String(titulo.category.type).toUpperCase() : null;
+        setStatusEdit({
+            open: true,
+            id: titulo.id,
+            value: titulo.status || 'PENDING',
+            type: billType
+        });
+    };
+
+    const fecharEdicaoStatus = () => setStatusEdit({ open: false, id: null, value: 'PENDING', type: null });
+
+    const salvarStatus = async () => {
+        if (!statusEdit.id) return;
+
+        try {
+            setSavingStatus(true);
+            const token = localStorage.getItem('token');
+            if (!token) throw new Error('Usuário não autenticado.');
+
+            const titulo = titulos.find(t => t.id === statusEdit.id);
+            if (!titulo) throw new Error('Lançamento não encontrado.');
+
+            // ✅ Backend exige BillRequestDTO completo
+            const payload = {
+                description: titulo.description,
+                emission: titulo.emission,
+                maturity: titulo.maturity,
+                installmentAmount: Number(titulo.installmentAmount) || 0,
+                installmentCount: Number(titulo.installmentCount) || 1,
+                periodicity: titulo.periodicity || 'MONTHLY',
+                status: statusEdit.value,
+                categoryId: Number(titulo.category?.id || titulo.categoryId),
+                accountId: Number(accountId),
+            };
+
+            if (!payload.categoryId) {
+                throw new Error('categoryId não encontrado no título (category.id).');
+            }
+
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/bill/${titulo.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || 'Erro ao atualizar status.');
+            }
+
+            // Atualiza na tabela sem precisar recarregar tudo
+            setTitulos(prev => prev.map(t => t.id === titulo.id ? { ...t, status: statusEdit.value } : t));
+            fecharEdicaoStatus();
+        } catch (err) {
+            console.error('Erro ao atualizar status:', err);
+            alert(`Erro ao atualizar status: ${err.message}`);
+        } finally {
+            setSavingStatus(false);
         }
     };
 
@@ -167,14 +250,14 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
                             {titulosFiltrados.map(titulo => {
                                 const tipoCategoria = titulo.category?.type?.toLowerCase();
                                 const isDespesa = tipoCategoria === 'payment';
-                                
+
                                 return (
                                     <tr key={titulo.id}>
                                         <td data-label="ID">#{titulo.id}</td>
                                         <td data-label="Descrição">{titulo.description}</td>
-                                        <td data-label="Tipo" style={{ 
-                                            color: isDespesa ? '#d32f2f' : '#2e7d32', 
-                                            fontWeight: 'bold' 
+                                        <td data-label="Tipo" style={{
+                                            color: isDespesa ? '#d32f2f' : '#2e7d32',
+                                            fontWeight: 'bold'
                                         }}>
                                             {traduzirTipo(titulo.category?.type)}
                                         </td>
@@ -185,7 +268,16 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
                                         </td>
                                         <td data-label="Parcela">{titulo.currentInstallment || 1}/{titulo.installmentCount || 1}</td>
                                         <td data-label="Status">
-                                            <span className={`badge-status ${getStatusClass(titulo.status)}`}>
+                                            <span
+                                                className={`badge-status ${getStatusClass(titulo.status)}`}
+                                                role="button"
+                                                tabIndex={0}
+                                                title="Clique para editar o status"
+                                                onClick={() => abrirEdicaoStatus(titulo)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' || e.key === ' ') abrirEdicaoStatus(titulo);
+                                                }}
+                                            >
                                                 {(titulo.status === 'PAID' || titulo.status === 'RECEIVED') && <FaCheckCircle />}
                                                 {titulo.status === 'PENDING' && <FaClock />} {traduzirStatus(titulo.status)}
                                             </span>
@@ -203,6 +295,35 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
                             })}
                         </tbody>
                     </table>
+                </div>
+            )}
+
+            {statusEdit.open && (
+                <div className="status-modal-overlay" onClick={fecharEdicaoStatus}>
+                    <div className="status-modal" onClick={(e) => e.stopPropagation()}>
+                        <h4>Alterar status</h4>
+
+                        <div className="status-modal-row">
+                            <select
+                                value={statusEdit.value}
+                                onChange={(e) => setStatusEdit(prev => ({ ...prev, value: e.target.value }))}
+                                disabled={savingStatus}
+                            >
+                                {getStatusOptions(statusEdit.type).map(opt => (
+                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="status-modal-actions">
+                            <button className="btn-secundario" onClick={fecharEdicaoStatus} disabled={savingStatus}>
+                                Cancelar
+                            </button>
+                            <button className="btn-primario" onClick={salvarStatus} disabled={savingStatus}>
+                                {savingStatus ? 'Salvando...' : 'Salvar'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

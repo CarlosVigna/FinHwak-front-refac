@@ -31,12 +31,15 @@ body {
     background: var(--nav-bg);
     backdrop-filter: blur(20px);
     box-shadow: var(--shadow-sm);
-    position: sticky;
+    position: fixed;
     top: 0;
     z-index: 1000;
     border-bottom: 1px solid var(--nav-border);
     transition: all 0.3s ease;
+    width: 100%;
+    left: 0;
 }
+
 
 .nav-header {
     display: none; /* Esconde no desktop */

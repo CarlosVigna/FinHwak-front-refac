@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth, AuthProvider } from './pages/Login/authContext';
 import PrivateRoute from './pages/Login/privateRoute';
 import MenuHome from './componentes/MenuHome';
@@ -21,10 +21,14 @@ import ContasRecebidas from './pages/ContasRecebidas';
 import ContasPagas from './pages/ContasPagas';
 import ContasPendentes from './pages/ContasPendentes';
 import Dashboard from './pages/Dashboard';
+import './App.css';
 
 function App() {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const showBanner = ['/', '/home', '/sobre', '/login'].includes(location.pathname);
 
   useEffect(() => {
 
@@ -32,40 +36,34 @@ function App() {
   }, [isAuthenticated]);
 
   return (
-    <div id="root">
+    <div className="app-shell">
       <MenuHome />
-      <Banner />
+      <div className="app-content">
+        {showBanner && <Banner />}
+        <main>
+          <Routes>
+            <Route path="/" element={<BodyHome />} />
+            <Route path="/home" element={<BodyHome />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/cadastro" element={<CadastroUsuario />} />
+            <Route path="/sobre" element={<Sobre />} />
 
-      <main>
-        <Routes>
-          <Route path="/" element={<BodyHome />} />
-          <Route path="/home" element={<BodyHome />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/cadastro" element={<CadastroUsuario />} />
-          <Route path="/sobre" element={<Sobre />} />
-
-
-
-          <Route path="/contas" element={<PrivateRoute><Contas /></PrivateRoute>} />
-          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-          <Route path="/cadastroTitulo" element={<PrivateRoute><CadastroTitulo /></PrivateRoute>} />
-          <Route path="/cadastrarCategoria" element={<PrivateRoute><CadastroCategoria /></PrivateRoute>} />
-          <Route path="/criar-conta" element={<PrivateRoute><CriarConta /></PrivateRoute>} />
-          <Route path="/editar-conta/:id" element={<PrivateRoute><EditarConta /></PrivateRoute>} />
-          <Route path="/conta/:id" element={<PrivateRoute><ContaDetails /></PrivateRoute>} />
-          <Route path="/relContasReceber" element={<PrivateRoute><ContasReceber /></PrivateRoute>} />
-          <Route path="/relContasPagar" element={<PrivateRoute><ContasPagar /></PrivateRoute>} />
-          <Route path="/relRecebimentos" element={<PrivateRoute><ContasRecebidas /></PrivateRoute>} />
-          <Route path="/relPagamentos" element={<PrivateRoute><ContasPagas /></PrivateRoute>} />
-          <Route path="/contas-pendentes" element={<PrivateRoute><ContasPendentes /></PrivateRoute>} />
-
-
-
-
-        </Routes>
-      </main>
-
-      <Footer />
+            <Route path="/contas" element={<PrivateRoute><Contas /></PrivateRoute>} />
+            <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+            <Route path="/cadastroTitulo" element={<PrivateRoute><CadastroTitulo /></PrivateRoute>} />
+            <Route path="/cadastrarCategoria" element={<PrivateRoute><CadastroCategoria /></PrivateRoute>} />
+            <Route path="/criar-conta" element={<PrivateRoute><CriarConta /></PrivateRoute>} />
+            <Route path="/editar-conta/:id" element={<PrivateRoute><EditarConta /></PrivateRoute>} />
+            <Route path="/conta/:id" element={<PrivateRoute><ContaDetails /></PrivateRoute>} />
+            <Route path="/relContasReceber" element={<PrivateRoute><ContasReceber /></PrivateRoute>} />
+            <Route path="/relContasPagar" element={<PrivateRoute><ContasPagar /></PrivateRoute>} />
+            <Route path="/relRecebimentos" element={<PrivateRoute><ContasRecebidas /></PrivateRoute>} />
+            <Route path="/relPagamentos" element={<PrivateRoute><ContasPagas /></PrivateRoute>} />
+            <Route path="/contas-pendentes" element={<PrivateRoute><ContasPendentes /></PrivateRoute>} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 }

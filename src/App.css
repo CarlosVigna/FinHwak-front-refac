@@ -1,0 +1,19 @@
+:root{
+  --nav-height: 72px;
+}
+
+.app-shell{
+  min-height: 100vh;
+}
+
+/* Como o menu fica fixo, empurra o conteúdo para baixo */
+.app-content{
+  padding-top: var(--nav-height);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-content main{
+  flex: 1;
+}
