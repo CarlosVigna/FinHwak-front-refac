@@ -6,12 +6,12 @@ import './login.css';
 
 const Login = () => {
     const { login } = useAuth();
-    
+
     const [valores, setValores] = useState({
         email: '',
-        password: '' 
+        password: ''
     });
-    
+
     const [erro, setErro] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
@@ -25,9 +25,7 @@ const Login = () => {
     };
 
     const handleLogin = async () => {
-        const { email, password } = valores; 
-        
-        console.log('Tentativa de login com:', email, password);
+        const { email, password } = valores;
 
         if (!email || !password) {
             setErro('Por favor, preencha todos os campos.');
@@ -42,10 +40,8 @@ const Login = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password }), 
+                body: JSON.stringify({ email, password }),
             });
-
-            console.log('Resposta do servidor:', response);
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => null);
@@ -55,21 +51,14 @@ const Login = () => {
             }
 
             const data = await response.json();
-            console.log('Dados recebidos no login:', data);
+            const { token } = data;
 
-            
-            const { token } = data; 
-            
-            
-            login(token, null); 
-            
-            localStorage.setItem('token', token);
-            
+            localStorage.removeItem('accountId');
+            login(token);
 
             setValores({ email: '', password: '' });
             setErro('');
 
-            console.log('Redirecionando para /contas');
             navigate('/contas');
         } catch (error) {
             console.error('Erro na requisição:', error);
@@ -81,7 +70,7 @@ const Login = () => {
 
     const camposLogin = [
         { label: 'Email:', placeholder: 'Digite seu e-mail', type: 'email', name: 'email' },
-        { label: 'Senha:', placeholder: 'Digite sua senha', type: 'password', name: 'password' }, 
+        { label: 'Senha:', placeholder: 'Digite sua senha', type: 'password', name: 'password' },
     ];
 
     return (
@@ -95,8 +84,8 @@ const Login = () => {
                 valores={valores}
                 onSubmit={handleLogin}
                 disabled={isLoading}
-                customClass="login-form" 
-                layout="vertical" 
+                customClass="login-form"
+                layout="vertical"
                 erro={erro}
             />
         </div>

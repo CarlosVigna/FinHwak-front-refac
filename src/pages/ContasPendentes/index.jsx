@@ -1,220 +1,279 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faExclamationTriangle, faCalendarAlt, faInbox } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCheckCircle,
+  faExclamationTriangle,
+  faCalendarAlt,
+  faInbox,
+} from '@fortawesome/free-solid-svg-icons';
 import './contasPendentes.css';
 
 const ContasPendentes = () => {
-    const [contas, setContas] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const hoje = new Date();
+  const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
 
-    const fetchContasPendentes = async () => {
-        try {
-            setLoading(true);
-            const token = localStorage.getItem('token');
-            const accountId = localStorage.getItem('accountId');
+  const formatInputDate = (date) => {
+    const ano = date.getFullYear();
+    const mes = String(date.getMonth() + 1).padStart(2, '0');
+    const dia = String(date.getDate()).padStart(2, '0');
+    return `${ano}-${mes}-${dia}`;
+  };
 
-            if (!token) {
-                throw new Error('Usuário não autenticado.');
-            }
+  const [contas, setContas] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [dataInicio, setDataInicio] = useState(formatInputDate(primeiroDiaMes));
+  const [dataFim, setDataFim] = useState(formatInputDate(ultimoDiaMes));
 
-            if (!accountId) {
-                throw new Error('Nenhuma conta selecionada. Volte e selecione uma conta.');
-            }
+  const fetchContasPendentes = async () => {
+    try {
+      setLoading(true);
 
-            // --- CORREÇÃO AQUI ---
-            // URL Correta: /bill/account/{id}
-            const url = `${import.meta.env.VITE_API_URL}/bill/account/${accountId}`;
-            
-            console.log('🌐 Buscando contas pendentes na URL:', url);
+      const token = localStorage.getItem('token');
+      const accountId = localStorage.getItem('accountId');
 
-            const response = await fetch(url, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
+      if (!token) {
+        throw new Error('Usuário não autenticado.');
+      }
 
-            if (!response.ok) {
-                const text = await response.text();
-                throw new Error(text || 'Falha ao carregar contas pendentes.');
-            }
+      if (!accountId) {
+        throw new Error('Nenhuma conta selecionada. Volte e selecione uma conta.');
+      }
 
-            const data = await response.json();
-            
-            // Filtrar apenas: Pagamentos (Type=PAYMENT) E Pendentes (Status=PENDING)
-            const pendentes = data.filter(item => {
-                // Tenta pegar o tipo da categoria OU do item (caso venha plano)
-                const type = item.category?.type || item.type;
-                const status = item.status;
+      const url = `${import.meta.env.VITE_API_URL}/bill/account/${accountId}/period?start=${dataInicio}&end=${dataFim}`;
 
-                const isPayment = type?.toUpperCase() === 'PAYMENT';
-                const isPending = status?.toUpperCase() === 'PENDING';
-                
-                return isPayment && isPending;
-            });
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-            // Ordenar por vencimento (mais antigas/atrasadas primeiro)
-            pendentes.sort((a, b) => new Date(a.maturity) - new Date(b.maturity));
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || 'Falha ao carregar contas pendentes.');
+      }
 
-            setContas(pendentes);
-            setError(null);
-        } catch (err) {
-            console.error(err);
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+      const data = await response.json();
 
-    useEffect(() => {
-        fetchContasPendentes();
-    }, []);
+      const pendentes = data.filter((item) => {
+        const type = item.category?.type || item.type;
+        const status = item.status;
 
-    const handleDarBaixa = async (conta) => {
-        const valorFormatado = formatCurrency(conta.installmentAmount || conta.value);
-        if (!window.confirm(`Confirma o pagamento de "${conta.description}"?\nValor: ${valorFormatado}`)) {
-            return;
-        }
+        const isPayment = type?.toUpperCase() === 'PAYMENT';
+        const isPending = status?.toUpperCase() === 'PENDING';
 
-        try {
-            const token = localStorage.getItem('token');
-            const accountId = localStorage.getItem('accountId');
+        return isPayment && isPending;
+      });
 
-            // Monta o payload mantendo os dados originais, apenas mudando o status
-            const payload = {
-                id: conta.id,
-                description: conta.description,
-                emission: conta.emission,
-                maturity: conta.maturity,
-                installmentAmount: Number(conta.installmentAmount || conta.value),
-                installmentCount: Number(conta.installmentCount || 1),
-                periodicity: conta.periodicity || 'MONTHLY',
-                status: 'PAID', // <--- MUDANÇA DE STATUS AQUI
-                categoryId: Number(conta.category?.id || conta.categoryId),
-                accountId: Number(accountId), // Usa o ID da conta atual
-                type: 'PAYMENT'
-            };
+      pendentes.sort((a, b) => new Date(a.maturity) - new Date(b.maturity));
 
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/bill/${conta.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
+      setContas(pendentes);
+      setError(null);
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            if (!response.ok) {
-                const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.message || 'Erro ao dar baixa na conta.');
-            }
+  useEffect(() => {
+    fetchContasPendentes();
+  }, []);
 
-            // Sucesso: remove da lista visualmente
-            setContas(prev => prev.filter(c => c.id !== conta.id));
-            alert('Conta paga com sucesso!');
+  const handleFiltrar = () => {
+    fetchContasPendentes();
+  };
 
-        } catch (err) {
-            console.error(err);
-            alert(`Erro: ${err.message}`);
-        }
-    };
+  const handleDarBaixa = async (conta) => {
+    const valorFormatado = formatCurrency(conta.installmentAmount || conta.value);
 
-    // Utilitários
-    const formatCurrency = (value) => {
-        if (value === undefined || value === null) return 'R$ 0,00';
-        return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    };
+    if (
+      !window.confirm(
+        `Confirma o pagamento de "${conta.description}"?\nValor: ${valorFormatado}`
+      )
+    ) {
+      return;
+    }
 
-    const formatDate = (dateString) => {
-        if (!dateString) return '-';
-        // Corrige bug de fuso horário adicionando 'T12:00:00' se for só data
-        const data = new Date(dateString.includes('T') ? dateString : dateString + 'T12:00:00');
-        return data.toLocaleDateString('pt-BR');
-    };
+    try {
+      const token = localStorage.getItem('token');
+      const accountId = localStorage.getItem('accountId');
 
-    const getStatusVencimento = (maturityDate) => {
-        const hoje = new Date();
-        hoje.setHours(0, 0, 0, 0);
-        
-        // Garante a conversão correta da string de data
-        const dataString = maturityDate.includes('T') ? maturityDate : maturityDate + 'T12:00:00';
-        const vencimento = new Date(dataString);
-        vencimento.setHours(0, 0, 0, 0);
+      const payload = {
+        id: conta.id,
+        description: conta.description,
+        emission: conta.emission,
+        maturity: conta.maturity,
+        installmentAmount: Number(conta.installmentAmount || conta.value),
+        installmentCount: Number(conta.installmentCount || 1),
+        periodicity: conta.periodicity || 'MONTHLY',
+        status: 'PAID',
+        categoryId: Number(conta.category?.id || conta.categoryId),
+        accountId: Number(accountId),
+        type: 'PAYMENT',
+      };
 
-        if (vencimento < hoje) return { label: 'Vencida', class: 'vencida', icon: faExclamationTriangle };
-        if (vencimento.getTime() === hoje.getTime()) return { label: 'Vence Hoje', class: 'hoje', icon: faCalendarAlt };
-        return { label: 'Em Dia', class: 'em-dia', icon: null };
-    };
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/bill/${conta.id}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
 
-    return (
-        <div className="contas-pendentes-page">
-            <div className="page-header">
-                <h1 className="page-title">Contas Pendentes</h1>
-                <p className="page-subtitle">Gerencie seus pagamentos em aberto</p>
-            </div>
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || 'Erro ao dar baixa na conta.');
+      }
 
-            <div className="tabela-card">
-                {error && <div className="mensagem-erro">{error}</div>}
+      setContas((prev) => prev.filter((c) => c.id !== conta.id));
+      alert('Conta paga com sucesso!');
+    } catch (err) {
+      console.error(err);
+      alert(`Erro: ${err.message}`);
+    }
+  };
 
-                {loading ? (
-                    <div style={{ textAlign: 'center', padding: '2rem' }}>⏳ Carregando contas...</div>
-                ) : (
-                    <div className="table-container">
-                        {contas.length === 0 ? (
-                            <div className="empty-state">
-                                <FontAwesomeIcon icon={faInbox} size="3x" style={{ marginBottom: '10px', color: '#ccc' }} />
-                                <p>Tudo em dia! Nenhuma conta pendente.</p>
-                            </div>
-                        ) : (
-                            <table className="table">
-                                <thead>
-                                    <tr>
-                                        <th>Descrição</th>
-                                        <th>Categoria</th>
-                                        <th>Vencimento</th>
-                                        <th>Valor</th>
-                                        <th>Situação</th>
-                                        <th>Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {contas.map(conta => {
-                                        const statusInfo = getStatusVencimento(conta.maturity);
-                                        return (
-                                            <tr key={conta.id}>
-                                                <td>{conta.description}</td>
-                                                <td>{conta.category?.name || '-'}</td>
-                                                <td>{formatDate(conta.maturity)}</td>
-                                                <td className={`valor ${statusInfo.class === 'vencida' ? 'vencida' : ''}`}>
-                                                    {formatCurrency(conta.installmentAmount || conta.value)}
-                                                </td>
-                                                <td>
-                                                    <span className={`status-badge ${statusInfo.class}`}>
-                                                        {statusInfo.icon && <FontAwesomeIcon icon={statusInfo.icon} />} {statusInfo.label}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <button
-                                                        className="btn-baixa"
-                                                        onClick={() => handleDarBaixa(conta)}
-                                                        title="Marcar como paga"
-                                                    >
-                                                        <FontAwesomeIcon icon={faCheckCircle} />
-                                                        <span> Pagar</span>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        )}
-                    </div>
-                )}
-            </div>
+  const formatCurrency = (value) => {
+    if (value === undefined || value === null) return 'R$ 0,00';
+    return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    const data = new Date(dateString.includes('T') ? dateString : `${dateString}T12:00:00`);
+    return data.toLocaleDateString('pt-BR');
+  };
+
+  const getStatusVencimento = (maturityDate) => {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
+    const dataString = maturityDate.includes('T') ? maturityDate : `${maturityDate}T12:00:00`;
+    const vencimento = new Date(dataString);
+    vencimento.setHours(0, 0, 0, 0);
+
+    if (vencimento < hoje) {
+      return { label: 'Vencida', class: 'vencida', icon: faExclamationTriangle };
+    }
+
+    if (vencimento.getTime() === hoje.getTime()) {
+      return { label: 'Vence Hoje', class: 'hoje', icon: faCalendarAlt };
+    }
+
+    return { label: 'Em Dia', class: 'em-dia', icon: null };
+  };
+
+  return (
+    <div className="contas-pendentes-page">
+      <div className="page-header">
+        <h1 className="page-title">Contas Pendentes</h1>
+        <p className="page-subtitle">Gerencie seus pagamentos em aberto</p>
+      </div>
+
+      <div className="tabela-card">
+        <div
+          style={{
+            display: 'flex',
+            gap: '12px',
+            flexWrap: 'wrap',
+            alignItems: 'end',
+            marginBottom: '20px',
+          }}
+        >
+          <div>
+            <label>Data inicial</label>
+            <input
+              type="date"
+              value={dataInicio}
+              onChange={(e) => setDataInicio(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label>Data final</label>
+            <input
+              type="date"
+              value={dataFim}
+              onChange={(e) => setDataFim(e.target.value)}
+            />
+          </div>
+
+          <button className="btn-baixa" onClick={handleFiltrar}>
+            Filtrar
+          </button>
         </div>
-    );
+
+        {error && <div className="mensagem-erro">{error}</div>}
+
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '2rem' }}>⏳ Carregando contas...</div>
+        ) : (
+          <div className="table-container">
+            {contas.length === 0 ? (
+              <div className="empty-state">
+                <FontAwesomeIcon
+                  icon={faInbox}
+                  size="3x"
+                  style={{ marginBottom: '10px', color: '#ccc' }}
+                />
+                <p>Nenhuma conta pendente no período informado.</p>
+              </div>
+            ) : (
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Descrição</th>
+                    <th>Categoria</th>
+                    <th>Vencimento</th>
+                    <th>Valor</th>
+                    <th>Situação</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {contas.map((conta) => {
+                    const statusInfo = getStatusVencimento(conta.maturity);
+
+                    return (
+                      <tr key={conta.id}>
+                        <td>{conta.description}</td>
+                        <td>{conta.category?.name || '-'}</td>
+                        <td>{formatDate(conta.maturity)}</td>
+                        <td className={`valor ${statusInfo.class === 'vencida' ? 'vencida' : ''}`}>
+                          {formatCurrency(conta.installmentAmount || conta.value)}
+                        </td>
+                        <td>
+                          <span className={`status-badge ${statusInfo.class}`}>
+                            {statusInfo.icon && <FontAwesomeIcon icon={statusInfo.icon} />}{' '}
+                            {statusInfo.label}
+                          </span>
+                        </td>
+                        <td>
+                          <button
+                            className="btn-baixa"
+                            onClick={() => handleDarBaixa(conta)}
+                            title="Marcar como paga"
+                          >
+                            <FontAwesomeIcon icon={faCheckCircle} />
+                            <span> Pagar</span>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default ContasPendentes;

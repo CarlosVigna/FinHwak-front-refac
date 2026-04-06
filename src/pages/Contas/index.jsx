@@ -4,136 +4,134 @@ import Card from '../../componentes/Card';
 import './contas.css';
 
 const Contas = () => {
-    const [contas, setContas] = useState([]);
-    const [erro, setErro] = useState(null);
-    const [sucesso, setSucesso] = useState("");
-    const navigate = useNavigate();
+  const [contas, setContas] = useState([]);
+  const [erro, setErro] = useState(null);
+  const [sucesso, setSucesso] = useState('');
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchContas = async () => {
-            try {
-                const token = localStorage.getItem('token');
+  useEffect(() => {
+    localStorage.removeItem('accountId');
 
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/account`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+    const fetchContas = async () => {
+      try {
+        const token = localStorage.getItem('token');
 
-                if (!response.ok) {
-                    throw new Error('Erro ao carregar contas.');
-                }
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/account`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
 
-                const data = await response.json();
-                setContas(data);
-            } catch (error) {
-                setErro('Erro ao carregar contas: ' + error.message);
-                console.error('Erro ao buscar contas:', error);
-            }
-        };
-
-        fetchContas();
-    }, []);
-
-    const handleEntrar = (idConta) => {
-        console.log('🔑 Entrando na conta com ID:', idConta);
-
-        // ✅ SALVA o accountId no localStorage
-        localStorage.setItem('accountId', idConta);
-
-        // ✅ Verifica se salvou
-        const verificacao = localStorage.getItem('accountId');
-        console.log('✅ AccountId salvo no localStorage:', verificacao);
-
-        navigate('/dashboard');
-    };
-
-    const handleEditar = (idConta) => {
-        console.log('Editando a conta com ID:', idConta);
-        navigate(`/editar-conta/${idConta}`);
-    };
-
-    const handleCriarConta = () => {
-        navigate('/criar-conta');
-    };
-
-    const handleExcluir = async (idConta) => {
-        const userConfirmed = window.confirm("ATENÇÃO: Excluir esta conta também removerá todos os títulos associados a ela. Deseja continuar?");
-        if (!userConfirmed) return;
-
-        setErro("");
-        setSucesso("");
-
-        try {
-            const token = localStorage.getItem('token');
-
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/account/${idConta}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (response.status === 204) {
-                setContas(prevContas => prevContas.filter(conta => conta.id !== idConta));
-                setSucesso('Conta e seus títulos foram excluídos com sucesso');
-                return;
-            }
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || 'Erro ao excluir conta.');
-            }
-
-        } catch (error) {
-            setErro(error.message);
-        } finally {
-            setTimeout(() => {
-                setErro("");
-                setSucesso("");
-            }, 3000);
+        if (!response.ok) {
+          throw new Error('Erro ao carregar contas.');
         }
+
+        const data = await response.json();
+        setContas(data);
+      } catch (error) {
+        setErro('Erro ao carregar contas: ' + error.message);
+        console.error('Erro ao buscar contas:', error);
+      }
     };
 
-    return (
-        <div className="contas-container">
-            <h1 className="titulo-contas">Minhas Contas</h1>
+    fetchContas();
+  }, []);
 
-            {erro && <div className="erro-mensagem">{erro}</div>}
-            {sucesso && <div className="sucesso-mensagem" style={{ color: 'green', textAlign: 'center', marginBottom: '10px' }}>{sucesso}</div>}
+  const handleEntrar = (idConta) => {
+    localStorage.setItem('accountId', String(idConta));
+    navigate('/dashboard');
+  };
 
-            <div className="cards-container">
-                {contas.length > 0 ? (
-                    contas.map(conta => (
-                        <Card
-                            key={conta.id}
-                            className="conta-card"
-                            conta={conta}
-                            onEntrar={handleEntrar}
-                            onEditar={handleEditar}
-                            onExcluir={handleExcluir}
-                        />
-                    ))
-                ) : (
-                    <div>
-                        <p>Nenhuma conta encontrada.</p>
-                    </div>
-                )}
-            </div>
+  const handleEditar = (idConta) => {
+    navigate(`/editar-conta/${idConta}`);
+  };
 
-            <div className="botao-criar-conta-container">
-                <button
-                    className="botao-nova-conta"
-                    onClick={handleCriarConta}
-                >
-                    Adicionar Nova Conta
-                </button>
-            </div>
-        </div>
+  const handleCriarConta = () => {
+    navigate('/criar-conta');
+  };
+
+  const handleExcluir = async (idConta) => {
+    const userConfirmed = window.confirm(
+      'ATENÇÃO: Excluir esta conta também removerá todos os títulos associados a ela. Deseja continuar?'
     );
+    if (!userConfirmed) return;
+
+    setErro('');
+    setSucesso('');
+
+    try {
+      const token = localStorage.getItem('token');
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/account/${idConta}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.status === 204) {
+        setContas((prevContas) => prevContas.filter((conta) => conta.id !== idConta));
+        setSucesso('Conta e seus títulos foram excluídos com sucesso');
+        return;
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Erro ao excluir conta.');
+      }
+    } catch (error) {
+      setErro(error.message);
+    } finally {
+      setTimeout(() => {
+        setErro('');
+        setSucesso('');
+      }, 3000);
+    }
+  };
+
+  return (
+    <div className="contas-container">
+      <h1 className="titulo-contas">Minhas Contas</h1>
+
+      {erro && <div className="erro-mensagem">{erro}</div>}
+      {sucesso && (
+        <div
+          className="sucesso-mensagem"
+          style={{ color: 'green', textAlign: 'center', marginBottom: '10px' }}
+        >
+          {sucesso}
+        </div>
+      )}
+
+      <div className="cards-container">
+        {contas.length > 0 ? (
+          contas.map((conta) => (
+            <Card
+              key={conta.id}
+              className="conta-card"
+              conta={conta}
+              onEntrar={handleEntrar}
+              onEditar={handleEditar}
+              onExcluir={handleExcluir}
+            />
+          ))
+        ) : (
+          <div>
+            <p>Nenhuma conta encontrada.</p>
+          </div>
+        )}
+      </div>
+
+      <div className="botao-criar-conta-container">
+        <button className="botao-nova-conta" onClick={handleCriarConta}>
+          Adicionar Nova Conta
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default Contas;

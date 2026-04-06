@@ -4,110 +4,103 @@ import ListaCategorias from '../ListaCategorias';
 import './cadastroCategoria.css';
 
 const CadastroCategoria = () => {
-    const [valores, setValores] = useState({
-        name: '',
-        type: 'RECEIPT'
+  const [valores, setValores] = useState({
+    name: '',
+    type: 'RECEIPT',
+  });
+
+  const [erro, setErro] = useState('');
+  const [refresh, setRefresh] = useState(false);
+  const [sucesso, setSucesso] = useState('');
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setValores({
+      ...valores,
+      [name]: value,
     });
+  };
 
-    const [erro, setErro] = useState("");
-    const [refresh, setRefresh] = useState(false);
-    const [sucesso, setSucesso] = useState("");
+  const handleCadastro = async (e) => {
+    e.preventDefault();
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setValores({
-            ...valores,
-            [name]: value
-        });
+    const { name, type } = valores;
+
+    if (!name) {
+      setErro('O nome da categoria é obrigatório.');
+      return;
+    }
+
+    const accountId = localStorage.getItem('accountId');
+
+    if (!accountId) {
+      setErro('Erro: Conta não identificada. Volte e selecione uma conta.');
+      return;
+    }
+
+    const novaCategoria = {
+      name,
+      type,
+      accountId: Number(accountId),
     };
 
-    const handleCadastro = async (e) => {
-        e.preventDefault();
+    try {
+      const token = localStorage.getItem('token');
 
-        const { name, type } = valores;
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/category`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(novaCategoria),
+      });
 
-        if (!name) {
-            setErro("O nome da categoria é obrigatório.");
-            return;
-        }
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: response.statusText }));
+        throw new Error(errorData.message || 'Erro ao cadastrar categoria');
+      }
 
-        const accountId = localStorage.getItem('accountId');
-        
-        if (!accountId) {
-            setErro("Erro: Conta não identificada. Por favor, volte e selecione uma conta.");
-            return;
-        }
+      await response.json();
 
-        const novaCategoria = { 
-            name, 
-            type, 
-            accountId: parseInt(accountId) 
-        };
+      setValores({
+        name: '',
+        type: 'RECEIPT',
+      });
 
-        console.log('📤 Cadastrando categoria:', novaCategoria);
+      setErro('');
+      setSucesso('Categoria cadastrada com sucesso!');
+      setRefresh((prev) => !prev);
 
-        try {
-            const token = localStorage.getItem('token');
-            
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/category`, {
-                method: "POST",
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(novaCategoria),
-            });
+      setTimeout(() => {
+        setSucesso('');
+      }, 3000);
+    } catch (error) {
+      console.error('Erro ao cadastrar categoria:', error);
+      setErro(error.message || 'Erro ao cadastrar categoria.');
+      setSucesso('');
+    }
+  };
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ message: response.statusText }));
-                console.error("❌ Erro na API:", errorData);
-                throw new Error(errorData.message || 'Erro ao cadastrar categoria');
-            }
+  return (
+    <div className="cadastro-categoria-vertical">
+      <div className="secao-superior">
+        <h2>Cadastrar Nova Categoria</h2>
+        <FormularioCategoria
+          valores={valores}
+          handleInputChange={handleInputChange}
+          onSubmit={handleCadastro}
+          erro={erro}
+          sucesso={sucesso}
+        />
+      </div>
 
-            const data = await response.json();
-            console.log('✅ Categoria cadastrada com sucesso:', data);
-
-            // Limpa o formulário
-            setValores({
-                name: '',
-                type: 'RECEIPT'
-            });
-            
-            setErro("");
-            setSucesso("Categoria cadastrada com sucesso!");
-            
-            // Atualiza a lista
-            setRefresh(prev => !prev);
-            
-            setTimeout(() => {
-                setSucesso("");
-            }, 3000);
-
-        } catch (error) {
-            console.error('❌ Erro ao cadastrar categoria:', error);
-            setErro(error.message || "Erro ao cadastrar categoria.");
-            setSucesso("");
-        }
-    };
-
-    return (
-        <div className="cadastro-categoria-vertical">
-            <div className="secao-superior">
-                <h2>Cadastrar Nova Categoria</h2>
-                <FormularioCategoria
-                    valores={valores}
-                    handleInputChange={handleInputChange}
-                    onSubmit={handleCadastro}
-                    erro={erro}
-                    sucesso={sucesso}
-                />
-            </div>
-            <div className="historico-container">
-                <h2 className="historico-titulo">Categorias Cadastradas</h2>
-                <ListaCategorias refresh={refresh} />
-            </div>
-        </div>
-    );
+      <div className="historico-container">
+        <h2 className="historico-titulo">Categorias Cadastradas</h2>
+        <ListaCategorias refresh={refresh} />
+      </div>
+    </div>
+  );
 };
 
 export default CadastroCategoria;
