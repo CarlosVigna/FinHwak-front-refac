@@ -24,7 +24,7 @@ import ContasRecebidas from './pages/ContasRecebidas';
 import ContasPagas from './pages/ContasPagas';
 import ContasPendentes from './pages/ContasPendentes';
 import Dashboard from './pages/Dashboard';
-import ChecklistMensal from 'src\pages\ChecklistMensal\index.jsx';
+import ChecklistMensal from './pages/Checklistmensal';
 
 import './App.css';
 
