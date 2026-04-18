@@ -140,7 +140,10 @@ const ContasPendentes = () => {
 
   const formatCurrency = (value) => {
     if (value === undefined || value === null) return 'R$ 0,00';
-    return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    return Number(value).toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
   };
 
   const formatDate = (dateString) => {
@@ -150,18 +153,21 @@ const ContasPendentes = () => {
   };
 
   const getStatusVencimento = (maturityDate) => {
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
+    const hojeAtual = new Date();
+    hojeAtual.setHours(0, 0, 0, 0);
 
-    const dataString = maturityDate.includes('T') ? maturityDate : `${maturityDate}T12:00:00`;
+    const dataString = maturityDate.includes('T')
+      ? maturityDate
+      : `${maturityDate}T12:00:00`;
+
     const vencimento = new Date(dataString);
     vencimento.setHours(0, 0, 0, 0);
 
-    if (vencimento < hoje) {
+    if (vencimento < hojeAtual) {
       return { label: 'Vencida', class: 'vencida', icon: faExclamationTriangle };
     }
 
-    if (vencimento.getTime() === hoje.getTime()) {
+    if (vencimento.getTime() === hojeAtual.getTime()) {
       return { label: 'Vence Hoje', class: 'hoje', icon: faCalendarAlt };
     }
 
@@ -176,34 +182,32 @@ const ContasPendentes = () => {
       </div>
 
       <div className="tabela-card">
-        <div
-          style={{
-            display: 'flex',
-            gap: '12px',
-            flexWrap: 'wrap',
-            alignItems: 'end',
-            marginBottom: '20px',
-          }}
-        >
-          <div>
-            <label>Data inicial</label>
+        <div className="filtros-periodo">
+          <div className="filtro-grupo">
+            <label htmlFor="dataInicio">Data inicial</label>
             <input
+              id="dataInicio"
               type="date"
               value={dataInicio}
               onChange={(e) => setDataInicio(e.target.value)}
             />
           </div>
 
-          <div>
-            <label>Data final</label>
+          <div className="filtro-grupo">
+            <label htmlFor="dataFim">Data final</label>
             <input
+              id="dataFim"
               type="date"
               value={dataFim}
               onChange={(e) => setDataFim(e.target.value)}
             />
           </div>
 
-          <button className="btn-baixa" onClick={handleFiltrar}>
+          <button
+            type="button"
+            className="btn-filtrar-periodo"
+            onClick={handleFiltrar}
+          >
             Filtrar
           </button>
         </div>
@@ -211,7 +215,9 @@ const ContasPendentes = () => {
         {error && <div className="mensagem-erro">{error}</div>}
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '2rem' }}>⏳ Carregando contas...</div>
+          <div style={{ textAlign: 'center', padding: '2rem' }}>
+            ⏳ Carregando contas...
+          </div>
         ) : (
           <div className="table-container">
             {contas.length === 0 ? (
@@ -255,6 +261,7 @@ const ContasPendentes = () => {
                         </td>
                         <td>
                           <button
+                            type="button"
                             className="btn-baixa"
                             onClick={() => handleDarBaixa(conta)}
                             title="Marcar como paga"

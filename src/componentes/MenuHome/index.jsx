@@ -21,7 +21,7 @@ function MenuHome() {
         navigate('/login');
     };
 
-    const handleTrocarConta = () => {
+    const handleIrParaContas = () => {
         localStorage.removeItem('accountId');
         setIsMenuOpen(false);
         setIsDropdownOpen(false);
@@ -105,7 +105,13 @@ function MenuHome() {
                 {isAuthenticated && (
                     <>
                         <li style={{ "--i": 3 }} className={isActive('/contas') ? 'active' : ''}>
-                            <Link to="/contas" onClick={handleLinkClick}>Contas</Link>
+                            <button
+                                type="button"
+                                className="menu-link-button"
+                                onClick={handleIrParaContas}
+                            >
+                                Contas
+                            </button>
                         </li>
 
                         {hasActiveAccount && (
@@ -172,16 +178,6 @@ function MenuHome() {
                                             </Link>
                                         </li>
                                     </ul>
-                                </li>
-
-                                <li style={{ "--i": 14 }}>
-                                    <button
-                                        type="button"
-                                        className="menu-link-button"
-                                        onClick={handleTrocarConta}
-                                    >
-                                        Trocar Conta
-                                    </button>
                                 </li>
                             </>
                         )}

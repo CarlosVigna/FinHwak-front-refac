@@ -3,13 +3,17 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
+  const isTokenValid = (tokenVal) => {
+    return !!tokenVal && tokenVal !== 'null' && tokenVal !== 'undefined';
+  };
+
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+  const [isAuthenticated, setIsAuthenticated] = useState(isTokenValid(localStorage.getItem('token')));
 
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
     setToken(savedToken);
-    setIsAuthenticated(!!savedToken);
+    setIsAuthenticated(isTokenValid(savedToken));
   }, []);
 
   const login = (newToken) => {
