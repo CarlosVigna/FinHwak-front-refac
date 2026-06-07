@@ -70,7 +70,7 @@
     .tabela-titulos tbody tr {
         display: block;
         margin-bottom: 1rem;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--border-color);
         border-radius: 8px;
         overflow: hidden;
     }
@@ -79,7 +79,7 @@
         display: flex;
         justify-content: space-between;
         padding: 0.75rem 1rem;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid var(--border-color);
     }
 
     .tabela-titulos td:last-child {
@@ -89,7 +89,7 @@
     .tabela-titulos td::before {
         content: attr(data-label);
         font-weight: 600;
-        color: #64748b;
+        color: var(--text-sub);
         font-size: 0.8rem;
         text-transform: uppercase;
         letter-spacing: 0.03em;
@@ -117,13 +117,13 @@
 
 .status-modal{
   width: min(420px, 100%);
-  background: #fff;
+  background: var(--surface-color);
   border-radius: 14px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  box-shadow: var(--shadow);
   padding: 16px;
 }
 
-.status-modal h4{
+  .status-modal h4{
   margin: 0 0 12px 0;
   font-size: 1.05rem;
 }
@@ -132,8 +132,8 @@
   width: 100%;
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid #e2e8f0;
-  background: #fff;
+  border: 1px solid var(--border-color);
+  background: var(--surface-color);
 }
 
 .status-modal-actions{
@@ -151,11 +151,11 @@
 }
 
 .status-modal-actions .btn-secundario{
-  background: #f1f5f9;
-  border-color: #e2e8f0;
+  background: var(--surface-color);
+  border-color: var(--border-color);
 }
 
 .status-modal-actions .btn-primario{
-  background: #10b981;
-  color: #fff;
+  background: var(--accent);
+  color: var(--text-color);
 }

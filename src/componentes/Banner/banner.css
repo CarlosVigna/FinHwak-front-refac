@@ -1,11 +1,5 @@
 /* ===== BANNER DINÂMICO - Tech & Sleek (Mais Fino) ===== */
 
-:root {
-    --banner-bg-1: #0f172a;
-    --banner-bg-2: #115e59;
-    --accent: #2dd4bf;
-}
-
 .banner-dinamico {
     position: relative;
     width: 100%;
@@ -16,12 +10,12 @@
     align-items: center;
     overflow: hidden;
 
-    /* Fundo Gradiente Profundo */
-    background: linear-gradient(-45deg, #020617, #0f172a, #134e4a, #0f766e);
+    /* Fundo Gradiente (usa tokens globais) */
+    background: linear-gradient(-45deg, var(--background-color), var(--surface-color));
     background-size: 300% 300%;
     animation: gradientMove 10s ease infinite;
 
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow);
     z-index: 10;
 }
 
@@ -34,8 +28,8 @@
     width: 100%;
     height: 100%;
     background-image:
-        linear-gradient(rgba(45, 212, 191, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(45, 212, 191, 0.05) 1px, transparent 1px);
+        linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
     background-size: 30px 30px;
     /* Tamanho do grid */
     z-index: 1;
@@ -70,7 +64,7 @@
 .blob-1 {
     width: 200px;
     height: 200px;
-    background: rgba(45, 212, 191, 0.2);
+    background: var(--accent);
     /* Tech Teal */
     top: -40px;
     left: 10%;
@@ -79,7 +73,7 @@
 .blob-2 {
     width: 180px;
     height: 180px;
-    background: rgba(6, 182, 212, 0.2);
+    background: var(--accent);
     /* Cyber Blue */
     bottom: -40px;
     right: 15%;
@@ -104,15 +98,15 @@
     text-align: center;
 
     /* Glass minimalista */
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--glass);
     /* Mais escuro para contraste tech */
     backdrop-filter: blur(8px);
     padding: 1.5rem 3rem;
     /* Mais compacto */
     border-radius: 16px;
-    border: 1px solid rgba(45, 212, 191, 0.2);
+    border: 1px solid var(--accent);
     /* Borda Tech Teal */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow);
 
     animation: fadeInUp 0.8s ease-out;
 }
@@ -134,7 +128,7 @@
     font-size: 2.5rem;
     /* Fonte um pouco menor para altura reduzida */
     font-weight: 800;
-    color: #ffffff;
+    color: var(--text-color);
     margin: 0;
     letter-spacing: -0.02em;
     text-shadow: 0 0 20px rgba(45, 212, 191, 0.5);
@@ -142,16 +136,16 @@
 }
 
 .banner-title .highlight {
-    color: #2dd4bf;
+    color: var(--accent);
     background: none;
-    -webkit-text-fill-color: #2dd4bf;
-    text-shadow: 0 0 10px rgba(45, 212, 191, 0.8);
+    -webkit-text-fill-color: var(--accent);
+    text-shadow: 0 0 10px var(--accent);
 }
 
 .banner-subtitle {
     font-family: 'Inter', sans-serif;
     font-size: 0.95rem;
-    color: #cbd5e1;
+    color: var(--text-sub);
     margin-top: 0.5rem;
     font-weight: 400;
     letter-spacing: 0.1em;
@@ -161,9 +155,9 @@
 .banner-decoration-line {
     width: 40px;
     height: 3px;
-    background: #2dd4bf;
+    background: var(--accent);
     margin: 1rem auto 0;
-    box-shadow: 0 0 10px #2dd4bf;
+    box-shadow: 0 0 10px var(--accent);
     /* Neon Line */
     border-radius: 2px;
 }

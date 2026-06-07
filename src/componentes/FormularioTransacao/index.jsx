@@ -3,6 +3,7 @@ import './formularioTransacao.css';
 
 const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao }) => {
     const [categorias, setCategorias] = useState([]);
+    const [checklistSuggestion, setChecklistSuggestion] = useState(null);
 
     const [valores, setValores] = useState({
         description: '',
@@ -80,6 +81,50 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
                 type: tituloParaEditar.category?.type || tituloParaEditar.type || 'RECEIPT'
             });
         }
+    }, [tituloParaEditar]);
+
+    // Prefill from checklist suggestion if query param present (e.g. ?checklistItemId=123)
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const checklistItemId = params.get('checklistItemId');
+
+        const fetchSuggestion = async () => {
+            try {
+                if (!checklistItemId || tituloParaEditar) return;
+
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/checklist/${checklistItemId}/suggestion`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    console.warn(`Aviso: código ${response.status} ao buscar sugestão do checklist`);
+                    return;
+                }
+
+                const suggestion = await response.json();
+                console.log('📋 Sugestão do checklist:', suggestion);
+
+                if (suggestion && (suggestion.installmentAmount || suggestion.categoryId || suggestion.description)) {
+                    const today = new Date().toISOString().split('T')[0];
+                    setValores(prev => ({
+                        ...prev,
+                        installmentAmount: suggestion.installmentAmount || prev.installmentAmount,
+                        categoryId: suggestion.categoryId || prev.categoryId,
+                        description: suggestion.description || prev.description,
+                        maturity: suggestion.maturity ? suggestion.maturity.split('T')[0] : today,
+                        emission: today
+                    }));
+                    setChecklistSuggestion(suggestion);
+                }
+            } catch (err) {
+                console.error('Erro ao buscar sugestão do checklist', err);
+            }
+        };
+
+        fetchSuggestion();
     }, [tituloParaEditar]);
 
     const handleInputChange = (e) => {

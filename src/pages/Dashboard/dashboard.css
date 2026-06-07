@@ -148,6 +148,26 @@
     box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
 }
 
+
+/* ===== Consolidated button ===== */
+.btn-consolidated {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, var(--secondary) 0%, #0891b2 100%);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-consolidated:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(6, 182, 212, 0.3);
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 1200px) {
     .dashboard-grid {

@@ -2,15 +2,13 @@
 
 .card-home {
     position: relative;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: var(--card-color);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
     border-radius: 24px;
     padding: 2rem;
-    box-shadow:
-        0 4px 24px rgba(0, 0, 0, 0.06),
-        0 1px 2px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow);
     transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
     overflow: hidden;
     opacity: 0;
@@ -57,7 +55,7 @@
     inset: 0;
     border-radius: 24px;
     padding: 2px;
-    background: linear-gradient(135deg, #10b981 0%, #06b6d4 50%, #8b5cf6 100%);
+    background: linear-gradient(135deg, var(--accent) 0%, #06b6d4 50%, #8b5cf6 100%);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
@@ -75,7 +73,7 @@
     width: 200%;
     height: 200%;
     background: radial-gradient(circle at center,
-            rgba(16, 185, 129, 0.1) 0%,
+            rgba(59,130,246,0.08) 0%,
             transparent 50%);
     opacity: 0;
     transition: opacity 0.5s ease;
@@ -85,9 +83,9 @@
 .card-home:hover {
     transform: translateY(-16px) scale(1.02);
     box-shadow:
-        0 32px 64px rgba(16, 185, 129, 0.15),
-        0 16px 32px rgba(6, 182, 212, 0.1);
-    background: rgba(255, 255, 255, 1);
+        0 32px 64px rgba(59,130,246,0.15),
+        0 16px 32px rgba(59,130,246,0.08);
+    background: var(--card-color);
 }
 
 .card-home:hover::before {
@@ -105,12 +103,12 @@
     object-fit: contain;
     margin-bottom: 1.5rem;
     transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-    filter: drop-shadow(0 4px 12px rgba(16, 185, 129, 0.2));
+    filter: drop-shadow(0 4px 12px rgba(59,130,246,0.12));
 }
 
 .card-home:hover .card-img-top {
     transform: scale(1.15) rotate(5deg);
-    filter: drop-shadow(0 8px 24px rgba(16, 185, 129, 0.35));
+    filter: drop-shadow(0 8px 24px rgba(59,130,246,0.22));
 }
 
 /* ===== Card Body ===== */
@@ -124,8 +122,8 @@
 
 .card-home:hover .card-body {
     background: linear-gradient(135deg,
-            rgba(16, 185, 129, 0.04),
-            rgba(6, 182, 212, 0.04));
+            rgba(59,130,246,0.04),
+            rgba(59,130,246,0.02));
 }
 
 /* ===== Card Title ===== */
@@ -133,7 +131,7 @@
     font-size: 1.35rem;
     font-weight: 700;
     margin-bottom: 0.75rem;
-    background: linear-gradient(135deg, #047857 0%, #0891b2 100%);
+    background: linear-gradient(135deg, var(--accent) 0%, #0891b2 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -151,13 +149,13 @@
 .card-text {
     font-size: 0.95rem;
     line-height: 1.7;
-    color: #64748b;
+    color: var(--text-sub);
     margin: 0;
     transition: color 0.4s ease;
 }
 
 .card-home:hover .card-text {
-    color: #475569;
+    color: var(--text-color);
 }
 
 /* ===== Responsive ===== */

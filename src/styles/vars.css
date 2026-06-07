@@ -1,0 +1,22 @@
+/* Global design tokens (light defaults). Components should use these variables.
+   Dark theme will override these in `styles/dark-override.css` when active. */
+:root{
+  --background-color: #F8FAFC; /* light page background */
+  --surface-color:    #FFFFFF; /* panels / surfaces */
+  --card-color:       #FFFFFF; /* cards */
+  --border-color:     #E5E7EB;
+  --text-color:       #0F172A;
+  --text-sub:         #6B7280;
+  --muted:            rgba(15,23,42,0.04);
+  --accent:           #3B82F6;
+  --success:          #16A34A;
+  --danger:           #DC2626;
+  --warning:          #F59E0B;
+  --glass:            rgba(255,255,255,0.6);
+  --shadow:           0 6px 18px rgba(2,6,23,0.06);
+  --radius:           10px;
+}
+
+/* Utility: expose accent as a semi-transparent variant if needed */
+/* Example: var(--accent-10) not directly available as CSS variable; components can use rgba fallback if required */
+

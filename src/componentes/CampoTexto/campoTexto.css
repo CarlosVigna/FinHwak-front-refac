@@ -21,10 +21,10 @@
   padding: 0.75rem;
   font-size: 1rem;
   font-family: inherit;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   border-radius: 0.375rem;
-  background: white;
-  color: inherit;
+  background: var(--surface-color);
+  color: var(--text-color);
   transition: border-color 0.2s ease;
 }
 
@@ -34,14 +34,14 @@
 }
 
 .campo-texto input::placeholder {
-  color: #9ca3af;
+  color: var(--text-sub);
 }
 
 /* Estados de validação - opcional */
 .campo-texto.error input {
-  border-color: #ef4444;
+  border-color: var(--danger);
 }
 
 .campo-texto.success input {
-  border-color: #22c55e;
+  border-color: var(--success);
 }

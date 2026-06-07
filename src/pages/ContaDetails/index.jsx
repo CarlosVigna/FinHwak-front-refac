@@ -54,7 +54,34 @@ const AccountDetails = () => {
         <div className="account-details-container">
             <div className="header-details">
                 <h1>Detalhes da Conta</h1>
-                <button onClick={() => navigate('/contas')}>Voltar</button>
+                <div>
+                    <button onClick={() => navigate('/contas')}>Voltar</button>
+                    <button style={{ marginLeft: '8px' }} onClick={async () => {
+                        try {
+                            const token = localStorage.getItem('token');
+                            const response = await fetch(`${import.meta.env.VITE_API_URL}/bill/export/account/${id}`, {
+                                headers: { Authorization: `Bearer ${token}` }
+                            });
+
+                            if (!response.ok) {
+                                const txt = await response.text();
+                                throw new Error(txt || 'Erro ao exportar CSV');
+                            }
+
+                            const blob = await response.blob();
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `finhawk_account_${id}.csv`;
+                            document.body.appendChild(a);
+                            a.click();
+                            a.remove();
+                            window.URL.revokeObjectURL(url);
+                        } catch (err) {
+                            alert('Erro ao exportar CSV: ' + err.message);
+                        }
+                    }}>Exportar CSV</button>
+                </div>
             </div>
 
             <div className="card-detalhe">

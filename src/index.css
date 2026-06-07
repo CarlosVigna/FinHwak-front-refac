@@ -1,10 +1,4 @@
-:root {
-  --background-color: rgb(255, 255, 255);
-  --text-color: rgb(34, 34, 34); 
-  --primary-color: #3498db; 
-  --secondary-color: #2ecc71; 
-  --font-family: 'Roboto', sans-serif; 
-}
+:root{ /* variables moved to styles/vars.css and styles/dark-override.css */ }
 
 * {
   margin: 0;

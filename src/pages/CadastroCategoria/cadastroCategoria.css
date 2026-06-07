@@ -4,13 +4,13 @@
     --primary: #10b981;
     --primary-hover: #059669;
     --secondary: #06b6d4;
-    --surface: #ffffff;
-    --surface-alt: #f8fafc;
-    --border: #e2e8f0;
-    --border-light: #f1f5f9;
-    --text-primary: #1e293b;
-    --text-secondary: #64748b;
-    --text-muted: #94a3b8;
+    --surface: var(--surface-color);
+    --surface-alt: rgba(255,255,255,0.02);
+    --border: var(--border-color);
+    --border-light: var(--border-color);
+    --text-primary: var(--text-color);
+    --text-secondary: var(--text-sub);
+    --text-muted: var(--text-sub);
     --success: #22c55e;
     --danger: #ef4444;
     --warning: #f59e0b;
@@ -24,7 +24,7 @@
     flex-direction: column;
     gap: 1.5rem;
     padding: 1.5rem;
-    background: var(--surface-alt);
+    background: var(--background-color);
     min-height: 100vh;
     align-items: center; /* ✅ Centraliza os cards */
 }

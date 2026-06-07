@@ -4,7 +4,7 @@
     --primary: #10b981;
     --primary-hover: #059669;
     --secondary: #06b6d4;
-    --surface: #ffffff;
+    --surface: var(--surface-color);
     --radius: 12px;
 }
 
@@ -17,8 +17,8 @@
     padding: 20px;
     padding-top: 3rem;
 
-    /* Fundo Cinza Claro (Light Mode) */
-    background-color: #f1f5f9;
+    /* Fundo segue tema global */
+    background-color: var(--background-color);
 
     font-family: 'Inter', sans-serif;
 }
@@ -67,13 +67,13 @@
     background-size: 32px;
     background-repeat: no-repeat;
     background-position: center;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
 }
 
 .cadastro-usuario .header h2 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--text-color);
     margin: 0;
 }
 
@@ -110,7 +110,7 @@
 .cadastro-usuario label {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #111827;
+    color: var(--text-color);
     margin-left: 2px;
 }
 
@@ -118,12 +118,12 @@
     width: 100%;
     padding: 0.875rem 1rem;
     font-size: 1rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
-    background-color: #fff;
+    background-color: var(--surface-color);
     transition: all 0.2s ease;
     outline: none;
-    color: #1f2937;
+    color: var(--text-color);
 }
 
 .cadastro-usuario input:focus {

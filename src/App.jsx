@@ -1,16 +1,11 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth, AuthProvider } from './pages/Login/authContext';
 import PrivateRoute from './pages/Login/privateRoute';
 import AccountRoute from './pages/Login/AccountRoute';
 
 import MenuHome from './componentes/MenuHome';
-import Banner from './componentes/Banner';
 import Footer from './componentes/Footer';
-import BodyHome from './componentes/BodyHome';
-
-import CadastroUsuario from './pages/CadastroUsuario';
-import Login from './pages/Login';
+import AuthTabs from './pages/AuthTabs';
 import Contas from './pages/Contas';
 import CadastroTitulo from './pages/CadastroTitulo';
 import CadastroCategoria from './pages/CadastroCategoria';
@@ -19,7 +14,6 @@ import EditarConta from './pages/EditarConta';
 import ContaDetails from './pages/ContaDetails';
 import ContasReceber from './pages/ContasReceber';
 import ContasPagar from './pages/ContasPagar';
-import Sobre from './pages/Sobre';
 import ContasRecebidas from './pages/ContasRecebidas';
 import ContasPagas from './pages/ContasPagas';
 import ContasPendentes from './pages/ContasPendentes';
@@ -29,23 +23,19 @@ import ChecklistMensal from './pages/Checklistmensal';
 import './App.css';
 
 function App() {
-  const location = useLocation();
   const { isAuthenticated } = useAuth();
 
-  const showBanner = ['/', '/home', '/sobre', '/login'].includes(location.pathname);
+  // No public landing in corporate mode: always private app
 
   return (
     <div className="app-shell">
-      <MenuHome isAuthenticated={isAuthenticated} />
+      {isAuthenticated && <MenuHome isAuthenticated={isAuthenticated} />}
       <div className="app-content">
-        {showBanner && <Banner />}
         <main>
           <Routes>
-            <Route path="/" element={<BodyHome />} />
-            <Route path="/home" element={<BodyHome />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/cadastro" element={<CadastroUsuario />} />
-            <Route path="/sobre" element={<Sobre />} />
+            <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />} />
+            <Route path="/login" element={<AuthTabs />} />
+            <Route path="/cadastro" element={<AuthTabs initialTab="cadastro" />} />
 
             <Route
               path="/contas"
@@ -87,9 +77,7 @@ function App() {
               path="/dashboard"
               element={
                 <PrivateRoute>
-                  <AccountRoute>
-                    <Dashboard />
-                  </AccountRoute>
+                  <Dashboard />
                 </PrivateRoute>
               }
             />

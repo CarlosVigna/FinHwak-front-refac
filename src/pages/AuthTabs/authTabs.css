@@ -1,0 +1,73 @@
+:root{
+  --bg-main: #0F172A;
+  --bg-card: #1E293B;
+  --border: #334155;
+  --text-main: #F8FAFC;
+  --text-sub: #CBD5E1;
+  --accent: #3B82F6;
+}
+
+.auth-tabs-shell{
+  min-height: 100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: var(--bg-main);
+  color: var(--text-main);
+  padding: 2rem;
+}
+
+.auth-tabs-card{
+  width: 100%;
+  max-width: 920px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+  overflow: hidden;
+}
+
+.auth-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.brand{
+  font-size:1.25rem;
+  font-weight:700;
+  color:var(--text-main);
+}
+
+.tabs{
+  display:flex;
+  gap:0.5rem;
+  background: transparent;
+}
+
+.tab{
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-sub);
+  cursor: pointer;
+}
+
+.tab.active{
+  background: linear-gradient(90deg, rgba(59,130,246,0.12), rgba(59,130,246,0.06));
+  color: var(--text-main);
+  border: 1px solid rgba(59,130,246,0.25);
+}
+
+.auth-content{
+  padding: 1.5rem;
+}
+
+/* Make inner forms adapt to dark */
+.container-login, .container-cadastro{
+  background: transparent;
+}
+

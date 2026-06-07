@@ -128,6 +128,38 @@ const ContasRecebidas = () => {
         }
     };
 
+    const handleExportCSV = async () => {
+        const idConta = localStorage.getItem('accountId');
+        if (!idConta) {
+            alert('Nenhuma conta selecionada.');
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/bill/export/account/${idConta}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (!response.ok) {
+                const txt = await response.text();
+                throw new Error(txt || 'Erro ao exportar CSV');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `relatorio_contas_recebidas_${idConta}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            alert('Erro ao exportar CSV: ' + err.message);
+        }
+    };
+
     return (
         <div className='cadastro-titulo-vertical'>
             <div className='historico-container'>
@@ -166,17 +198,28 @@ const ContasRecebidas = () => {
                             ))}
                         </select>
                     </div>
-                    <div className="grupo-campo" style={{ justifyContent: 'flex-end' }}>
-                        <button 
+                    <div className="grupo-campo" style={{ justifyContent: 'flex-end', gap: '0.5rem' }}>
+                        <button
                             onClick={handleExportPDF} 
                             style={{ 
-                                height: '44px', width: '100%', marginTop: 'auto', 
+                                height: '44px', flex: 1, marginTop: 'auto',
                                 background: 'linear-gradient(135deg, #10b981 0%, #06b6d4 100%)',
                                 color: 'white', border: 'none', borderRadius: '8px',
                                 fontWeight: 'bold', cursor: 'pointer', transition: '0.2s ease'
                             }}
                         >
-                            Exportar PDF
+                            📄 Exportar PDF
+                        </button>
+                        <button
+                            onClick={handleExportCSV}
+                            style={{
+                                height: '44px', flex: 1, marginTop: 'auto',
+                                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                                color: 'white', border: 'none', borderRadius: '8px',
+                                fontWeight: 'bold', cursor: 'pointer', transition: '0.2s ease'
+                            }}
+                        >
+                            📊 Exportar CSV
                         </button>
                     </div>
                 </div>

@@ -1,13 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-    --nav-bg: rgba(255, 255, 255, 0.95);
-    --nav-border: rgba(226, 232, 240, 0.8);
-    --nav-text: #334155;
-    --nav-hover: #10b981;
-    --nav-active: #059669;
-    --button-gradient: linear-gradient(135deg, #10b981, #06b6d4);
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --nav-bg: var(--surface-color, rgba(255, 255, 255, 0.95));
+    --nav-border: var(--border-color, rgba(226, 232, 240, 0.8));
+    --nav-text: var(--text-color, #334155);
+    --nav-hover: var(--accent, #10b981);
+    --nav-active: var(--accent, #059669);
+    --button-gradient: linear-gradient(135deg, var(--accent, #10b981), #06b6d4);
+    --shadow-sm: var(--shadow, 0 2px 8px rgba(0, 0, 0, 0.06));
     --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
@@ -206,7 +206,7 @@ body {
 
 .buttons button {
     background: var(--button-gradient);
-    color: white !important;
+    color: var(--text-color) !important;
     border: none;
     padding: 0.7rem 1.5rem;
     border-radius: 12px;

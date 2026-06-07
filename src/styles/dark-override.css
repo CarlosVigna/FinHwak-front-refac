@@ -1,0 +1,208 @@
+/* ---------- Paleta / Variáveis ---------- */
+:root{
+  --background-color: #0F172A;
+  --surface-color:    #1E293B;
+  --card-color:       #111827; /* cards ligeiramente mais escuros */
+  --border-color:     #334155;
+  --text-color:       #F8FAFC;
+  --text-sub:         #CBD5E1;
+  --muted:            rgba(248,250,252,0.06);
+  --accent:           #3B82F6;
+  --success:          #22C55E;
+  --danger:           #EF4444;
+  --warning:          #F59E0B;
+  --glass:            rgba(255,255,255,0.02);
+  --shadow:           0 6px 18px rgba(2,6,23,0.6);
+  --radius:           10px;
+}
+
+/* ---------- Global / Base ---------- */
+html,body,#root{
+  height:100%;
+  background: var(--background-color) !important;
+  color: var(--text-color) !important;
+  font-family: var(--font-family, "Inter", "Roboto", system-ui, sans-serif);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  isolation:isolate;
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after { box-sizing: inherit; }
+
+/* Force background for main layout containers commonly used */
+.app, .App, .page, main, #app, .container, .page-content {
+  background: transparent !important;
+  color: var(--text-color) !important;
+}
+
+/* header / topbar / nav */
+header, .topbar, .app-header, .header, nav {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent) ;
+  background-color: var(--surface-color) !important;
+  color: var(--text-color) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  box-shadow: none !important;
+}
+
+/* sidebar / menu */
+aside, .sidebar, .menu, .side-menu {
+  background: var(--surface-color) !important;
+  color: var(--text-color) !important;
+  border-right: 1px solid var(--border-color) !important;
+}
+
+/* cards / panels */
+.card, .panel, .box, .card-body, .card-container, .panel-card, .card-wrap,
+.auth-tabs-card, .auth-card {
+  background: linear-gradient(180deg, var(--card-color), rgba(13,18,30,0.9)) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow) !important;
+  border-radius: var(--radius) !important;
+}
+
+/* buttons */
+button, .btn, .button {
+  color: var(--text-color) !important;
+  background: linear-gradient(180deg, rgba(59,130,246,0.12), rgba(59,130,246,0.06));
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+button.primary, .btn-primary, .btn--primary {
+  background: linear-gradient(180deg, var(--accent), #2563EB) !important;
+  color: white !important;
+  border: 1px solid rgba(0,0,0,0.12) !important;
+}
+button.ghost, .btn-ghost, .btn-outline {
+  background: transparent !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-color) !important;
+}
+
+/* inputs / selects / textarea */
+input, textarea, select, .input, .form-control {
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-color) !important;
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+::placeholder { color: var(--text-sub) !important; }
+
+/* labels / helper text */
+label, .label, .field-label, .helper-text {
+  color: var(--text-sub) !important;
+}
+
+/* tables */
+table, .table {
+  color: var(--text-color) !important;
+  border-collapse: collapse;
+}
+table th, .table thead th {
+  background: rgba(255,255,255,0.02) !important;
+  color: var(--text-sub) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  padding: 10px;
+}
+table td, .table td {
+  background: transparent !important;
+  border-bottom: 1px dashed rgba(255,255,255,0.02);
+  padding: 10px;
+}
+.table tr:nth-child(even) td { background: rgba(255,255,255,0.01) !important; }
+
+/* lists / rows */
+.list, .list-item, .row, .item {
+  background: transparent !important;
+  color: var(--text-color) !important;
+}
+
+/* modals / overlays */
+.modal, .modal-content, .dialog, .overlay, .react-modal {
+  background: linear-gradient(180deg, var(--card-color), rgba(13,18,30,0.95)) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow) !important;
+}
+.modal-backdrop, .overlay-backdrop {
+  background: rgba(2,6,23,0.6) !important;
+}
+
+/* dropdowns / popovers / tooltips */
+.dropdown, .popover, .tooltip, .select-dropdown, .menu-dropdown {
+  background: var(--surface-color) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+/* badges / chips */
+.badge, .chip, .tag {
+  background: rgba(255,255,255,0.03) !important;
+  color: var(--text-sub) !important;
+  border-radius: 999px;
+  padding: 4px 8px;
+}
+
+/* links */
+a, a:visited {
+  color: var(--accent) !important;
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+/* icons / svgs */
+svg, img.icon {
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+/* form controls (checkbox / radio) modern browsers */
+input[type="checkbox"], input[type="radio"] {
+  accent-color: var(--accent);
+}
+
+/* datepicker / react-select / toastify common integrations */
+.react-select__control, .react-select__menu, .react-select__option,
+.react-datepicker, .Toastify__toast {
+  background: var(--surface-color) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+/* overrides for images like logos (if white variant needed) */
+img.logo, .brand-logo {
+  filter: brightness(0) invert(1);
+}
+
+/* small utility */
+.text-muted { color: var(--text-sub) !important; }
+.bg-surface { background: var(--surface-color) !important; color: var(--text-color) !important; }
+.shadow-soft { box-shadow: 0 8px 24px rgba(2,6,23,0.55) !important; }
+
+/* very high specificity fallback for components that still resist */
+body .card, body .panel, body .table, body header, body footer,
+body .sidebar, body .menu {
+  background-color: var(--surface-color) !important;
+  color: var(--text-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* accessibility: focus outlines */
+button:focus, input:focus, select:focus, textarea:focus {
+  outline: 2px solid rgba(59,130,246,0.18);
+  outline-offset: 2px;
+}
+
+/* small responsive niceties */
+@media (max-width: 720px) {
+  .sidebar { display: none !important; }
+  .card { border-radius: 8px !important; }
+}
+
+/* end of dark overrides */
+

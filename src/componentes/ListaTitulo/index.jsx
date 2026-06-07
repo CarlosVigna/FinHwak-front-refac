@@ -254,7 +254,15 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
                                 return (
                                     <tr key={titulo.id}>
                                         <td data-label="ID">#{titulo.id}</td>
-                                        <td data-label="Descrição">{titulo.description}</td>
+                                        <td data-label="Descrição">
+                                            <div>{titulo.description}</div>
+                                            <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '6px' }}>
+                                                {titulo.createdAt && <div>Criado: {formatarData(titulo.createdAt.split('T')[0])}</div>}
+                                                {titulo.updatedAt && <div>Atualizado: {formatarData(titulo.updatedAt.split('T')[0])}</div>}
+                                                {titulo.paidAt && <div>Pago em: {formatarData(titulo.paidAt.split('T')[0])}</div>}
+                                                {titulo.receivedAt && <div>Recebido em: {formatarData(titulo.receivedAt.split('T')[0])}</div>}
+                                            </div>
+                                        </td>
                                         <td data-label="Tipo" style={{
                                             color: isDespesa ? '#d32f2f' : '#2e7d32',
                                             fontWeight: 'bold'

@@ -248,14 +248,24 @@ const ChecklistMensal = () => {
                             )}
                         </td>
                         <td style={{ textAlign: 'center' }}>
-                          <button
-                            type="button"
-                            className="btn-acao btn-excluir"
-                            title="Apagar Recorrência"
-                            onClick={() => handleDelete(item.id)}
-                          >
-                            <FaTrash />
-                          </button>
+                          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                            <button
+                              type="button"
+                              className="btn-acao btn-criar"
+                              title="Criar lançamento a partir do checklist"
+                              onClick={() => window.location.href = `/cadastroTitulo?checklistItemId=${item.id}`}
+                            >
+                              Criar
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-acao btn-excluir"
+                              title="Apagar Recorrência"
+                              onClick={() => handleDelete(item.id)}
+                            >
+                              <FaTrash />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );

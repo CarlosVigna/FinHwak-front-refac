@@ -174,6 +174,38 @@ const ContasPendentes = () => {
     return { label: 'Em Dia', class: 'em-dia', icon: null };
   };
 
+  const handleExportCSV = async () => {
+    const idConta = localStorage.getItem('accountId');
+    if (!idConta) {
+      alert('Nenhuma conta selecionada.');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/bill/export/account/${idConta}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (!response.ok) {
+        const txt = await response.text();
+        throw new Error(txt || 'Erro ao exportar CSV');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `relatorio_contas_pendentes_${idConta}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert('Erro ao exportar CSV: ' + err.message);
+    }
+  };
+
   return (
     <div className="contas-pendentes-page">
       <div className="page-header">
@@ -203,13 +235,31 @@ const ContasPendentes = () => {
             />
           </div>
 
-          <button
-            type="button"
-            className="btn-filtrar-periodo"
-            onClick={handleFiltrar}
-          >
-            Filtrar
-          </button>
+           <button
+             type="button"
+             className="btn-filtrar-periodo"
+             onClick={handleFiltrar}
+           >
+             Filtrar
+           </button>
+
+           <button
+             type="button"
+             className="btn-exportar-csv"
+             onClick={handleExportCSV}
+             style={{
+               background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+               color: 'white',
+               border: 'none',
+               borderRadius: '8px',
+               padding: '0.75rem 1.5rem',
+               fontWeight: 'bold',
+               cursor: 'pointer',
+               transition: '0.2s ease'
+             }}
+           >
+             📊 Exportar CSV
+           </button>
         </div>
 
         {error && <div className="mensagem-erro">{error}</div>}

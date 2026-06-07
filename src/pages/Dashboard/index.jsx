@@ -19,11 +19,13 @@ import {
     groupByMonth
 } from './utils/calculations';
 import './dashboard.css';
+import ConsolidatedOverview from './components/ConsolidatedOverview';
 
 const Dashboard = () => {
     const [bills, setBills] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showConsolidated, setShowConsolidated] = useState(false);
 
     // Month filter state - default to current month
     const currentDate = new Date();
@@ -32,6 +34,14 @@ const Dashboard = () => {
 
     // Fetch bills on component mount
     useEffect(() => {
+        const accountId = localStorage.getItem('accountId');
+        // Check if consolidated view was explicitly requested
+        const requestConsolidated = localStorage.getItem('dashboardShowConsolidated');
+        if (requestConsolidated === 'true') {
+            setShowConsolidated(true);
+            return;
+        }
+        if (!accountId) return; // consolidated view will be shown
         fetchBills();
     }, []);
 
@@ -51,6 +61,7 @@ const Dashboard = () => {
 
             const url = `${import.meta.env.VITE_API_URL}/bill/account/${accountId}`;
             console.log('🌐 Buscando dados do dashboard na URL:', url);
+            console.log('[Dashboard] TOKEN:', token);
 
             const response = await fetch(url, {
                 headers: {
@@ -58,6 +69,7 @@ const Dashboard = () => {
                     'Content-Type': 'application/json'
                 }
             });
+            console.log('[Dashboard] fetch status:', response.status);
 
             if (!response.ok) {
                 const text = await response.text();
@@ -132,12 +144,58 @@ const Dashboard = () => {
             </div>
         );
     }
+    const accountId = localStorage.getItem('accountId');
+    const handleSelectAccount = (id) => {
+        localStorage.setItem('accountId', String(id));
+        localStorage.removeItem('dashboardShowConsolidated');
+        // reload dashboard for selected account
+        window.location.reload();
+    };
+    const handleShowConsolidated = () => {
+        localStorage.removeItem('accountId');
+        localStorage.setItem('dashboardShowConsolidated', 'true');
+        setShowConsolidated(true);
+        setLoading(false);
+    };
+
+    if (showConsolidated || !accountId) {
+        if (!loading) {
+            return (
+                <div className="dashboard-page">
+                    <ConsolidatedOverview
+                        onSelectAccount={handleSelectAccount}
+                        onBackToDashboard={() => setShowConsolidated(false)}
+                    />
+                </div>
+            );
+        }
+        // Still loading
+        return (
+            <div className="dashboard-page">
+                <div className="dashboard-loading">
+                    <div className="loading-spinner"></div>
+                    <p>Carregando visão consolidada...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="dashboard-page">
             <div className="page-header">
-                <h1 className="page-title">Dashboard Financeiro</h1>
-                <p className="page-subtitle">Visão completa das suas finanças</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <div>
+                        <h1 className="page-title">Dashboard Financeiro</h1>
+                        <p className="page-subtitle">Visão completa das suas finanças</p>
+                    </div>
+                    <button
+                        className="btn-consolidated"
+                        onClick={handleShowConsolidated}
+                        title="Exibir visão consolidada de todas as contas"
+                    >
+                        📊 Visão Consolidada
+                    </button>
+                </div>
             </div>
 
             <MonthSelector
