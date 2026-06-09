@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth, AuthProvider } from './pages/Login/authContext';
-import PrivateRoute from './pages/Login/privateRoute';
+import { useAuth, AuthProvider } from './pages/Login/AuthContext';
+import PrivateRoute from './pages/Login/PrivateRoute';
 import AccountRoute from './pages/Login/AccountRoute';
 
 import MenuHome from './componentes/MenuHome';
@@ -18,9 +18,7 @@ import ContasRecebidas from './pages/ContasRecebidas';
 import ContasPagas from './pages/ContasPagas';
 import ContasPendentes from './pages/ContasPendentes';
 import Dashboard from './pages/Dashboard';
-import ChecklistMensal from './pages/Checklistmensal';
-
-import './App.css';
+import ChecklistMensal from './pages/ChecklistMensal';
 
 function App() {
   const { isAuthenticated } = useAuth();

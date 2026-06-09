@@ -1,5 +1,4 @@
 import React from 'react';
-import './formularioCategoria.css';
 
 const FormularioCategoria = ({ valores, handleInputChange, onSubmit, erro, sucesso }) => {
     return (

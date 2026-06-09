@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { FaEdit, FaTrash, FaCheckCircle, FaClock, FaExclamationCircle } from 'react-icons/fa';
-import './listaTitulo.css';
 
 const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) => {
     const [titulos, setTitulos] = useState([]);
@@ -226,7 +225,7 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
             {titulosFiltrados.length === 0 && !error ? (
                 <div className="lista-vazia">
                     <p>Nenhum lançamento encontrado para os filtros selecionados.</p>
-                    <p style={{ fontSize: '0.9em', color: '#666' }}>
+                    <p className="lista-vazia-meta">
                         📌 Conta selecionada: <strong>{accountId}</strong>
                     </p>
                 </div>
@@ -256,17 +255,14 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
                                         <td data-label="ID">#{titulo.id}</td>
                                         <td data-label="Descrição">
                                             <div>{titulo.description}</div>
-                                            <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '6px' }}>
+                                            <div className="titulo-meta">
                                                 {titulo.createdAt && <div>Criado: {formatarData(titulo.createdAt.split('T')[0])}</div>}
                                                 {titulo.updatedAt && <div>Atualizado: {formatarData(titulo.updatedAt.split('T')[0])}</div>}
                                                 {titulo.paidAt && <div>Pago em: {formatarData(titulo.paidAt.split('T')[0])}</div>}
                                                 {titulo.receivedAt && <div>Recebido em: {formatarData(titulo.receivedAt.split('T')[0])}</div>}
                                             </div>
                                         </td>
-                                        <td data-label="Tipo" style={{
-                                            color: isDespesa ? '#d32f2f' : '#2e7d32',
-                                            fontWeight: 'bold'
-                                        }}>
+                                        <td data-label="Tipo" className={isDespesa ? 'valor-saida' : 'valor-entrada'}>
                                             {traduzirTipo(titulo.category?.type)}
                                         </td>
                                         <td data-label="Categoria">{titulo.category?.name || '-'}</td>

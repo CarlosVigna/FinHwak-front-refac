@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Formulario from '../../componentes/Formulario';
-import { useAuth } from './authContext';
-import './login.css';
+import { useAuth } from './AuthContext';
 
 const Login = () => {
     const { login } = useAuth();
@@ -61,7 +60,7 @@ const Login = () => {
 
             navigate('/contas');
         } catch (error) {
-            console.error('Erro na requisição:', error);
+            console.error('Erro na requisicao:', error);
             setErro('Erro ao conectar com o servidor.');
         } finally {
             setIsLoading(false);
@@ -74,21 +73,18 @@ const Login = () => {
     ];
 
     return (
-        <div className='container-login'>
-            <Formulario
-                titulo="Login"
-                campos={camposLogin}
-                botaoTexto={isLoading ? 'Carregando...' : 'Entrar'}
-                className="botao-login"
-                handleInputChange={handleInputChange}
-                valores={valores}
-                onSubmit={handleLogin}
-                disabled={isLoading}
-                customClass="login-form"
-                layout="vertical"
-                erro={erro}
-            />
-        </div>
+        <Formulario
+            titulo="Entrar"
+            campos={camposLogin}
+            botaoTexto={isLoading ? 'Entrando...' : 'Entrar'}
+            handleInputChange={handleInputChange}
+            valores={valores}
+            onSubmit={handleLogin}
+            disabled={isLoading}
+            customClass="auth-card login-card"
+            layout="vertical"
+            erro={erro}
+        />
     );
 };
 

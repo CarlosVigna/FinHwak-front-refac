@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import Formulario from '../../componentes/Formulario';
-import './cadastroUsuario.css';
 
 const URL = `${import.meta.env.VITE_API_URL}`;
 
@@ -95,7 +94,7 @@ function CadastroUsuario() {
     ];
 
     return (
-        <div className='container-cadastro form-control no-inner-shadow'>
+        <div className="container-cadastro">
             <Formulario 
                 titulo="Cadastro de Usuário"
                 campos={camposCadastro}
@@ -105,7 +104,7 @@ function CadastroUsuario() {
                 valores={valores}
                 onSubmit={handleCadastro}
                 layout="vertical" 
-                customClass="cadastro-usuario"
+                customClass="auth-card cadastro-usuario"
                 erro={erro}
                 sucesso={sucesso}
             />

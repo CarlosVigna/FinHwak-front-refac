@@ -12,7 +12,7 @@ const Banner = () => {
             {/* Conteúdo Central */}
             <div className="banner-content">
                 <h1 className="banner-title">
-                    Fin<span className="highlight">Hwak</span>
+                    Fin<span className="highlight">Hawk</span>
                 </h1>
                 <p className="banner-subtitle">
                     Gerenciamento Financeiro Inteligente

@@ -6,7 +6,6 @@ import {
   faCalendarAlt,
   faInbox,
 } from '@fortawesome/free-solid-svg-icons';
-import './contasPendentes.css';
 
 const ContasPendentes = () => {
   const hoje = new Date();
@@ -208,9 +207,14 @@ const ContasPendentes = () => {
 
   return (
     <div className="contas-pendentes-page">
-      <div className="page-header">
-        <h1 className="page-title">Contas Pendentes</h1>
-        <p className="page-subtitle">Gerencie seus pagamentos em aberto</p>
+      <div className="fh-page-header">
+        <h1 className="fh-title">
+          Contas <span>Pendentes</span>
+        </h1>
+
+        <p className="fh-subtitle">
+          Gerencie seus pagamentos em aberto.
+        </p>
       </div>
 
       <div className="tabela-card">
@@ -235,37 +239,27 @@ const ContasPendentes = () => {
             />
           </div>
 
-           <button
-             type="button"
-             className="btn-filtrar-periodo"
-             onClick={handleFiltrar}
-           >
-             Filtrar
-           </button>
+          <button
+            type="button"
+            className="btn-filtrar-periodo"
+            onClick={handleFiltrar}
+          >
+            Filtrar
+          </button>
 
-           <button
-             type="button"
-             className="btn-exportar-csv"
-             onClick={handleExportCSV}
-             style={{
-               background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-               color: 'white',
-               border: 'none',
-               borderRadius: '8px',
-               padding: '0.75rem 1.5rem',
-               fontWeight: 'bold',
-               cursor: 'pointer',
-               transition: '0.2s ease'
-             }}
-           >
-             📊 Exportar CSV
-           </button>
+          <button
+            type="button"
+            className="btn-exportar-csv btn-export-csv"
+            onClick={handleExportCSV}
+          >
+            📊 Exportar CSV
+          </button>
         </div>
 
         {error && <div className="mensagem-erro">{error}</div>}
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <div className="loading-placeholder">
             ⏳ Carregando contas...
           </div>
         ) : (
@@ -275,7 +269,7 @@ const ContasPendentes = () => {
                 <FontAwesomeIcon
                   icon={faInbox}
                   size="3x"
-                  style={{ marginBottom: '10px', color: '#ccc' }}
+                  className="empty-state-icon"
                 />
                 <p>Nenhuma conta pendente no período informado.</p>
               </div>

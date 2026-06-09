@@ -54,9 +54,9 @@ const AccountDetails = () => {
         <div className="account-details-container">
             <div className="header-details">
                 <h1>Detalhes da Conta</h1>
-                <div>
+                <div className="account-details-actions">
                     <button onClick={() => navigate('/contas')}>Voltar</button>
-                    <button style={{ marginLeft: '8px' }} onClick={async () => {
+                    <button className="btn-export-csv" onClick={async () => {
                         try {
                             const token = localStorage.getItem('token');
                             const response = await fetch(`${import.meta.env.VITE_API_URL}/bill/export/account/${id}`, {
@@ -90,7 +90,6 @@ const AccountDetails = () => {
                         src={account.photoUrl} 
                         alt="Foto da conta" 
                         className="account-photo"
-                        style={{ width: '100px', height: '100px', borderRadius: '50%' }} 
                     />
                 )}
 

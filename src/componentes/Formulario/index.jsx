@@ -1,5 +1,4 @@
 import CampoTexto from '../CampoTexto';
-import './formulario.css';
 import Botao from '../Botao';
 
 const Formulario = ({ titulo, campos, botaoTexto, handleInputChange, valores, onSubmit, className, layout, customClass, erro, sucesso }) => {
@@ -54,8 +53,6 @@ const Formulario = ({ titulo, campos, botaoTexto, handleInputChange, valores, on
                         className={className}
                     />
                 </div>
-                {erro && <p className='erro-mensagem'>{erro}</p>}
-                {sucesso && <p className='sucesso-mensagem'>{sucesso}</p>}
             </form>
         </div>
     );

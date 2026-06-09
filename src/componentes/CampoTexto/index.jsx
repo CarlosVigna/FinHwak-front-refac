@@ -1,4 +1,3 @@
-import './campoTexto.css';
 
 const CampoTexto = ({ texto, label, name, type, valor, placeholder, onChange, autoComplete, className }) => {
     return (

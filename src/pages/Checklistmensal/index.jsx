@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { FaTrash, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
-import '../CadastroTitulo/cadastroTitulo.css';
 
 const ChecklistMensal = () => {
   const [itens, setItens] = useState([]);
@@ -143,12 +142,12 @@ const ChecklistMensal = () => {
       
       {/* Formulário de Cadastro */}
       <div className='secao-superior'>
-        <h2 className="historico-titulo" style={{ borderBottom: 'none', paddingBottom: 0, marginBottom: '20px' }}>
+        <h2 className="historico-titulo checklist-title">
             Controle de Checklist Recorrente
         </h2>
         
-        <form onSubmit={handleCadastrar} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+        <form onSubmit={handleCadastrar} className="checklist-form">
+          <div className="checklist-grid">
             <div className="campo-formulario">
               <label>Descrição do Item</label>
               <input
@@ -172,21 +171,21 @@ const ChecklistMensal = () => {
             </div>
           </div>
 
-          <div className="botoes-formulario" style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+          <div className="botoes-formulario checklist-actions">
              <button type="submit">Adicionar Recorrência</button>
           </div>
           
-          {erro && <div className="error-message" style={{ padding: '10px' }}>{erro}</div>}
-          {sucesso && <div className="success-message" style={{ padding: '10px' }}>{sucesso}</div>}
+          {erro && <div className="error-message">{erro}</div>}
+          {sucesso && <div className="success-message">{sucesso}</div>}
         </form>
       </div>
 
       {/* Histórico/Lista */}
       <div className='historico-container'>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-            <h3 style={{ margin: 0, color: 'var(--text-primary)' }}>Acompanhamento do Mês</h3>
+        <div className="checklist-toolbar">
+            <h3>Acompanhamento do Mês</h3>
             
-            <div className="campo-formulario" style={{ minWidth: '200px' }}>
+            <div className="campo-formulario checklist-month-field">
                 <input 
                     type="month" 
                     value={selectedMonth} 
@@ -200,21 +199,21 @@ const ChecklistMensal = () => {
             <table className="tabela-titulos">
               <thead>
                 <tr>
-                  <th style={{ width: '60px', textAlign: 'center' }}>Feito</th>
+                  <th className="cell-narrow cell-center">Feito</th>
                   <th>Dia de Vencimento</th>
                   <th>Descrição</th>
                   <th>Status no Mês</th>
-                  <th style={{ textAlign: 'center' }}>Ações</th>
+                  <th className="cell-center">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                     <tr>
-                        <td colSpan="5" style={{ textAlign: 'center', padding: '2rem' }}>Carregando...</td>
+                        <td colSpan="5" className="empty-table-cell">Carregando...</td>
                     </tr>
                 ) : itens.length === 0 ? (
                     <tr>
-                        <td colSpan="5" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>
+                        <td colSpan="5" className="empty-table-cell">
                             Nenhum item recorrente cadastrado. Adicione acima.
                         </td>
                     </tr>
@@ -223,22 +222,22 @@ const ChecklistMensal = () => {
                     const isConcluido = checkedItemsState[item.id] || false;
                     
                     return (
-                      <tr key={item.id} style={{ opacity: isConcluido ? 0.7 : 1 }}>
-                        <td style={{ textAlign: 'center' }}>
+                      <tr key={item.id} className={isConcluido ? 'checklist-row-done' : ''}>
+                        <td className="cell-center">
                             <input 
                                 type="checkbox" 
-                                style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                                className="checklist-checkbox"
                                 checked={isConcluido}
                                 onChange={() => handleToggle(item.id)}
                             />
                         </td>
                         <td data-label="Dia">{item.dueDay}</td>
-                        <td data-label="Descrição" style={{ textDecoration: isConcluido ? 'line-through' : 'none' }}>
+                        <td data-label="Descrição" className={isConcluido ? 'checklist-item-done' : ''}>
                             {item.description}
                         </td>
                         <td data-label="Status">
                             {isConcluido ? (
-                                <span className="badge-status" style={{ background: '#dcfce7', color: '#166534', borderColor: '#86efac' }}>
+                                <span className="badge-status checklist-status-done">
                                     <FaCheckCircle /> Concluído
                                 </span>
                             ) : (
@@ -247,8 +246,8 @@ const ChecklistMensal = () => {
                                 </span>
                             )}
                         </td>
-                        <td style={{ textAlign: 'center' }}>
-                          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                        <td className="cell-center">
+                          <div className="action-group">
                             <button
                               type="button"
                               className="btn-acao btn-criar"

@@ -1,6 +1,4 @@
 import React from 'react';
-import Botao from '../Botao';
-import './card.css';
 import imagemPadrao from '../../assets/imagens/conta-padrao.png';
 
 const Card = ({ conta, onEntrar, onEditar, onExcluir, className }) => {

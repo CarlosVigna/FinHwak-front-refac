@@ -61,7 +61,7 @@
 }
 
 .timeline-day-today {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+    background: linear-gradient(135deg, var(--accent-soft), var(--info-soft));
     border-color: var(--primary);
     border-width: 2px;
 }
@@ -123,12 +123,12 @@
 }
 
 .timeline-transaction-income {
-    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    background: var(--success-soft);
     color: var(--success);
 }
 
 .timeline-transaction-expense {
-    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    background: var(--danger-soft);
     color: var(--danger);
 }
 

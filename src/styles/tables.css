@@ -1,0 +1,169 @@
+.fh-table,
+.tabela-titulos,
+.table,
+.historico-container table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--text-color);
+}
+
+.tabela-responsiva,
+.table-container {
+  width: 100%;
+  overflow: auto;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.table-container {
+  max-height: 620px;
+}
+
+.tabela-responsiva {
+  max-height: 620px;
+}
+
+.fh-table thead,
+.tabela-titulos thead,
+.table thead,
+.historico-container table thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--surface-raised);
+}
+
+.fh-table th,
+.tabela-titulos th,
+.table th,
+.historico-container table th {
+  padding: 13px 12px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  font-weight: 760;
+  letter-spacing: 0.05em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.fh-table td,
+.tabela-titulos td,
+.table td,
+.historico-container table td {
+  padding: 13px 12px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-color);
+  vertical-align: middle;
+}
+
+.fh-table tbody tr,
+.tabela-titulos tbody tr,
+.table tbody tr,
+.historico-container table tbody tr {
+  background: transparent;
+  transition: background 0.16s ease;
+}
+
+.fh-table tbody tr:nth-child(even),
+.tabela-titulos tbody tr:nth-child(even),
+.table tbody tr:nth-child(even),
+.historico-container table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.fh-table tbody tr:hover,
+.tabela-titulos tbody tr:hover,
+.table tbody tr:hover,
+.historico-container table tbody tr:hover {
+  background: rgba(91, 140, 255, 0.08);
+}
+
+.coluna-acoes {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.empty-table-cell {
+  padding: 32px !important;
+  color: var(--text-secondary) !important;
+  text-align: center !important;
+}
+
+.cell-center {
+  text-align: center !important;
+}
+
+.cell-narrow {
+  width: 60px;
+}
+
+.status-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(8px);
+}
+
+.status-modal {
+  width: min(420px, 100%);
+}
+
+.status-modal h4 {
+  margin: 0 0 14px;
+}
+
+.status-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+@media (max-width: 768px) {
+  .tabela-titulos thead,
+  .table thead {
+    display: none;
+  }
+
+  .tabela-titulos tbody tr,
+  .table tbody tr {
+    display: block;
+    margin-bottom: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .tabela-titulos td,
+  .table td {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 11px 12px;
+    text-align: right;
+  }
+
+  .tabela-titulos td::before,
+  .table td::before {
+    content: attr(data-label);
+    color: var(--text-secondary);
+    font-size: 0.74rem;
+    font-weight: 760;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .coluna-acoes {
+    justify-content: flex-end;
+  }
+}

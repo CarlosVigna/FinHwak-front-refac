@@ -7,7 +7,6 @@ import {
     faScaleBalanced,
     faWallet
 } from '@fortawesome/free-solid-svg-icons';
-import './SummaryCards.css';
 
 const SummaryCards = ({ receitas, despesas, saldoPrevisto, saldoRealizado }) => {
     const cards = [

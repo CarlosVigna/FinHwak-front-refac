@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../../componentes/Card';
-import './contas.css';
 
 const Contas = () => {
   const [contas, setContas] = useState([]);
@@ -98,10 +97,7 @@ const Contas = () => {
 
       {erro && <div className="erro-mensagem">{erro}</div>}
       {sucesso && (
-        <div
-          className="sucesso-mensagem"
-          style={{ color: 'green', textAlign: 'center', marginBottom: '10px' }}
-        >
+        <div className="sucesso-mensagem">
           {sucesso}
         </div>
       )}

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './listaCategorias.css';
 
 const ListaCategorias = ({ refresh }) => {
     const [dados, setDados] = useState([]);

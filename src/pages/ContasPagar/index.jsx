@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { FaClock, FaExclamationTriangle, FaFilter } from 'react-icons/fa';
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
-import './contasPagar.css';
 
 const ContasPagar = () => {
     const [dados, setDados] = useState([]);
@@ -198,26 +197,16 @@ const ContasPagar = () => {
                             ))}
                         </select>
                     </div>
-                    <div className="grupo-campo" style={{ justifyContent: 'flex-end', gap: '0.5rem' }}>
+                    <div className="grupo-campo report-actions">
                         <button 
                             onClick={handleExportPDF} 
-                            style={{ 
-                                height: '44px', flex: 1, marginTop: 'auto', 
-                                background: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)',
-                                color: 'white', border: 'none', borderRadius: '8px',
-                                fontWeight: 'bold', cursor: 'pointer', transition: '0.2s ease'
-                            }}
+                            className="btn-export-pdf btn-export-danger"
                         >
                             📄 Exportar PDF
                         </button>
                         <button 
                             onClick={handleExportCSV} 
-                            style={{ 
-                                height: '44px', flex: 1, marginTop: 'auto', 
-                                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                                color: 'white', border: 'none', borderRadius: '8px',
-                                fontWeight: 'bold', cursor: 'pointer', transition: '0.2s ease'
-                            }}
+                            className="btn-export-csv"
                         >
                             📊 Exportar CSV
                         </button>
@@ -262,7 +251,7 @@ const ContasPagar = () => {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="6" style={{ textAlign: 'center', padding: '30px', color: '#666' }}>
+                                        <td colSpan="6" className="empty-table-cell">
                                             Nenhuma conta a pagar encontrada para este período.
                                         </td>
                                     </tr>

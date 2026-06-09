@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import './ConsolidatedOverview.css';
 import { formatCurrency } from '../utils/formatters';
 
 const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
@@ -96,7 +95,7 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
     return (
         <div className="consolidated-overview">
             <div className="consolidated-header">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <div className="consolidated-header-row">
                     <h2>Saldo Realizado Consolidado</h2>
                     {onBackToDashboard && (
                         <button
@@ -166,7 +165,7 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
                         .filter(acc => selectedAccounts.has(acc.accountId))
                         .map(acc => (
                             <div key={acc.accountId} className="consolidated-account-card">
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div className="consolidated-account-main">
                                     <div>
                                         <div className="acc-name">{acc.name}</div>
                                         <div className="acc-values">
@@ -199,4 +198,3 @@ ConsolidatedOverview.propTypes = {
     onSelectAccount: PropTypes.func,
     onBackToDashboard: PropTypes.func,
 };
-

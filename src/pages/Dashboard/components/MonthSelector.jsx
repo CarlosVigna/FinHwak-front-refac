@@ -2,7 +2,6 @@ import React from 'react';
 import { formatMonthYear, getMonthName } from '../utils/formatters';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarDays, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import './MonthSelector.css';
 
 const MonthSelector = ({ selectedMonth, selectedYear, onMonthChange }) => {
     const currentDate = new Date();

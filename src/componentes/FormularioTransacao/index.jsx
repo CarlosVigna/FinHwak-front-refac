@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import './formularioTransacao.css';
 
 const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao }) => {
     const [categorias, setCategorias] = useState([]);

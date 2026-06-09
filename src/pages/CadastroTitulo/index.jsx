@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import FormularioTransacao from '../../componentes/FormularioTransacao';
 import ListaTitulo from '../../componentes/ListaTitulo';
-import './cadastroTitulo.css';
 
 const CadastroTitulo = () => {
     const [tituloParaEditar, setTituloParaEditar] = useState(null);
@@ -63,42 +62,48 @@ const CadastroTitulo = () => {
     };
 
     return (
-        <div className="cadastro-titulo-vertical">
-            <div className="secao-superior">
-                <FormularioTransacao
-                    tituloParaEditar={tituloParaEditar}
-                    onSave={handleSave}
-                    onCancel={handleCancel}
-                    tipoTransacao={tipoTransacao}
-                />
-            </div>
-            <div className="historico-container">
-                <h2 className="historico-titulo">Histórico de Lançamentos</h2>
-                <div className="botoes-filtro-container">
-                    <button
-                        className={`botao-tipo ${tipoTransacao === 'recebimentos' ? 'ativo' : ''}`}
-                        onClick={() => handleTipoTransacao('recebimentos')}
-                    >
-                        Recebimentos
-                    </button>
-                    <button
-                        className={`botao-tipo ${tipoTransacao === 'pagamentos' ? 'ativo' : ''}`}
-                        onClick={() => handleTipoTransacao('pagamentos')}
-                    >
-                        Pagamentos
-                    </button>
-                </div>
-                <ListaTitulo
-                    key={accountId} // ✅ Force re-render quando conta mudar
-                    accountId={accountId} // ✅ Passa o accountId como prop
-                    onEdit={handleEdit}
-                    refresh={refreshList}
-                    tipoTransacao={tipoTransacao}
-                    filtroData={filtroData}
-                />
-            </div>
+    <div className="cadastro-titulo-vertical">
+
+        <div className="fh-page-header">
+            <h1 className="fh-title">
+                Cadastro de <span>Títulos</span>
+            </h1>
+
+            <p className="fh-subtitle">
+                Gerencie recebimentos e pagamentos da conta selecionada.
+            </p>
         </div>
-    );
+
+        <div className="secao-superior">
+            <FormularioTransacao
+                tituloParaEditar={tituloParaEditar}
+                onSave={handleSave}
+                onCancel={handleCancel}
+                tipoTransacao={tipoTransacao}
+            />
+        </div>
+
+        <div className="historico-container">
+            <h2 className="historico-titulo">
+                Histórico de Lançamentos
+            </h2>
+
+            <div className="botoes-filtro-container">
+                ...
+            </div>
+
+            <ListaTitulo
+                key={accountId}
+                accountId={accountId}
+                onEdit={handleEdit}
+                refresh={refreshList}
+                tipoTransacao={tipoTransacao}
+                filtroData={filtroData}
+            />
+        </div>
+
+    </div>
+);
 };
 
 export default CadastroTitulo;

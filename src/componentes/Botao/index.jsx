@@ -1,4 +1,3 @@
-import './botao.css'
 
 const Botao = ({ texto, onClick, className }) => {
     return (

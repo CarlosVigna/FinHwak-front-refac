@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import FormularioCategoria from '../../componentes/FormularioCategoria';
 import ListaCategorias from '../ListaCategorias';
-import './cadastroCategoria.css';
 
 const CadastroCategoria = () => {
   const [valores, setValores] = useState({

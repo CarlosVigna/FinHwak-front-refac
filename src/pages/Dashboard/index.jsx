@@ -18,7 +18,6 @@ import {
     groupByDay,
     groupByMonth
 } from './utils/calculations';
-import './dashboard.css';
 import ConsolidatedOverview from './components/ConsolidatedOverview';
 
 const Dashboard = () => {
@@ -183,7 +182,7 @@ const Dashboard = () => {
     return (
         <div className="dashboard-page">
             <div className="page-header">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                <div className="dashboard-header-row">
                     <div>
                         <h1 className="page-title">Dashboard Financeiro</h1>
                         <p className="page-subtitle">Visão completa das suas finanças</p>
