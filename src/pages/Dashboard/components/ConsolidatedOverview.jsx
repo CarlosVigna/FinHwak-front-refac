@@ -9,6 +9,9 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
     const [selectedAccounts, setSelectedAccounts] = useState(new Set());
     const [selectAll, setSelectAll] = useState(true);
 
+    console.log(
+        '[ConsolidatedOverview] render'
+    );
     useEffect(() => {
         const fetchSummary = async () => {
             try {
@@ -36,6 +39,10 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
                 }
 
                 const data = await response.json();
+                console.log(
+                    '[ConsolidatedOverview] dados carregados',
+                    data
+                );
                 setSummary(data);
                 // Initialize all accounts as selected
                 if (data.accounts) {

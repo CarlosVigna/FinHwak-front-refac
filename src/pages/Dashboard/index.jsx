@@ -1,4 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+    useState,
+    useEffect,
+    useMemo
+} from 'react';
 import MonthSelector from './components/MonthSelector';
 import SummaryCards from './components/SummaryCards';
 import TrafficLight from './components/TrafficLight';
@@ -34,13 +38,21 @@ const Dashboard = () => {
     // Fetch bills on component mount
     useEffect(() => {
         const accountId = localStorage.getItem('accountId');
-        // Check if consolidated view was explicitly requested
-        const requestConsolidated = localStorage.getItem('dashboardShowConsolidated');
+
+        const requestConsolidated =
+            localStorage.getItem('dashboardShowConsolidated');
+
         if (requestConsolidated === 'true') {
             setShowConsolidated(true);
+            setLoading(false);
             return;
         }
-        if (!accountId) return; // consolidated view will be shown
+
+        if (!accountId) {
+            setLoading(false);
+            return;
+        }
+
         fetchBills();
     }, []);
 
@@ -48,7 +60,17 @@ const Dashboard = () => {
         try {
             setLoading(true);
             const token = localStorage.getItem('token');
-            const accountId = localStorage.getItem('accountId');
+            const accountId =
+                localStorage.getItem('accountId');
+
+            console.log(
+                '[Dashboard]',
+                {
+                    accountId,
+                    showConsolidated,
+                    loading
+                }
+            );;
 
             if (!token) {
                 throw new Error('Usuário não autenticado.');
@@ -94,7 +116,15 @@ const Dashboard = () => {
     };
 
     // Filter bills by selected month for summary cards and category chart
-    const filteredBills = filterByMonth(bills, selectedMonth, selectedYear);
+    const filteredBills = useMemo(
+        () =>
+            filterByMonth(
+                bills,
+                selectedMonth,
+                selectedYear
+            ),
+        [bills, selectedMonth, selectedYear]
+    );
 
     // Calculate summary metrics
     const receitas = calculateReceitas(filteredBills);
@@ -111,10 +141,16 @@ const Dashboard = () => {
     const categoryData = groupByCategory(filteredBills);
 
     // Weekly timeline data (always shows next 7 days from today)
-    const weekData = groupByDay(bills, 7);
+    const weekData = useMemo(
+        () => groupByDay(bills, 7),
+        [bills]
+    );
 
     // Annual chart data (shows 12 months)
-    const monthData = groupByMonth(bills, 6, 5);
+    const monthData = useMemo(
+    () => groupByMonth(bills, 6, 5),
+    [bills]
+);
 
     if (loading) {
         return (
@@ -151,10 +187,15 @@ const Dashboard = () => {
         window.location.reload();
     };
     const handleShowConsolidated = () => {
-        localStorage.removeItem('accountId');
+        const currentAccountId = localStorage.getItem('accountId');
+
+        if (currentAccountId) {
+            localStorage.setItem('lastAccountId', currentAccountId);
+        }
+
         localStorage.setItem('dashboardShowConsolidated', 'true');
+
         setShowConsolidated(true);
-        setLoading(false);
     };
 
     if (showConsolidated || !accountId) {
@@ -163,7 +204,18 @@ const Dashboard = () => {
                 <div className="dashboard-page">
                     <ConsolidatedOverview
                         onSelectAccount={handleSelectAccount}
-                        onBackToDashboard={() => setShowConsolidated(false)}
+                        onBackToDashboard={() => {
+                            localStorage.removeItem('dashboardShowConsolidated');
+
+                            const lastAccountId =
+                                localStorage.getItem('lastAccountId');
+
+                            if (lastAccountId) {
+                                localStorage.setItem('accountId', lastAccountId);
+                            }
+
+                            window.location.reload();
+                        }}
                     />
                 </div>
             );
