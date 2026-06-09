@@ -17,10 +17,11 @@ import ContasPagar from './pages/ContasPagar';
 import ContasRecebidas from './pages/ContasRecebidas';
 import ContasPagas from './pages/ContasPagas';
 import ContasPendentes from './pages/ContasPendentes';
-import Dashboard from './pages/Dashboard';
-import ChecklistMensal from './pages/ChecklistMensal';
 
-function App() {
+import Dashboard from './pages/Dashboard';
+import ChecklistMensal from './pages/ChecklistMensal/index.jsx';
+ 
+function App() { 
   const { isAuthenticated } = useAuth();
 
   // No public landing in corporate mode: always private app
