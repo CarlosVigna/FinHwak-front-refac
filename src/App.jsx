@@ -19,7 +19,7 @@ import ContasPagas from './pages/ContasPagas';
 import ContasPendentes from './pages/ContasPendentes';
 
 import Dashboard from './pages/Dashboard';
-import ChecklistMensal from './pages/ChecklistMensal';
+import ChecklistMensal from './pages/ChecklistMensal/index.jsx';
  
 function App() { 
   const { isAuthenticated } = useAuth();

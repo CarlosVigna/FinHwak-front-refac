@@ -131,6 +131,7 @@ const Dashboard = () => {
     const despesas = calculateDespesas(filteredBills);
     const saldoPrevisto = calculateSaldoPrevisto(filteredBills);
     const saldoRealizado = calculateSaldoRealizado(filteredBills);
+    const saldoAcumulado = calculateSaldoRealizado(bills);
 
     // Traffic light data (always uses all bills, not filtered by month)
     const overdueBills = getOverdueBills(bills);
@@ -260,6 +261,7 @@ const Dashboard = () => {
                 despesas={despesas}
                 saldoPrevisto={saldoPrevisto}
                 saldoRealizado={saldoRealizado}
+                saldoAcumulado={saldoAcumulado}
             />
 
             <TrafficLight

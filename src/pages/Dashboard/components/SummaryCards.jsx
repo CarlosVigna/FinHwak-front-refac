@@ -8,7 +8,7 @@ import {
     faWallet
 } from '@fortawesome/free-solid-svg-icons';
 
-const SummaryCards = ({ receitas, despesas, saldoPrevisto, saldoRealizado }) => {
+const SummaryCards = ({ receitas, despesas, saldoPrevisto, saldoRealizado, saldoAcumulado }) => {
     const cards = [
         {
             title: 'Receitas',
@@ -25,7 +25,7 @@ const SummaryCards = ({ receitas, despesas, saldoPrevisto, saldoRealizado }) => 
             gradient: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
         },
         {
-            title: 'Saldo Previsto',
+            title: 'Resultado Previsto',
             value: saldoPrevisto,
             icon: faScaleBalanced,
             color: saldoPrevisto >= 0 ? 'success' : 'danger',
@@ -34,13 +34,22 @@ const SummaryCards = ({ receitas, despesas, saldoPrevisto, saldoRealizado }) => 
                 : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
         },
         {
-            title: 'Saldo Realizado',
+            title: 'Resultado Realizado',
             value: saldoRealizado,
             icon: faWallet,
             color: saldoRealizado >= 0 ? 'success' : 'danger',
             gradient: saldoRealizado >= 0
                 ? 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)'
                 : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+        },
+        {
+            title: 'Saldo Acumulado',
+            value: saldoAcumulado,
+            icon: faWallet,
+            color: saldoAcumulado >= 0 ? 'success' : 'danger',
+            gradient: saldoAcumulado >= 0
+                ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)'
+                : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
         }
     ];
 
