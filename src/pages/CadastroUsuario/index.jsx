@@ -12,9 +12,6 @@ async function cadastrarUsuario(usuarioPayload) {
         body: JSON.stringify(usuarioPayload),
     });
 
-    console.log("Status da resposta:", response.status);
-
-   
     if (response.ok) {
         return { sucesso: true };
     }
@@ -77,7 +74,6 @@ function CadastroUsuario() {
                 setErro(resultado.erro || "Erro ao cadastrar Usuário. Tente novamente.");
             }
         } catch (error) {
-            console.log("Erro crítico ao tentar cadastrar:", error); 
             setErro("Erro de conexão com o servidor.");
         }
     };

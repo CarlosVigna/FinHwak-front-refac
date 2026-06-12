@@ -34,9 +34,7 @@ const CriarConta = () => {
                 throw new Error(errorData.message || "Erro ao criar conta.");
             }
 
-            const data = await response.json();
-            console.log("Conta criada:", data);
-            
+            await response.json();
             navigate('/contas');
 
         } catch (error) {

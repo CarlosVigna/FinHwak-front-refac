@@ -104,7 +104,6 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
                 }
 
                 const suggestion = await response.json();
-                console.log('📋 Sugestão do checklist:', suggestion);
 
                 if (suggestion && (suggestion.installmentAmount || suggestion.categoryId || suggestion.description)) {
                     const today = new Date().toISOString().split('T')[0];

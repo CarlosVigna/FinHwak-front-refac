@@ -32,8 +32,6 @@ const AccountDetails = () => {
                 }
 
                 const data = await response.json();
-                console.log("Dados da conta:", data);
-                
                 setAccount(data);
             } catch (err) {
                 console.error(err);

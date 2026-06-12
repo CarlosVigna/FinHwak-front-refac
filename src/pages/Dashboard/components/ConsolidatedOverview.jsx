@@ -9,9 +9,6 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
     const [selectedAccounts, setSelectedAccounts] = useState(new Set());
     const [selectAll, setSelectAll] = useState(true);
 
-    console.log(
-        '[ConsolidatedOverview] render'
-    );
     useEffect(() => {
         const fetchSummary = async () => {
             try {
@@ -20,26 +17,17 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
                 if (!token) throw new Error('Usuário não autenticado.');
 
                 const url = `${import.meta.env.VITE_API_URL}/bill/dashboard/consolidated`;
-                console.log('URL:', url);
 
                 const response = await fetch(url, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
-                console.log('STATUS:', response.status);
-
                 if (!response.ok) {
-                    // read full error body for debugging as requested
                     const text = await response.text();
-                    console.log('ERRO COMPLETO:', text);
                     throw new Error(text || 'Falha ao carregar resumo consolidado.');
                 }
 
                 const data = await response.json();
-                console.log(
-                    '[ConsolidatedOverview] dados carregados',
-                    data
-                );
                 setSummary(data);
                 // Initialize all accounts as selected
                 if (data.accounts) {

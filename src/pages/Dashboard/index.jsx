@@ -63,15 +63,6 @@ const Dashboard = () => {
             const accountId =
                 localStorage.getItem('accountId');
 
-            console.log(
-                '[Dashboard]',
-                {
-                    accountId,
-                    showConsolidated,
-                    loading
-                }
-            );;
-
             if (!token) {
                 throw new Error('Usuário não autenticado.');
             }
@@ -81,7 +72,6 @@ const Dashboard = () => {
             }
 
             const url = `${import.meta.env.VITE_API_URL}/bill/account/${accountId}`;
-            console.log('🌐 Buscando dados do dashboard na URL:', url);
 
             const response = await fetch(url, {
                 headers: {
@@ -89,7 +79,6 @@ const Dashboard = () => {
                     'Content-Type': 'application/json'
                 }
             });
-            console.log('[Dashboard] fetch status:', response.status);
 
             if (!response.ok) {
                 const text = await response.text();
@@ -97,8 +86,6 @@ const Dashboard = () => {
             }
 
             const data = await response.json();
-            console.log('✅ Dados carregados:', data.length, 'títulos');
-
             setBills(data);
             setError(null);
         } catch (err) {

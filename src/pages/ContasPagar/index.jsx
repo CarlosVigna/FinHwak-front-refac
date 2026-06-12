@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { FaClock, FaExclamationTriangle, FaFilter } from 'react-icons/fa';
+import { FaClock, FaExclamationTriangle } from 'react-icons/fa';
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 

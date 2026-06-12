@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { FaEdit, FaTrash, FaCheckCircle, FaClock, FaExclamationCircle } from 'react-icons/fa';
 
-const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) => {
+const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh }) => {
     const [titulos, setTitulos] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -9,9 +9,6 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
     // ✅ ADICIONADO: estados que estavam faltando (era isso que causava statusEdit is not defined)
     const [statusEdit, setStatusEdit] = useState({ open: false, id: null, value: 'PENDING', type: null });
     const [savingStatus, setSavingStatus] = useState(false);
-
-    console.log("DEBUG: AccountID recebido:", accountId);
-    console.log("DEBUG: Tipo Transação:", tipoTransacao);
 
     // Deleta um título
     const handleDelete = useCallback(async (id) => {
@@ -50,7 +47,6 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
             if (!token) throw new Error('Usuário não autenticado.');
 
             const url = `${import.meta.env.VITE_API_URL}/bill/account/${accountId}`;
-            console.log('🌐 Requisição para URL:', url);
 
             const response = await fetch(url, {
                 headers: {
@@ -88,9 +84,6 @@ const ListaTitulo = ({ accountId, tipoTransacao, filtroData, onEdit, refresh }) 
         if (tipoTransacao === 'pagamentos') return tipoCategoria === 'payment';
         return true;
     });
-
-    console.log('📊 Títulos totais:', titulos.length);
-    console.log('📊 Títulos filtrados:', titulosFiltrados.length);
 
     // Funções auxiliares
     const formatarData = (dataISO) => {
