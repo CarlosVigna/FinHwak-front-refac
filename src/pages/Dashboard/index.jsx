@@ -167,53 +167,40 @@ const Dashboard = () => {
         );
     }
     const accountId = localStorage.getItem('accountId');
+
     const handleSelectAccount = (id) => {
         localStorage.setItem('accountId', String(id));
         localStorage.removeItem('dashboardShowConsolidated');
-        // reload dashboard for selected account
-        window.location.reload();
+        setShowConsolidated(false);
+        fetchBills();
     };
+
+    const handleBackToDashboard = () => {
+        localStorage.removeItem('dashboardShowConsolidated');
+        const lastAccountId = localStorage.getItem('lastAccountId');
+        if (lastAccountId) {
+            localStorage.setItem('accountId', lastAccountId);
+        }
+        setShowConsolidated(false);
+        fetchBills();
+    };
+
     const handleShowConsolidated = () => {
         const currentAccountId = localStorage.getItem('accountId');
-
         if (currentAccountId) {
             localStorage.setItem('lastAccountId', currentAccountId);
         }
-
         localStorage.setItem('dashboardShowConsolidated', 'true');
-
         setShowConsolidated(true);
     };
 
     if (showConsolidated || !accountId) {
-        if (!loading) {
-            return (
-                <div className="dashboard-page">
-                    <ConsolidatedOverview
-                        onSelectAccount={handleSelectAccount}
-                        onBackToDashboard={() => {
-                            localStorage.removeItem('dashboardShowConsolidated');
-
-                            const lastAccountId =
-                                localStorage.getItem('lastAccountId');
-
-                            if (lastAccountId) {
-                                localStorage.setItem('accountId', lastAccountId);
-                            }
-
-                            window.location.reload();
-                        }}
-                    />
-                </div>
-            );
-        }
-        // Still loading
         return (
             <div className="dashboard-page">
-                <div className="dashboard-loading">
-                    <div className="loading-spinner"></div>
-                    <p>Carregando visão consolidada...</p>
-                </div>
+                <ConsolidatedOverview
+                    onSelectAccount={handleSelectAccount}
+                    onBackToDashboard={handleBackToDashboard}
+                />
             </div>
         );
     }
