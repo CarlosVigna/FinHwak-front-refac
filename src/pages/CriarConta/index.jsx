@@ -7,11 +7,16 @@ const CriarConta = () => {
     const [photoUrl, setPhotoUrl] = useState('');
     const navigate = useNavigate();
     const [error, setError] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
  
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (isSubmitting) return;
+
+        setIsSubmitting(true);
+        setError(null);
 
         const dadosConta = {
             name: name,
@@ -32,6 +37,8 @@ const CriarConta = () => {
         } catch (error) {
             console.error("Erro ao criar conta:", error);
             setError(error.message);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -67,11 +74,14 @@ const CriarConta = () => {
                 {error && <div className="erro-mensagem">{error}</div>}
                 
                 <div className="botoes-container">
-                    <button type="submit" className="botao-salvar">Criar Conta</button>
-                    <button 
-                        type="button" 
+                    <button type="submit" className="botao-salvar" disabled={isSubmitting}>
+                        {isSubmitting ? 'Criando...' : 'Criar Conta'}
+                    </button>
+                    <button
+                        type="button"
                         className="botao-cancelar"
                         onClick={() => navigate('/contas')}
+                        disabled={isSubmitting}
                     >
                         Cancelar
                     </button>

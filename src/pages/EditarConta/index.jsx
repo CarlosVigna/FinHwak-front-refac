@@ -5,9 +5,9 @@ import { api } from '../../services/api';
 const EditarConta = () => {
     const [name, setName] = useState('');
     const [photoUrl, setPhotoUrl] = useState('');
-    
     const [erro, setErro] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
     const navigate = useNavigate();
     const { id } = useParams();
 
@@ -37,6 +37,9 @@ const EditarConta = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (isSaving) return;
+
+        setIsSaving(true);
         setErro(null);
 
         const dadosAtualizados = {
@@ -55,6 +58,8 @@ const EditarConta = () => {
             navigate('/contas');
         } catch (error) {
             setErro(error.message);
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -96,11 +101,14 @@ const EditarConta = () => {
 
 
                 <div className="botoes-container">
-                    <button type="submit" className="botao-salvar">Salvar Alterações</button>
-                    <button 
-                        type="button" 
+                    <button type="submit" className="botao-salvar" disabled={isSaving}>
+                        {isSaving ? 'Salvando...' : 'Salvar Alterações'}
+                    </button>
+                    <button
+                        type="button"
                         className="botao-cancelar"
                         onClick={() => navigate('/contas')}
+                        disabled={isSaving}
                     >
                         Cancelar
                     </button>
