@@ -1,19 +1,22 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaTrash, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import { api } from '../../services/api';
 
 const ChecklistMensal = () => {
+  const navigate = useNavigate();
   const [itens, setItens] = useState([]);
   const [descricao, setDescricao] = useState('');
   const [dueDay, setDueDay] = useState('');
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState('');
   const [loading, setLoading] = useState(false);
-  
-  // Controle mensal
-  const currentMonthStr = new Date().toISOString().slice(0, 7); // YYYY-MM
+
+  const currentMonthStr = new Date().toISOString().slice(0, 7);
   const [selectedMonth, setSelectedMonth] = useState(currentMonthStr);
-  const [checkedItemsState, setCheckedItemsState] = useState({});
+  const [checkedItemsState, setCheckedItemsState] = useState(new Set());
+  const [loadingCompletions, setLoadingCompletions] = useState(false);
+  const [savingItems, setSavingItems] = useState(new Set());
 
   const accountId = localStorage.getItem('accountId');
 
@@ -21,9 +24,7 @@ const ChecklistMensal = () => {
     try {
       setLoading(true);
       const response = await api.get(`/checklist/account/${accountId}`);
-
       if (!response.ok) throw new Error('Erro ao carregar checklist.');
-      
       const data = await response.json();
       setItens(data);
       setErro('');
@@ -35,41 +36,78 @@ const ChecklistMensal = () => {
     }
   }, [accountId]);
 
+  const fetchCompletions = useCallback(async () => {
+    if (!accountId || accountId === 'null') return;
+    try {
+      setLoadingCompletions(true);
+      const response = await api.get(`/checklist/account/${accountId}/completions?month=${selectedMonth}`);
+      if (!response.ok) throw new Error('Erro ao carregar conclusões.');
+      const ids = await response.json();
+      setCheckedItemsState(new Set(ids));
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingCompletions(false);
+    }
+  }, [accountId, selectedMonth]);
+
   useEffect(() => {
-    if (accountId && accountId !== "null") {
+    if (accountId && accountId !== 'null') {
       fetchItens();
     }
   }, [fetchItens, accountId]);
 
-  // Carregar status do mês sempre que o mês ou accountId mudar
   useEffect(() => {
-    if (!accountId) return;
-    const storageKey = `finhawk_checklist_${selectedMonth}_${accountId}`;
-    const saved = localStorage.getItem(storageKey);
-    if (saved) {
-      setCheckedItemsState(JSON.parse(saved));
-    } else {
-      setCheckedItemsState({});
+    fetchCompletions();
+  }, [fetchCompletions]);
+
+  const handleToggle = async (itemId) => {
+    const isConcluido = checkedItemsState.has(itemId);
+
+    setSavingItems(prev => {
+      const next = new Set(prev);
+      next.add(itemId);
+      return next;
+    });
+
+    try {
+      if (isConcluido) {
+        const response = await api.delete(`/checklist/${itemId}/completion/${selectedMonth}`);
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(text || 'Erro ao desmarcar item.');
+        }
+        setCheckedItemsState(prev => {
+          const next = new Set(prev);
+          next.delete(itemId);
+          return next;
+        });
+      } else {
+        const response = await api.post(`/checklist/${itemId}/completion`, { month: selectedMonth });
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(text || 'Erro ao marcar item.');
+        }
+        setCheckedItemsState(prev => new Set(prev).add(itemId));
+      }
+      setErro('');
+    } catch (error) {
+      console.error(error);
+      setErro(error.message);
+    } finally {
+      setSavingItems(prev => {
+        const next = new Set(prev);
+        next.delete(itemId);
+        return next;
+      });
     }
-  }, [selectedMonth, accountId]);
-
-  const saveMonthState = (newState) => {
-    const storageKey = `finhawk_checklist_${selectedMonth}_${accountId}`;
-    localStorage.setItem(storageKey, JSON.stringify(newState));
-    setCheckedItemsState(newState);
-  };
-
-  const handleToggle = (itemId) => {
-    const newState = { ...checkedItemsState };
-    newState[itemId] = !newState[itemId];
-    saveMonthState(newState);
   };
 
   const handleCadastrar = async (e) => {
     e.preventDefault();
     if (!descricao || !dueDay) {
-        setErro("Preencha todos os campos.");
-        return;
+      setErro('Preencha todos os campos.');
+      return;
     }
 
     try {
@@ -84,9 +122,9 @@ const ChecklistMensal = () => {
       const response = await api.post('/checklist', payload);
 
       if (!response.ok) {
-          const errText = await response.text();
-          console.error("Backend Error:", errText);
-          throw new Error(`Erro do servidor (${response.status}) ao cadastrar item. Verifique os logs no console.`);
+        const errText = await response.text();
+        console.error('Backend Error:', errText);
+        throw new Error(`Erro do servidor (${response.status}) ao cadastrar item. Verifique os logs no console.`);
       }
 
       setDescricao('');
@@ -107,24 +145,27 @@ const ChecklistMensal = () => {
 
     try {
       const response = await api.delete(`/checklist/${id}`);
-
       if (!response.ok) throw new Error('Erro ao excluir item.');
+      setCheckedItemsState(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
       fetchItens();
     } catch (error) {
       console.error(error);
-      alert(error.message);
+      setErro(error.message);
     }
   };
 
   return (
     <div className='cadastro-titulo-vertical'>
-      
-      {/* Formulário de Cadastro */}
+
       <div className='secao-superior'>
         <h2 className="historico-titulo checklist-title">
-            Controle de Checklist Recorrente
+          Controle de Checklist Recorrente
         </h2>
-        
+
         <form onSubmit={handleCadastrar} className="checklist-form">
           <div className="checklist-grid">
             <div className="campo-formulario">
@@ -136,7 +177,7 @@ const ChecklistMensal = () => {
                 placeholder="Ex: Aluguel, Internet..."
               />
             </div>
-            
+
             <div className="campo-formulario">
               <label>Dia do Vencimento</label>
               <input
@@ -151,26 +192,25 @@ const ChecklistMensal = () => {
           </div>
 
           <div className="botoes-formulario checklist-actions">
-             <button type="submit">Adicionar Recorrência</button>
+            <button type="submit">Adicionar Recorrência</button>
           </div>
-          
+
           {erro && <div className="error-message">{erro}</div>}
           {sucesso && <div className="success-message">{sucesso}</div>}
         </form>
       </div>
 
-      {/* Histórico/Lista */}
       <div className='historico-container'>
         <div className="checklist-toolbar">
-            <h3>Acompanhamento do Mês</h3>
-            
-            <div className="campo-formulario checklist-month-field">
-                <input 
-                    type="month" 
-                    value={selectedMonth} 
-                    onChange={(e) => setSelectedMonth(e.target.value)} 
-                />
-            </div>
+          <h3>Acompanhamento do Mês</h3>
+
+          <div className="campo-formulario checklist-month-field">
+            <input
+              type="month"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+            />
+          </div>
         </div>
 
         <div className="table-container">
@@ -187,43 +227,47 @@ const ChecklistMensal = () => {
               </thead>
               <tbody>
                 {loading ? (
-                    <tr>
-                        <td colSpan="5" className="empty-table-cell">Carregando...</td>
-                    </tr>
+                  <tr>
+                    <td colSpan="5" className="empty-table-cell">Carregando...</td>
+                  </tr>
                 ) : itens.length === 0 ? (
-                    <tr>
-                        <td colSpan="5" className="empty-table-cell">
-                            Nenhum item recorrente cadastrado. Adicione acima.
-                        </td>
-                    </tr>
+                  <tr>
+                    <td colSpan="5" className="empty-table-cell">
+                      Nenhum item recorrente cadastrado. Adicione acima.
+                    </td>
+                  </tr>
                 ) : (
                   itens.map((item) => {
-                    const isConcluido = checkedItemsState[item.id] || false;
-                    
+                    const isConcluido = checkedItemsState.has(item.id);
+                    const isSaving = savingItems.has(item.id);
+
                     return (
                       <tr key={item.id} className={isConcluido ? 'checklist-row-done' : ''}>
                         <td className="cell-center">
-                            <input 
-                                type="checkbox" 
-                                className="checklist-checkbox"
-                                checked={isConcluido}
-                                onChange={() => handleToggle(item.id)}
-                            />
+                          <input
+                            type="checkbox"
+                            className="checklist-checkbox"
+                            checked={isConcluido}
+                            onChange={() => handleToggle(item.id)}
+                            disabled={loadingCompletions || isSaving}
+                          />
                         </td>
                         <td data-label="Dia">{item.dueDay}</td>
                         <td data-label="Descrição" className={isConcluido ? 'checklist-item-done' : ''}>
-                            {item.description}
+                          {item.description}
                         </td>
                         <td data-label="Status">
-                            {isConcluido ? (
-                                <span className="badge-status checklist-status-done">
-                                    <FaCheckCircle /> Concluído
-                                </span>
-                            ) : (
-                                <span className="badge-status status-pendente">
-                                    <FaExclamationCircle /> Pendente
-                                </span>
-                            )}
+                          {isSaving ? (
+                            <span className="badge-status">Salvando...</span>
+                          ) : isConcluido ? (
+                            <span className="badge-status checklist-status-done">
+                              <FaCheckCircle /> Concluído
+                            </span>
+                          ) : (
+                            <span className="badge-status status-pendente">
+                              <FaExclamationCircle /> Pendente
+                            </span>
+                          )}
                         </td>
                         <td className="cell-center">
                           <div className="action-group">
@@ -231,7 +275,7 @@ const ChecklistMensal = () => {
                               type="button"
                               className="btn-acao btn-criar"
                               title="Criar lançamento a partir do checklist"
-                              onClick={() => window.location.href = `/cadastroTitulo?checklistItemId=${item.id}`}
+                              onClick={() => navigate(`/cadastroTitulo?checklistItemId=${item.id}`)}
                             >
                               Criar
                             </button>

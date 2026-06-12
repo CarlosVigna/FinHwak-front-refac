@@ -6,6 +6,7 @@ const CadastroTitulo = () => {
     const [tituloParaEditar, setTituloParaEditar] = useState(null);
     const [refreshList, setRefreshList] = useState(false);
     const [tipoTransacao, setTipoTransacao] = useState('todos');
+    const [busca, setBusca] = useState('');
     const [accountId] = useState(() => localStorage.getItem('accountId'));
 
     const handleEdit = useCallback((titulo) => {
@@ -54,7 +55,37 @@ const CadastroTitulo = () => {
             </h2>
 
             <div className="botoes-filtro-container">
-                ...
+                <div className="filtro-tipo">
+                    <button
+                        className={`btn-filtro ${tipoTransacao === 'todos' ? 'ativo' : ''}`}
+                        onClick={() => handleTipoTransacao('todos')}
+                        type="button"
+                    >
+                        Todos
+                    </button>
+                    <button
+                        className={`btn-filtro ${tipoTransacao === 'recebimentos' ? 'ativo' : ''}`}
+                        onClick={() => handleTipoTransacao('recebimentos')}
+                        type="button"
+                    >
+                        Recebimentos
+                    </button>
+                    <button
+                        className={`btn-filtro ${tipoTransacao === 'pagamentos' ? 'ativo' : ''}`}
+                        onClick={() => handleTipoTransacao('pagamentos')}
+                        type="button"
+                    >
+                        Pagamentos
+                    </button>
+                </div>
+
+                <input
+                    className="input-busca-titulo"
+                    type="text"
+                    placeholder="Buscar por descrição..."
+                    value={busca}
+                    onChange={(e) => setBusca(e.target.value)}
+                />
             </div>
 
             <ListaTitulo
@@ -63,6 +94,7 @@ const CadastroTitulo = () => {
                 onEdit={handleEdit}
                 refresh={refreshList}
                 tipoTransacao={tipoTransacao}
+                busca={busca}
             />
         </div>
 

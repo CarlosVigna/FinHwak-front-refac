@@ -1,6 +1,6 @@
 import React from 'react';
 
-const FormularioCategoria = ({ valores, handleInputChange, onSubmit, erro, sucesso }) => {
+const FormularioCategoria = ({ valores, handleInputChange, onSubmit, erro, sucesso, editando = false, onCancel }) => {
     return (
         <form className="formulario-horizontal" onSubmit={onSubmit}>
             {erro && <div className="error-message">{erro}</div>}
@@ -37,8 +37,13 @@ const FormularioCategoria = ({ valores, handleInputChange, onSubmit, erro, suces
 
             <div className="botoes-formulario">
                 <button type="submit" className="botao-salvar">
-                    Cadastrar
+                    {editando ? 'Salvar Alterações' : 'Cadastrar'}
                 </button>
+                {editando && (
+                    <button type="button" className="btn-secundario" onClick={onCancel}>
+                        Cancelar
+                    </button>
+                )}
             </div>
         </form>
     );

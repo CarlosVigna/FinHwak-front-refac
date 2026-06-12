@@ -117,6 +117,11 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
         setErro('');
         setSucesso('');
 
+        if (valores.emission && valores.maturity && valores.emission > valores.maturity) {
+            setErro('A data de emissão não pode ser posterior à data de vencimento.');
+            return;
+        }
+
         try {
             const accountId = localStorage.getItem('accountId');
 

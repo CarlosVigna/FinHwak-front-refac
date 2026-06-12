@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Formulario from '../../componentes/Formulario';
 
 const URL = `${import.meta.env.VITE_API_URL}`;
@@ -22,7 +23,8 @@ async function cadastrarUsuario(usuarioPayload) {
 }
 
 function CadastroUsuario() {
-   
+    const navigate = useNavigate();
+
     const [valores, setValores] = useState({
         nome: '',
         email: '',
@@ -61,15 +63,16 @@ function CadastroUsuario() {
         try {
             const resultado = await cadastrarUsuario(payload);
 
-            if (resultado.sucesso) {  
-                setSucesso("Cadastro realizado com sucesso! Faça login.");  
+            if (resultado.sucesso) {
+                setSucesso("Cadastro realizado com sucesso! Redirecionando para login...");
                 setValores({
                     nome: '',
                     email: '',
                     senha: '',
                     confirmarSenha: ''
                 });
-                setErro("");  
+                setErro("");
+                setTimeout(() => navigate('/login'), 3000);
             } else {
                 setErro(resultado.erro || "Erro ao cadastrar Usuário. Tente novamente.");
             }

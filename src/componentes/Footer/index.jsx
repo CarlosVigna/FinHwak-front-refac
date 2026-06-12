@@ -3,11 +3,6 @@ function Footer() {
     return (
         <footer>
             <div className="footer-content">
-                <div className="footer-links">
-                    <a href="#home">Home</a>
-                    <a href="/sobre">Sobre</a>
-                    <a href="/sobre">Contato</a>
-                </div>
                 <div className="social-icons">
                     <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">

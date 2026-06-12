@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 import { api } from '../../services/api';
 
-const ListaCategorias = ({ refresh }) => {
+const ListaCategorias = ({ refresh, onEdit }) => {
     const [dados, setDados] = useState([]);
     const [tipoFiltro, setTipoFiltro] = useState('todos');
     const [loading, setLoading] = useState(true);
@@ -26,9 +27,9 @@ const ListaCategorias = ({ refresh }) => {
             const data = await response.json();
             setDados(data);
             setError(null);
-        } catch (error) {
-            console.error('Erro ao buscar dados:', error);
-            setError(error.message);
+        } catch (err) {
+            console.error('Erro ao buscar dados:', err);
+            setError(err.message);
             setDados([]);
         } finally {
             setLoading(false);
@@ -39,6 +40,23 @@ const ListaCategorias = ({ refresh }) => {
         fetchDados();
     }, [refresh, fetchDados]);
 
+    const handleDelete = async (categoria) => {
+        if (!window.confirm(`Excluir a categoria "${categoria.name}"?`)) return;
+
+        try {
+            const response = await api.delete(`/category/${categoria.id}`);
+
+            if (!response.ok) {
+                throw new Error('Não foi possível excluir esta categoria. Verifique se ela não está vinculada a lançamentos.');
+            }
+
+            setDados((prev) => prev.filter((c) => c.id !== categoria.id));
+            setError(null);
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
     const filteredData = dados.filter((categoria) => {
         if (tipoFiltro === 'todos') return true;
         return categoria.type?.toLowerCase() === tipoFiltro.toLowerCase();
@@ -46,12 +64,9 @@ const ListaCategorias = ({ refresh }) => {
 
     const traduzirTipo = (tipo) => {
         if (!tipo) return '-';
-
         const t = tipo.toLowerCase();
-
         if (t === 'receipt') return 'Recebimento';
         if (t === 'payment') return 'Pagamento';
-
         return tipo;
     };
 
@@ -80,6 +95,7 @@ const ListaCategorias = ({ refresh }) => {
                             <th>ID</th>
                             <th>Nome da Categoria</th>
                             <th>Tipo</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -88,6 +104,22 @@ const ListaCategorias = ({ refresh }) => {
                                 <td>{categoria.id}</td>
                                 <td>{categoria.name}</td>
                                 <td>{traduzirTipo(categoria.type)}</td>
+                                <td className="coluna-acoes">
+                                    <button
+                                        className="btn-acao btn-editar"
+                                        title="Editar categoria"
+                                        onClick={() => onEdit(categoria)}
+                                    >
+                                        <FaEdit />
+                                    </button>
+                                    <button
+                                        className="btn-acao btn-excluir"
+                                        title="Excluir categoria"
+                                        onClick={() => handleDelete(categoria)}
+                                    >
+                                        <FaTrash />
+                                    </button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>

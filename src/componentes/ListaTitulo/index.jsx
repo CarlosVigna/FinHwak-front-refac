@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { FaEdit, FaTrash, FaCheckCircle, FaClock, FaExclamationCircle } from 'react-icons/fa';
 import { api } from '../../services/api';
 
-const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh }) => {
+const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh, busca = '' }) => {
     const [titulos, setTitulos] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -10,6 +10,7 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh }) => {
     // ✅ ADICIONADO: estados que estavam faltando (era isso que causava statusEdit is not defined)
     const [statusEdit, setStatusEdit] = useState({ open: false, id: null, value: 'PENDING', type: null });
     const [savingStatus, setSavingStatus] = useState(false);
+    const [statusErro, setStatusErro] = useState('');
 
     // Deleta um título
     const handleDelete = useCallback(async (id) => {
@@ -21,7 +22,7 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh }) => {
             if (response.ok) {
                 setTitulos(prev => prev.filter(titulo => titulo.id !== id));
             } else {
-                alert("Erro ao excluir lançamento.");
+                setError("Erro ao excluir lançamento.");
             }
         } catch (err) {
             console.error("Erro ao excluir:", err);
@@ -61,14 +62,15 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh }) => {
         fetchTitulos();
     }, [fetchTitulos, refresh]);
 
-    // Filtra por tipo de transação
+    // Filtra por tipo de transação e por busca de descrição
+    const termoBusca = busca.trim().toLowerCase();
     const titulosFiltrados = titulos.filter(titulo => {
-        if (tipoTransacao === 'todos') return true;
-
         const tipoCategoria = titulo.category?.type?.toLowerCase();
 
-        if (tipoTransacao === 'recebimentos') return tipoCategoria === 'receipt';
-        if (tipoTransacao === 'pagamentos') return tipoCategoria === 'payment';
+        if (tipoTransacao === 'recebimentos' && tipoCategoria !== 'receipt') return false;
+        if (tipoTransacao === 'pagamentos' && tipoCategoria !== 'payment') return false;
+        if (termoBusca && !titulo.description?.toLowerCase().includes(termoBusca)) return false;
+
         return true;
     });
 
@@ -141,45 +143,29 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh }) => {
         });
     };
 
-    const fecharEdicaoStatus = () => setStatusEdit({ open: false, id: null, value: 'PENDING', type: null });
+    const fecharEdicaoStatus = () => {
+        setStatusEdit({ open: false, id: null, value: 'PENDING', type: null });
+        setStatusErro('');
+    };
 
     const salvarStatus = async () => {
         if (!statusEdit.id) return;
 
         try {
             setSavingStatus(true);
-            const titulo = titulos.find(t => t.id === statusEdit.id);
-            if (!titulo) throw new Error('Lançamento não encontrado.');
 
-            const payload = {
-                description: titulo.description,
-                emission: titulo.emission,
-                maturity: titulo.maturity,
-                installmentAmount: Number(titulo.installmentAmount) || 0,
-                installmentCount: Number(titulo.installmentCount) || 1,
-                periodicity: titulo.periodicity || 'MONTHLY',
-                status: statusEdit.value,
-                categoryId: Number(titulo.category?.id || titulo.categoryId),
-                accountId: Number(accountId),
-            };
-
-            if (!payload.categoryId) {
-                throw new Error('categoryId não encontrado no título (category.id).');
-            }
-
-            const response = await api.put(`/bill/${titulo.id}`, payload);
+            const response = await api.patch(`/bill/${statusEdit.id}/status`, { status: statusEdit.value });
 
             if (!response.ok) {
                 const text = await response.text();
                 throw new Error(text || 'Erro ao atualizar status.');
             }
 
-            // Atualiza na tabela sem precisar recarregar tudo
-            setTitulos(prev => prev.map(t => t.id === titulo.id ? { ...t, status: statusEdit.value } : t));
+            setTitulos(prev => prev.map(t => t.id === statusEdit.id ? { ...t, status: statusEdit.value } : t));
             fecharEdicaoStatus();
         } catch (err) {
             console.error('Erro ao atualizar status:', err);
-            alert(`Erro ao atualizar status: ${err.message}`);
+            setStatusErro(err.message);
         } finally {
             setSavingStatus(false);
         }
@@ -287,6 +273,8 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh }) => {
                                 ))}
                             </select>
                         </div>
+
+                        {statusErro && <p className="error-message">{statusErro}</p>}
 
                         <div className="status-modal-actions">
                             <button className="btn-secundario" onClick={fecharEdicaoStatus} disabled={savingStatus}>

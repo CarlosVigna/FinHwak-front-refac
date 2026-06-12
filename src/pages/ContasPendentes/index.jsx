@@ -23,6 +23,7 @@ const ContasPendentes = () => {
   const [contas, setContas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sucesso, setSucesso] = useState('');
   const [dataInicio, setDataInicio] = useState(formatInputDate(primeiroDiaMes));
   const [dataFim, setDataFim] = useState(formatInputDate(ultimoDiaMes));
 
@@ -87,23 +88,7 @@ const ContasPendentes = () => {
     }
 
     try {
-      const accountId = localStorage.getItem('accountId');
-
-      const payload = {
-        id: conta.id,
-        description: conta.description,
-        emission: conta.emission,
-        maturity: conta.maturity,
-        installmentAmount: Number(conta.installmentAmount || conta.value),
-        installmentCount: Number(conta.installmentCount || 1),
-        periodicity: conta.periodicity || 'MONTHLY',
-        status: 'PAID',
-        categoryId: Number(conta.category?.id || conta.categoryId),
-        accountId: Number(accountId),
-        type: 'PAYMENT',
-      };
-
-      const response = await api.put(`/bill/${conta.id}`, payload);
+      const response = await api.patch(`/bill/${conta.id}/status`, { status: 'PAID' });
 
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
@@ -111,10 +96,11 @@ const ContasPendentes = () => {
       }
 
       setContas((prev) => prev.filter((c) => c.id !== conta.id));
-      alert('Conta paga com sucesso!');
+      setSucesso('Conta paga com sucesso!');
+      setTimeout(() => setSucesso(''), 3000);
     } catch (err) {
       console.error(err);
-      alert(`Erro: ${err.message}`);
+      setError(err.message);
     }
   };
 
@@ -157,7 +143,7 @@ const ContasPendentes = () => {
   const handleExportCSV = async () => {
     const idConta = localStorage.getItem('accountId');
     if (!idConta) {
-      alert('Nenhuma conta selecionada.');
+      setError('Nenhuma conta selecionada.');
       return;
     }
 
@@ -179,7 +165,7 @@ const ContasPendentes = () => {
       a.remove();
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      alert('Erro ao exportar CSV: ' + err.message);
+      setError('Erro ao exportar CSV: ' + err.message);
     }
   };
 
@@ -235,6 +221,7 @@ const ContasPendentes = () => {
         </div>
 
         {error && <div className="mensagem-erro">{error}</div>}
+        {sucesso && <div className="sucesso-mensagem">{sucesso}</div>}
 
         {loading ? (
           <div className="loading-placeholder">

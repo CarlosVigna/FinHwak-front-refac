@@ -106,14 +106,14 @@ const ContasPagas = () => {
             pdf.save('relatorio_contas_pagas.pdf');
         } catch (err) {
             console.error('Erro ao exportar PDF:', err);
-            alert('Não foi possível gerar o PDF do relatório.');
+            setError('Não foi possível gerar o PDF do relatório.');
         }
     };
 
     const handleExportCSV = async () => {
         const idConta = localStorage.getItem('accountId');
         if (!idConta) {
-            alert('Nenhuma conta selecionada.');
+            setError('Nenhuma conta selecionada.');
             return;
         }
 
@@ -135,7 +135,7 @@ const ContasPagas = () => {
             a.remove();
             window.URL.revokeObjectURL(url);
         } catch (err) {
-            alert('Erro ao exportar CSV: ' + err.message);
+            setError('Erro ao exportar CSV: ' + err.message);
         }
     };
 

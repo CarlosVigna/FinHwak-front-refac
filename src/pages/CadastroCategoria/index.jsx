@@ -3,22 +3,33 @@ import { api } from '../../services/api';
 import FormularioCategoria from '../../componentes/FormularioCategoria';
 import ListaCategorias from '../ListaCategorias';
 
-const CadastroCategoria = () => {
-  const [valores, setValores] = useState({
-    name: '',
-    type: 'RECEIPT',
-  });
+const VALORES_VAZIOS = { name: '', type: 'RECEIPT' };
 
+const CadastroCategoria = () => {
+  const [valores, setValores] = useState(VALORES_VAZIOS);
+  const [categoriaParaEditar, setCategoriaParaEditar] = useState(null);
   const [erro, setErro] = useState('');
   const [refresh, setRefresh] = useState(false);
   const [sucesso, setSucesso] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setValores({
-      ...valores,
-      [name]: value,
-    });
+    setValores((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleEdit = (categoria) => {
+    setCategoriaParaEditar(categoria);
+    setValores({ name: categoria.name, type: categoria.type });
+    setErro('');
+    setSucesso('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancel = () => {
+    setCategoriaParaEditar(null);
+    setValores(VALORES_VAZIOS);
+    setErro('');
+    setSucesso('');
   };
 
   const handleCadastro = async (e) => {
@@ -38,37 +49,38 @@ const CadastroCategoria = () => {
       return;
     }
 
-    const novaCategoria = {
-      name,
-      type,
-      accountId: Number(accountId),
-    };
-
     try {
-      const response = await api.post('/category', novaCategoria);
+      let response;
+
+      if (categoriaParaEditar) {
+        const payload = { name, type, accountId: Number(accountId) };
+        response = await api.put(`/category/${categoriaParaEditar.id}`, payload);
+      } else {
+        const payload = { name, type, accountId: Number(accountId) };
+        response = await api.post('/category', payload);
+      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: response.statusText }));
-        throw new Error(errorData.message || 'Erro ao cadastrar categoria');
+        throw new Error(errorData.message || 'Erro ao salvar categoria');
       }
 
       await response.json();
 
-      setValores({
-        name: '',
-        type: 'RECEIPT',
-      });
+      const msg = categoriaParaEditar
+        ? 'Categoria atualizada com sucesso!'
+        : 'Categoria cadastrada com sucesso!';
 
+      setCategoriaParaEditar(null);
+      setValores(VALORES_VAZIOS);
       setErro('');
-      setSucesso('Categoria cadastrada com sucesso!');
+      setSucesso(msg);
       setRefresh((prev) => !prev);
 
-      setTimeout(() => {
-        setSucesso('');
-      }, 3000);
+      setTimeout(() => setSucesso(''), 3000);
     } catch (error) {
-      console.error('Erro ao cadastrar categoria:', error);
-      setErro(error.message || 'Erro ao cadastrar categoria.');
+      console.error('Erro ao salvar categoria:', error);
+      setErro(error.message || 'Erro ao salvar categoria.');
       setSucesso('');
     }
   };
@@ -76,19 +88,21 @@ const CadastroCategoria = () => {
   return (
     <div className="cadastro-categoria-vertical">
       <div className="secao-superior">
-        <h2>Cadastrar Nova Categoria</h2>
+        <h2>{categoriaParaEditar ? 'Editar Categoria' : 'Cadastrar Nova Categoria'}</h2>
         <FormularioCategoria
           valores={valores}
           handleInputChange={handleInputChange}
           onSubmit={handleCadastro}
           erro={erro}
           sucesso={sucesso}
+          editando={!!categoriaParaEditar}
+          onCancel={handleCancel}
         />
       </div>
 
       <div className="historico-container">
         <h2 className="historico-titulo">Categorias Cadastradas</h2>
-        <ListaCategorias refresh={refresh} />
+        <ListaCategorias refresh={refresh} onEdit={handleEdit} />
       </div>
     </div>
   );
