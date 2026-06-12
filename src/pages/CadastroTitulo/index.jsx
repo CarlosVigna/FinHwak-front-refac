@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import FormularioTransacao from '../../componentes/FormularioTransacao';
 import ListaTitulo from '../../componentes/ListaTitulo';
 
@@ -6,24 +6,7 @@ const CadastroTitulo = () => {
     const [tituloParaEditar, setTituloParaEditar] = useState(null);
     const [refreshList, setRefreshList] = useState(false);
     const [tipoTransacao, setTipoTransacao] = useState('todos');
-    const [accountId, setAccountId] = useState(null);
-
-    useEffect(() => {
-        const currentAccountId = localStorage.getItem('accountId');
-        setAccountId(currentAccountId);
-    }, []);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            const currentAccountId = localStorage.getItem('accountId');
-            if (currentAccountId !== accountId) {
-                setAccountId(currentAccountId);
-                setRefreshList(prev => !prev);
-            }
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, [accountId]);
+    const [accountId] = useState(() => localStorage.getItem('accountId'));
 
     const handleEdit = useCallback((titulo) => {
         setTituloParaEditar(titulo);
