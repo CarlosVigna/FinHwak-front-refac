@@ -4,8 +4,6 @@ import Formulario from '../../componentes/Formulario';
 const URL = `${import.meta.env.VITE_API_URL}`;
 
 async function cadastrarUsuario(usuarioPayload) {
-    console.log("Enviando payload formatado para o backend:", usuarioPayload);
-    
     const response = await fetch(URL + "/auth/register", {
         method: "POST",
         headers: {
@@ -49,7 +47,6 @@ function CadastroUsuario() {
 
     const handleCadastro = async (e) => {
         e.preventDefault();
-        console.log("Validando formulário...", valores);  
 
         const { nome, email, senha, confirmarSenha } = valores;
 
@@ -59,10 +56,9 @@ function CadastroUsuario() {
         }
 
         const payload = {
-            name: nome,       
-            email: email,     
-            password: senha,  
-            role: "ADMIN"     
+            name: nome,
+            email: email,
+            password: senha
         };
 
         try {

@@ -16,10 +16,7 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
         const fetchSummary = async () => {
             try {
                 setLoading(true);
-                // Temporary debug logs requested for diagnosing 403
-                console.log('=== DASHBOARD CONSOLIDADO ===');
                 const token = localStorage.getItem('token');
-                console.log('TOKEN:', token);
                 if (!token) throw new Error('Usuário não autenticado.');
 
                 const url = `${import.meta.env.VITE_API_URL}/bill/dashboard/consolidated`;

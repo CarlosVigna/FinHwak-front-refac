@@ -82,7 +82,6 @@ const Dashboard = () => {
 
             const url = `${import.meta.env.VITE_API_URL}/bill/account/${accountId}`;
             console.log('🌐 Buscando dados do dashboard na URL:', url);
-            console.log('[Dashboard] TOKEN:', token);
 
             const response = await fetch(url, {
                 headers: {

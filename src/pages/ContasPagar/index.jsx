@@ -64,7 +64,7 @@ const ContasPagar = () => {
         try {
             // Revisa se seu backend espera "tipo" ou "type", e "contaId" ou "accountId"
             // Tentei manter o seu padrão, mas com tratamento de erro isolado
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/categorias/tipo?tipo=Pagamento&contaId=${idConta}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/category/account/${idConta}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -193,7 +193,7 @@ const ContasPagar = () => {
                         >
                             <option value="">Todas as Categorias</option>
                             {categorias.map(cat => (
-                                <option key={cat.id} value={cat.nome}>{cat.nome}</option>
+                                <option key={cat.id} value={cat.name}>{cat.name}</option>
                             ))}
                         </select>
                     </div>

@@ -31,7 +31,7 @@ export const calculateReceitas = (bills) => {
             const type = bill.category?.type || bill.type;
             return type?.toUpperCase() === 'RECEIPT';
         })
-        .reduce((sum, bill) => sum + Number(bill.installmentAmount || bill.value || 0), 0);
+        .reduce((sum, bill) => sum + Number(bill.installmentAmount || 0), 0);
 };
 
 /**
@@ -47,7 +47,7 @@ export const calculateDespesas = (bills) => {
             const type = bill.category?.type || bill.type;
             return type?.toUpperCase() === 'PAYMENT';
         })
-        .reduce((sum, bill) => sum + Number(bill.installmentAmount || bill.value || 0), 0);
+        .reduce((sum, bill) => sum + Number(bill.installmentAmount || 0), 0);
 };
 
 /**
@@ -76,7 +76,7 @@ export const calculateSaldoRealizado = (bills) => {
         })
         .reduce((sum, bill) => {
             const type = bill.category?.type || bill.type;
-            const value = Number(bill.installmentAmount || bill.value || 0);
+            const value = Number(bill.installmentAmount || 0);
 
             // Add for RECEIPT, subtract for PAYMENT
             if (type?.toUpperCase() === 'RECEIPT') {
@@ -107,7 +107,7 @@ export const groupByCategory = (bills) => {
     // Group by category
     const grouped = payments.reduce((acc, bill) => {
         const categoryName = bill.category?.name || 'Sem Categoria';
-        const value = Number(bill.installmentAmount || bill.value || 0);
+        const value = Number(bill.installmentAmount || 0);
 
         if (!acc[categoryName]) {
             acc[categoryName] = 0;
@@ -234,14 +234,14 @@ export const groupByDay = (bills, days = 7) => {
                 const type = bill.category?.type || bill.type;
                 return type?.toUpperCase() === 'RECEIPT';
             })
-            .reduce((sum, bill) => sum + Number(bill.installmentAmount || bill.value || 0), 0);
+            .reduce((sum, bill) => sum + Number(bill.installmentAmount || 0), 0);
 
         const despesas = dayBills
             .filter(bill => {
                 const type = bill.category?.type || bill.type;
                 return type?.toUpperCase() === 'PAYMENT';
             })
-            .reduce((sum, bill) => sum + Number(bill.installmentAmount || bill.value || 0), 0);
+            .reduce((sum, bill) => sum + Number(bill.installmentAmount || 0), 0);
 
         result.push({
             date,
