@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { api } from '../../services/api';
 
 const ListaCategorias = ({ refresh }) => {
     const [dados, setDados] = useState([]);
@@ -10,27 +11,13 @@ const ListaCategorias = ({ refresh }) => {
         setLoading(true);
 
         try {
-            const token = localStorage.getItem('token');
             const accountId = localStorage.getItem('accountId');
-
-            if (!token) {
-                throw new Error('Token não encontrado. Faça login novamente.');
-            }
 
             if (!accountId) {
                 throw new Error('Nenhuma conta selecionada. Volte e escolha uma conta.');
             }
 
-            const response = await fetch(
-                `${import.meta.env.VITE_API_URL}/category/account/${accountId}`,
-                {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
+            const response = await api.get(`/category/account/${accountId}`);
 
             if (!response.ok) {
                 throw new Error('Erro ao buscar categorias');

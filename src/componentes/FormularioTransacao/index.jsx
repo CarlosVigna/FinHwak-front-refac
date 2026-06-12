@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { api } from '../../services/api';
 
 const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao }) => {
     const [categorias, setCategorias] = useState([]);
@@ -29,28 +30,14 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
     useEffect(() => {
         const fetchCategorias = async () => {
             try {
-                const token = localStorage.getItem('token');
                 const accountId = localStorage.getItem('accountId');
-
-                if (!token) {
-                    setErro("Token não encontrado. Faça login novamente.");
-                    return;
-                }
 
                 if (!accountId) {
                     setErro("Erro: Conta não identificada.");
                     return;
                 }
 
-                const response = await fetch(
-                    `${import.meta.env.VITE_API_URL}/category/account/${accountId}`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    }
-                );
+                const response = await api.get(`/category/account/${accountId}`);
 
                 if (!response.ok) throw new Error('Falha ao carregar categorias.');
 
@@ -91,12 +78,7 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
             try {
                 if (!checklistItemId || tituloParaEditar) return;
 
-                const token = localStorage.getItem('token');
-                if (!token) return;
-
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/checklist/${checklistItemId}/suggestion`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const response = await api.get(`/checklist/${checklistItemId}/suggestion`);
 
                 if (!response.ok) {
                     console.warn(`Aviso: código ${response.status} ao buscar sugestão do checklist`);
@@ -136,13 +118,10 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
         setSucesso('');
 
         try {
-            const token = localStorage.getItem('token');
             const accountId = localStorage.getItem('accountId');
 
-            if (!token) throw new Error('Usuário não autenticado. Faça login novamente.');
             if (!accountId) throw new Error('Conta não identificada. Selecione uma conta novamente.');
 
-            // ✅ Payload compatível com BillRequestDTO do backend
             const payload = {
                 description: valores.description,
                 emission: valores.emission,
@@ -155,18 +134,9 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
                 accountId: Number(accountId)
             };
 
-            const url = tituloParaEditar
-                ? `${import.meta.env.VITE_API_URL}/bill/${tituloParaEditar.id}`
-                : `${import.meta.env.VITE_API_URL}/bill`;
-
-            const response = await fetch(url, {
-                method: tituloParaEditar ? 'PUT' : 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
+            const response = tituloParaEditar
+                ? await api.put(`/bill/${tituloParaEditar.id}`, payload)
+                : await api.post('/bill', payload);
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));

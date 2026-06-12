@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { FaEdit, FaTrash, FaCheckCircle, FaClock, FaExclamationCircle } from 'react-icons/fa';
+import { api } from '../../services/api';
 
 const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh }) => {
     const [titulos, setTitulos] = useState([]);
@@ -15,11 +16,7 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh }) => {
         if (!window.confirm("Tem certeza que deseja excluir este lançamento?")) return;
 
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/bill/${id}`, {
-                method: 'DELETE',
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.delete(`/bill/${id}`);
 
             if (response.ok) {
                 setTitulos(prev => prev.filter(titulo => titulo.id !== id));
@@ -43,17 +40,7 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh }) => {
         setError(null);
 
         try {
-            const token = localStorage.getItem('token');
-            if (!token) throw new Error('Usuário não autenticado.');
-
-            const url = `${import.meta.env.VITE_API_URL}/bill/account/${accountId}`;
-
-            const response = await fetch(url, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
+            const response = await api.get(`/bill/account/${accountId}`);
 
             if (!response.ok) {
                 const text = await response.text();
@@ -161,13 +148,9 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh }) => {
 
         try {
             setSavingStatus(true);
-            const token = localStorage.getItem('token');
-            if (!token) throw new Error('Usuário não autenticado.');
-
             const titulo = titulos.find(t => t.id === statusEdit.id);
             if (!titulo) throw new Error('Lançamento não encontrado.');
 
-            // ✅ Backend exige BillRequestDTO completo
             const payload = {
                 description: titulo.description,
                 emission: titulo.emission,
@@ -184,14 +167,7 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh }) => {
                 throw new Error('categoryId não encontrado no título (category.id).');
             }
 
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/bill/${titulo.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
+            const response = await api.put(`/bill/${titulo.id}`, payload);
 
             if (!response.ok) {
                 const text = await response.text();

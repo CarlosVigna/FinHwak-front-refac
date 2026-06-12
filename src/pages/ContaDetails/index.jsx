@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { api } from '../../services/api';
 
 const AccountDetails = () => {
     const { id } = useParams(); 
@@ -12,20 +13,7 @@ const AccountDetails = () => {
     useEffect(() => {
         const fetchAccount = async () => {
             try {
-                const token = localStorage.getItem('token');
-                
-                if (!token) {
-                    setError('Usuário não autenticado.');
-                    return;
-                }
-
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/account/${id}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`, 
-                        'Content-Type': 'application/json'
-                    }
-                });
+                const response = await api.get(`/account/${id}`);
 
                 if (!response.ok) {
                     throw new Error('Erro ao buscar detalhes da conta.');
@@ -56,10 +44,7 @@ const AccountDetails = () => {
                     <button onClick={() => navigate('/contas')}>Voltar</button>
                     <button className="btn-export-csv" onClick={async () => {
                         try {
-                            const token = localStorage.getItem('token');
-                            const response = await fetch(`${import.meta.env.VITE_API_URL}/bill/export/account/${id}`, {
-                                headers: { Authorization: `Bearer ${token}` }
-                            });
+                            const response = await api.blob(`/bill/export/account/${id}`);
 
                             if (!response.ok) {
                                 const txt = await response.text();

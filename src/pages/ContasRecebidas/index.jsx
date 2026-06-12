@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { FaClock, FaExclamationTriangle } from 'react-icons/fa';
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
+import { api } from '../../services/api';
 
 const ContasRecebidas = () => {
     const [dados, setDados] = useState([]);
@@ -14,7 +15,6 @@ const ContasRecebidas = () => {
 
     // 1. Busca os Títulos (Bills) - Rota que já está funcionando
     const fetchDados = useCallback(async () => {
-        const token = localStorage.getItem('token');
         const idConta = localStorage.getItem('accountId');
 
         if (!idConta || idConta === "null") {
@@ -24,13 +24,7 @@ const ContasRecebidas = () => {
 
         setLoading(true);
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/bill/account/${idConta}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
+            const response = await api.get(`/bill/account/${idConta}`);
 
             if (!response.ok) {
                 throw new Error(`Erro ao buscar lançamentos (${response.status})`);
@@ -56,21 +50,12 @@ const ContasRecebidas = () => {
 
     // 2. Busca as Categorias - Ajustada para ser mais resiliente
     const fetchCategorias = useCallback(async () => {
-        const token = localStorage.getItem('token');
         const idConta = localStorage.getItem('accountId');
 
-        if (!token || !idConta || idConta === "null") return;
+        if (!idConta || idConta === "null") return;
 
         try {
-            // Revisa se seu backend espera "tipo" ou "type", e "contaId" ou "accountId"
-            // Tentei manter o seu padrão, mas com tratamento de erro isolado
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/category/account/${idConta}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
+            const response = await api.get(`/category/account/${idConta}`);
 
             if (response.ok) {
                 const data = await response.json();
@@ -133,10 +118,7 @@ const ContasRecebidas = () => {
         }
 
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/bill/export/account/${idConta}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.blob(`/bill/export/account/${idConta}`);
 
             if (!response.ok) {
                 const txt = await response.text();

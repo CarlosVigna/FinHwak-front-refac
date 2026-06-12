@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { api } from '../../../services/api';
 import PropTypes from 'prop-types';
 import { formatCurrency } from '../utils/formatters';
 
@@ -13,14 +14,7 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
         const fetchSummary = async () => {
             try {
                 setLoading(true);
-                const token = localStorage.getItem('token');
-                if (!token) throw new Error('Usuário não autenticado.');
-
-                const url = `${import.meta.env.VITE_API_URL}/bill/dashboard/consolidated`;
-
-                const response = await fetch(url, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const response = await api.get('/bill/dashboard/consolidated');
 
                 if (!response.ok) {
                     const text = await response.text();

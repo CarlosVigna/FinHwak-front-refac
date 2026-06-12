@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { api } from '../../services/api';
 import FormularioCategoria from '../../componentes/FormularioCategoria';
 import ListaCategorias from '../ListaCategorias';
 
@@ -44,16 +45,7 @@ const CadastroCategoria = () => {
     };
 
     try {
-      const token = localStorage.getItem('token');
-
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/category`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(novaCategoria),
-      });
+      const response = await api.post('/category', novaCategoria);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: response.statusText }));

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../../componentes/Card';
+import { api } from '../../services/api';
 
 const Contas = () => {
   const [contas, setContas] = useState([]);
@@ -13,15 +14,7 @@ const Contas = () => {
 
     const fetchContas = async () => {
       try {
-        const token = localStorage.getItem('token');
-
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/account`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await api.get('/account');
 
         if (!response.ok) {
           throw new Error('Erro ao carregar contas.');
@@ -61,15 +54,7 @@ const Contas = () => {
     setSucesso('');
 
     try {
-      const token = localStorage.getItem('token');
-
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/account/${idConta}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await api.delete(`/account/${idConta}`);
 
       if (response.status === 204) {
         setContas((prevContas) => prevContas.filter((conta) => conta.id !== idConta));

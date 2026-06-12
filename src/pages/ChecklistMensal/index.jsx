@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { FaTrash, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
+import { api } from '../../services/api';
 
 const ChecklistMensal = () => {
   const [itens, setItens] = useState([]);
@@ -19,14 +20,7 @@ const ChecklistMensal = () => {
   const fetchItens = useCallback(async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/checklist/account/${accountId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await api.get(`/checklist/account/${accountId}`);
 
       if (!response.ok) throw new Error('Erro ao carregar checklist.');
       
@@ -79,23 +73,15 @@ const ChecklistMensal = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
       const payload = {
         description: descricao,
         dueDay: Number(dueDay),
         active: true,
-        accountId: Number(accountId), // compatibilidade com DTO
-        account: { id: Number(accountId) } // compatibilidade com Entity
+        accountId: Number(accountId),
+        account: { id: Number(accountId) }
       };
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/checklist`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await api.post('/checklist', payload);
 
       if (!response.ok) {
           const errText = await response.text();
@@ -120,14 +106,7 @@ const ChecklistMensal = () => {
     if (!confirmar) return;
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/checklist/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await api.delete(`/checklist/${id}`);
 
       if (!response.ok) throw new Error('Erro ao excluir item.');
       fetchItens();

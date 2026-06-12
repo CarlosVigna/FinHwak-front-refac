@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { api } from '../../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheckCircle,
@@ -29,25 +30,13 @@ const ContasPendentes = () => {
     try {
       setLoading(true);
 
-      const token = localStorage.getItem('token');
       const accountId = localStorage.getItem('accountId');
-
-      if (!token) {
-        throw new Error('Usuário não autenticado.');
-      }
 
       if (!accountId) {
         throw new Error('Nenhuma conta selecionada. Volte e selecione uma conta.');
       }
 
-      const url = `${import.meta.env.VITE_API_URL}/bill/account/${accountId}/period?start=${dataInicio}&end=${dataFim}`;
-
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await api.get(`/bill/account/${accountId}/period?start=${dataInicio}&end=${dataFim}`);
 
       if (!response.ok) {
         const text = await response.text();
@@ -98,7 +87,6 @@ const ContasPendentes = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
       const accountId = localStorage.getItem('accountId');
 
       const payload = {
@@ -115,14 +103,7 @@ const ContasPendentes = () => {
         type: 'PAYMENT',
       };
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/bill/${conta.id}`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await api.put(`/bill/${conta.id}`, payload);
 
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
@@ -181,10 +162,7 @@ const ContasPendentes = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/bill/export/account/${idConta}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.blob(`/bill/export/account/${idConta}`);
 
       if (!response.ok) {
         const txt = await response.text();

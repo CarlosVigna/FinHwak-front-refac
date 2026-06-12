@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { setUnauthorizedHandler } from '../../services/api';
 
 const AuthContext = createContext();
 
@@ -14,6 +15,16 @@ export function AuthProvider({ children }) {
     const savedToken = localStorage.getItem('token');
     setToken(savedToken);
     setIsAuthenticated(isTokenValid(savedToken));
+  }, []);
+
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('accountId');
+      setToken(null);
+      setIsAuthenticated(false);
+    });
+    return () => setUnauthorizedHandler(null);
   }, []);
 
   const login = (newToken) => {

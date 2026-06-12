@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../../services/api';
 
 const CriarConta = () => {
     const [name, setName] = useState('');
@@ -18,16 +19,7 @@ const CriarConta = () => {
         };
 
         try {
-            const token = localStorage.getItem('token');
-            
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/account`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(dadosConta),
-            });
+            const response = await api.post('/account', dadosConta);
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));

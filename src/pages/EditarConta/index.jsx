@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { api } from '../../services/api';
 
 const EditarConta = () => {
     const [name, setName] = useState('');
@@ -13,14 +14,7 @@ const EditarConta = () => {
     useEffect(() => {
         const fetchConta = async () => {
             try {
-                const token = localStorage.getItem('token');
-                
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/account/${id}`, {
-                    headers: { 
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+                const response = await api.get(`/account/${id}`);
 
                 if (!response.ok) {
                     throw new Error("Erro ao carregar dados da conta");
@@ -51,15 +45,7 @@ const EditarConta = () => {
         };
 
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/account/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(dadosAtualizados)
-            });
+            const response = await api.put(`/account/${id}`, dadosAtualizados);
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));

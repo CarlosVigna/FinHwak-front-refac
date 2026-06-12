@@ -3,6 +3,7 @@ import React, {
     useEffect,
     useMemo
 } from 'react';
+import { api } from '../../services/api';
 import MonthSelector from './components/MonthSelector';
 import SummaryCards from './components/SummaryCards';
 import TrafficLight from './components/TrafficLight';
@@ -59,26 +60,13 @@ const Dashboard = () => {
     const fetchBills = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('token');
-            const accountId =
-                localStorage.getItem('accountId');
-
-            if (!token) {
-                throw new Error('Usuário não autenticado.');
-            }
+            const accountId = localStorage.getItem('accountId');
 
             if (!accountId) {
                 throw new Error('Nenhuma conta selecionada. Volte e selecione uma conta.');
             }
 
-            const url = `${import.meta.env.VITE_API_URL}/bill/account/${accountId}`;
-
-            const response = await fetch(url, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
+            const response = await api.get(`/bill/account/${accountId}`);
 
             if (!response.ok) {
                 const text = await response.text();
