@@ -46,7 +46,10 @@ const CriarConta = () => {
 
     return (
         <div className="criar-conta-container">
-            <h1>Criar Nova Conta</h1>
+            <div className="fh-page-header">
+                <h1 className="fh-title">Criar Nova <span>Conta</span></h1>
+                <p className="fh-subtitle">Preencha os dados para adicionar uma conta financeira.</p>
+            </div>
             <form onSubmit={handleSubmit}>
                 
                 <div className="form-group">

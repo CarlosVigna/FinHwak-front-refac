@@ -91,6 +91,11 @@ const CadastroCategoria = () => {
 
   return (
     <div className="cadastro-categoria-vertical">
+      <div className="fh-page-header">
+        <h1 className="fh-title">Cadastro de <span>Categorias</span></h1>
+        <p className="fh-subtitle">Organize seus lançamentos por categoria de receita ou despesa.</p>
+      </div>
+
       {fromNewAccount && (
         <div className="banner-guiado">
           <strong>Conta criada com sucesso!</strong>

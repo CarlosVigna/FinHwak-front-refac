@@ -72,6 +72,8 @@ function MenuHome() {
 
     return (
         <nav className='nav'>
+            <Link to="/" className="nav-brand" onClick={handleLinkClick}>FinHawk</Link>
+
             <div className="nav-header">
                 <button
                     className="menu-toggle"

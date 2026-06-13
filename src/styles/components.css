@@ -609,6 +609,19 @@ textarea:focus-visible {
   backdrop-filter: blur(18px);
 }
 
+.nav-brand {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.nav-brand:hover {
+  opacity: 0.82;
+}
+
 .nav-header {
   display: none;
 }
@@ -706,6 +719,7 @@ textarea:focus-visible {
   background: rgba(0, 0, 0, 0.48);
   opacity: 0;
   visibility: hidden;
+  transition: opacity 0.22s ease, visibility 0.22s ease;
 }
 
 .nav-overlay.active {

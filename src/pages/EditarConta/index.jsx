@@ -69,7 +69,10 @@ const EditarConta = () => {
 
     return (
         <div className="editar-conta-container">
-            <h1>Editar Conta</h1>
+            <div className="fh-page-header">
+                <h1 className="fh-title">Editar <span>Conta</span></h1>
+                <p className="fh-subtitle">Atualize os dados da conta selecionada.</p>
+            </div>
 
             {erro && <div className="error-message">{erro}</div>}
 
