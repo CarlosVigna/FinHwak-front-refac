@@ -1,214 +1,114 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../pages/Login/AuthContext';
-import Botao from '../../componentes/Botao';
-import { useState, useEffect } from 'react';
 import { useTheme } from '../../hooks/useTheme';
 
+function NavItem({ to, icon, label }) {
+    return (
+        <NavLink
+            to={to}
+            className={({ isActive }) => `sb-item${isActive ? ' active' : ''}`}
+        >
+            <span className={`sb-icon sb-icon-${icon}`} />
+            {label}
+        </NavLink>
+    );
+}
+
 function MenuHome() {
-    const { isAuthenticated, logout } = useAuth();
+    const { logout } = useAuth();
     const navigate = useNavigate();
-    const location = useLocation();
     const { theme, toggleTheme } = useTheme();
+    const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-    const accountId = localStorage.getItem('accountId');
+    const accountId   = localStorage.getItem('accountId');
     const accountName = localStorage.getItem('accountName');
-    const hasActiveAccount = !!accountId;
+    const hasAccount  = !!accountId;
 
     const handleLogout = () => {
         logout();
         navigate('/login');
     };
 
-    const handleIrParaContas = () => {
+    const handleGoToContas = () => {
         localStorage.removeItem('accountId');
         localStorage.removeItem('accountName');
-        setIsMenuOpen(false);
-        setIsDropdownOpen(false);
+        setIsMobileOpen(false);
         navigate('/contas');
     };
 
-    const handleDropdownItemClick = () => {
-        setIsDropdownOpen(false);
-        setIsMenuOpen(false);
-    };
-
-    const isActive = (path) => {
-        return location.pathname === path;
-    };
-
-    const closeDropdown = (e) => {
-        if (!e.target.closest('.dropdown')) {
-            setIsDropdownOpen(false);
-        }
-    };
-
-    const toggleMenu = () => {
-        setIsMenuOpen(!isMenuOpen);
-        if (isDropdownOpen) setIsDropdownOpen(false);
-    };
-
-    const handleLinkClick = () => {
-        setIsMenuOpen(false);
-        setIsDropdownOpen(false);
-    };
-
-    useEffect(() => {
-        const closeMenu = (e) => {
-            if (!e.target.closest('nav') && isMenuOpen) {
-                setIsMenuOpen(false);
-                setIsDropdownOpen(false);
-            }
-        };
-
-        document.addEventListener('click', closeMenu);
-        return () => document.removeEventListener('click', closeMenu);
-    }, [isMenuOpen]);
-
-    useEffect(() => {
-        document.addEventListener('click', closeDropdown);
-        return () => document.removeEventListener('click', closeDropdown);
-    }, []);
+    const closeOnNav = () => setIsMobileOpen(false);
 
     return (
-        <nav className='nav'>
-            <Link to="/" className="nav-brand" onClick={handleLinkClick}>FinHawk</Link>
+        <>
+            {/* Hamburger — mobile only */}
+            <button
+                className="hamburger"
+                onClick={() => setIsMobileOpen(o => !o)}
+                aria-label="Abrir menu"
+            >
+                {isMobileOpen ? '✕' : '☰'}
+            </button>
 
-            <div className="nav-header">
-                <button
-                    className="menu-toggle"
-                    onClick={toggleMenu}
-                    aria-label="Menu"
-                    aria-expanded={isMenuOpen}
-                >
-                    {isMenuOpen ? '✕' : '☰'}
-                </button>
-            </div>
-
+            {/* Overlay — mobile only */}
             <div
-                className={`nav-overlay ${isMenuOpen ? 'active' : ''}`}
-                onClick={() => setIsMenuOpen(false)}
+                className={`sb-overlay${isMobileOpen ? ' active' : ''}`}
+                onClick={() => setIsMobileOpen(false)}
             />
 
-            <ul className={`nav-list ${isMenuOpen ? 'active' : ''}`}>
-                
-                {isAuthenticated && (
-                    <>
-                        <li className={isActive('/contas') ? 'active' : ''}>
-                            <button
-                                type="button"
-                                className="menu-link-button"
-                                onClick={handleIrParaContas}
-                            >
-                                Contas
-                            </button>
-                        </li>
+            <aside className={`sidebar${isMobileOpen ? ' open' : ''}`}>
 
-                        <li className={isActive('/configuracoes') ? 'active' : ''}>
-                            <Link to="/configuracoes" onClick={handleLinkClick}>Configurações</Link>
-                        </li>
+                {/* Topo: logo + conta ativa */}
+                <div className="sb-top">
+                    <div className="sb-brand">
+                        <div className="sb-logo-mark">FH</div>
+                        <span className="sb-logo-name">FinHawk</span>
+                    </div>
 
-                        {hasActiveAccount && (
-                            <>
-                                {accountName && (
-                                    <li className="conta-ativa-indicator">
-                                        <span className="conta-ativa-label">🏦 {accountName}</span>
-                                    </li>
-                                )}
+                    {accountName && (
+                        <div className="sb-account-pill" onClick={handleGoToContas}>
+                            <span className="sb-account-dot" />
+                            <span className="sb-account-name">{accountName}</span>
+                            <span className="sb-account-arrow">⌄</span>
+                        </div>
+                    )}
+                </div>
 
-                                <li className={isActive('/dashboard') ? 'active' : ''}>
-                                    <Link to="/dashboard" onClick={handleLinkClick}>Dashboard</Link>
-                                </li>
+                {/* Navegação */}
+                <nav className="sb-nav" onClick={closeOnNav}>
+                    {hasAccount && (
+                        <>
+                            <div className="sb-section">Visão geral</div>
+                            <NavItem to="/dashboard"          icon="blue"   label="Dashboard" />
+                            <NavItem to="/cadastroTitulo"     icon="muted"  label="Lançamentos" />
+                            <NavItem to="/cadastrarCategoria" icon="muted"  label="Categorias" />
 
-                                <li className={isActive('/cadastroTitulo') ? 'active' : ''}>
-                                    <Link to="/cadastroTitulo" onClick={handleLinkClick}>Cadastro de Títulos</Link>
-                                </li>
+                            <div className="sb-section">Relatórios</div>
+                            <NavItem to="/relContasReceber"  icon="green"  label="A receber" />
+                            <NavItem to="/relContasPagar"    icon="red"    label="A pagar" />
+                            <NavItem to="/relRecebimentos"   icon="muted"  label="Recebidas" />
+                            <NavItem to="/relPagamentos"     icon="muted"  label="Pagas" />
+                            <NavItem to="/contas-pendentes"  icon="amber"  label="Pendentes" />
+                            <NavItem to="/checklist-mensal"  icon="purple" label="Checklist" />
+                        </>
+                    )}
+                </nav>
 
-                                <li className={isActive('/contas-pendentes') ? 'active' : ''}>
-                                    <Link to="/contas-pendentes" onClick={handleLinkClick}>Contas Pendentes</Link>
-                                </li>
+                {/* Rodapé */}
+                <div className="sb-footer" onClick={closeOnNav}>
+                    <button className="sb-theme-btn" onClick={toggleTheme}>
+                        {theme === 'dark' ? '☀ Modo claro' : '🌙 Modo escuro'}
+                    </button>
+                    <NavItem to="/contas"        icon="muted" label="Contas" />
+                    <NavItem to="/configuracoes" icon="muted" label="Configurações" />
+                    <button className="sb-item sb-logout" onClick={handleLogout}>
+                        <span className="sb-icon sb-icon-muted" />
+                        Sair
+                    </button>
+                </div>
 
-                                <li className={isActive('/cadastrarCategoria') ? 'active' : ''}>
-                                    <Link to="/cadastrarCategoria" onClick={handleLinkClick}>Cadastro Categoria</Link>
-                                </li>
-
-                                <li className={isActive('/checklist-mensal') ? 'active' : ''}>
-                                    <Link to="/checklist-mensal" onClick={handleLinkClick}>Checklist</Link>
-                                </li>
-
-                                <li
-                                    className={`dropdown ${isActive('/rel') ? 'active' : ''} ${isDropdownOpen ? 'open' : ''}`}
-                                >
-                                    <Link
-                                        to="#"
-                                        className="dropdown-toggle"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            setIsDropdownOpen(!isDropdownOpen);
-                                        }}
-                                        aria-expanded={isDropdownOpen}
-                                        role="button"
-                                    >
-                                        Relatórios
-                                    </Link>
-
-                                    <ul className="dropdown-content" role="menu">
-                                        <li className={isActive('/relContasReceber') ? 'active' : ''}>
-                                            <Link to="/relContasReceber" onClick={handleDropdownItemClick}>
-                                                Contas a Receber
-                                            </Link>
-                                        </li>
-
-                                        <li className={isActive('/relContasPagar') ? 'active' : ''}>
-                                            <Link to="/relContasPagar" onClick={handleDropdownItemClick}>
-                                                Contas a Pagar
-                                            </Link>
-                                        </li>
-
-                                        <li className={isActive('/relRecebimentos') ? 'active' : ''}>
-                                            <Link to="/relRecebimentos" onClick={handleDropdownItemClick}>
-                                                Recebimentos
-                                            </Link>
-                                        </li>
-
-                                        <li className={isActive('/relPagamentos') ? 'active' : ''}>
-                                            <Link to="/relPagamentos" onClick={handleDropdownItemClick}>
-                                                Pagamentos
-                                            </Link>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </>
-                        )}
-                    </>
-                )}
-            </ul>
-
-            <div className='buttons'>
-                <button
-                    className="theme-toggle"
-                    onClick={toggleTheme}
-                    title={theme === 'dark' ? 'Mudar para modo claro' : 'Mudar para modo escuro'}
-                    aria-label="Alternar tema"
-                >
-                    {theme === 'dark' ? '☀️' : '🌙'}
-                </button>
-
-                {!isAuthenticated ? (
-                    <Link to='/login'>
-                        <Botao texto="Login" />
-                    </Link>
-                ) : (
-                    <Botao texto="Logout" onClick={handleLogout} />
-                )}
-
-                {!isAuthenticated && (
-                    <Botao texto="Cadastrar" onClick={() => navigate('/cadastro')} />
-                )}
-            </div>
-        </nav>
+            </aside>
+        </>
     );
 }
 

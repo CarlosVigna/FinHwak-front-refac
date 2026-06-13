@@ -12,11 +12,9 @@ import {
 const DeltaBadge = ({ delta }) => {
     if (delta === 0) return null;
     const positive = delta > 0;
-    const arrow = positive ? '↑' : '↓';
-    const color = positive ? '#10b981' : '#ef4444';
     return (
-        <span className="summary-card-delta" style={{ color }}>
-            {arrow} {formatCurrency(Math.abs(delta))} vs mês anterior
+        <span className={`summary-card-delta ${positive ? 'delta-up' : 'delta-down'}`}>
+            {positive ? '↑' : '↓'} {formatCurrency(Math.abs(delta))} vs mês anterior
         </span>
     );
 };
@@ -32,13 +30,25 @@ const SummaryCards = ({
     deltaDespesas,
     deltaResultado
 }) => {
+    const pendingColor = pendenteMes > 0 ? 'warning' : 'success';
+    const prevColor    = saldoPrevisto   >= 0 ? 'success' : 'danger';
+    const realColor    = saldoRealizado  >= 0 ? 'success' : 'danger';
+    const acumColor    = saldoAcumulado  >= 0 ? 'success' : 'danger';
+
+    const iconToken = {
+        success: { bg: 'var(--green-soft)', color: 'var(--green)' },
+        danger:  { bg: 'var(--red-soft)',   color: 'var(--red)' },
+        warning: { bg: 'var(--amber-soft)', color: 'var(--amber)' },
+        blue:    { bg: 'var(--blue-soft)',  color: 'var(--blue)' },
+    };
+
     const cards = [
         {
             title: 'Receitas',
             value: receitas,
             icon: faArrowTrendUp,
             color: 'success',
-            gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            icon_: iconToken.success,
             delta: deltaReceitas
         },
         {
@@ -46,47 +56,39 @@ const SummaryCards = ({
             value: despesas,
             icon: faArrowTrendDown,
             color: 'danger',
-            gradient: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            icon_: iconToken.danger,
             delta: deltaDespesas
         },
         {
             title: 'Pendente do Mês',
             value: pendenteMes,
             icon: faClock,
-            color: pendenteMes > 0 ? 'warning' : 'success',
-            gradient: pendenteMes > 0
-                ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
-                : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            color: pendingColor,
+            icon_: iconToken[pendingColor],
             delta: null
         },
         {
             title: 'Resultado Previsto',
             value: saldoPrevisto,
             icon: faScaleBalanced,
-            color: saldoPrevisto >= 0 ? 'success' : 'danger',
-            gradient: saldoPrevisto >= 0
-                ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-                : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            color: prevColor,
+            icon_: iconToken[prevColor],
             delta: null
         },
         {
             title: 'Resultado Realizado',
             value: saldoRealizado,
             icon: faWallet,
-            color: saldoRealizado >= 0 ? 'success' : 'danger',
-            gradient: saldoRealizado >= 0
-                ? 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)'
-                : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+            color: realColor,
+            icon_: iconToken.blue,
             delta: deltaResultado
         },
         {
             title: 'Saldo Acumulado',
             value: saldoAcumulado,
             icon: faWallet,
-            color: saldoAcumulado >= 0 ? 'success' : 'danger',
-            gradient: saldoAcumulado >= 0
-                ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)'
-                : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            color: acumColor,
+            icon_: iconToken[acumColor],
             delta: null
         }
     ];
@@ -97,13 +99,13 @@ const SummaryCards = ({
                 <div
                     key={index}
                     className={`summary-card summary-card-${card.color}`}
-                    style={{ animationDelay: `${index * 0.1}s` }}
+                    style={{ animationDelay: `${index * 0.08}s` }}
                 >
                     <div className="summary-card-header">
                         <span className="summary-card-title">{card.title}</span>
                         <div
                             className="summary-card-icon"
-                            style={{ background: card.gradient }}
+                            style={{ background: card.icon_.bg, color: card.icon_.color }}
                         >
                             <FontAwesomeIcon icon={card.icon} />
                         </div>
@@ -112,9 +114,7 @@ const SummaryCards = ({
                         <span className={`summary-card-value ${card.color}`}>
                             {formatCurrency(card.value)}
                         </span>
-                        {card.delta != null && (
-                            <DeltaBadge delta={card.delta} />
-                        )}
+                        {card.delta != null && <DeltaBadge delta={card.delta} />}
                     </div>
                 </div>
             ))}

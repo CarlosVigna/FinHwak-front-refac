@@ -1,15 +1,23 @@
-.app-shell {
+.app-layout {
+  display: flex;
   min-height: 100vh;
 }
 
-.app-content {
+.app-main {
+  flex: 1;
+  margin-left: 200px;
   min-height: 100vh;
-  padding-top: var(--nav-height);
   display: flex;
   flex-direction: column;
+  background: var(--bg);
+  overflow-x: hidden;
 }
 
-.app-content main {
+.app-main-full {
+  margin-left: 0;
+}
+
+.app-main main {
   flex: 1;
 }
 
@@ -20,7 +28,7 @@
 .cadastro-categoria-vertical,
 .contas-container {
   width: 100%;
-  min-height: calc(100vh - var(--nav-height));
+  min-height: 100vh;
   padding: 24px;
   background: transparent;
 }
@@ -47,6 +55,45 @@
   max-width: 1320px;
   margin: 0 auto 8px;
   animation: fadeInUp 0.45s ease-out both;
+}
+
+/* ── page-topbar — Sprint 14 Etapa 4 ─────────── */
+.page-topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  animation: fadeInUp 0.45s ease-out both;
+}
+
+.page-topbar h1 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.page-topbar p {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--muted2);
+  line-height: 1.4;
+}
+
+.page-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding-top: 2px;
 }
 
 .dashboard-header-row,
@@ -196,8 +243,9 @@
 }
 
 @media (max-width: 768px) {
-  .app-content {
-    padding-top: 64px;
+  .app-main {
+    margin-left: 0;
+    padding-top: 52px;
   }
 
   .fh-page,

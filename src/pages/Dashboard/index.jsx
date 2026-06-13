@@ -28,7 +28,6 @@ import {
     groupByDay,
     groupByMonth
 } from './utils/calculations';
-import DashboardExecutive from './components/DashboardExecutive';
 import ConsolidatedOverview from './components/ConsolidatedOverview';
 
 const Dashboard = () => {
@@ -303,16 +302,6 @@ const Dashboard = () => {
                 selectedMonth={selectedMonth}
                 selectedYear={selectedYear}
                 onMonthChange={handleMonthChange}
-            />
-
-            <DashboardExecutive
-                receitas={receitas}
-                despesas={despesas}
-                pendenteMes={pendenteMes}
-                saldoRealizado={saldoRealizado}
-                deltaReceitas={deltaReceitas}
-                deltaDespesas={deltaDespesas}
-                deltaResultado={deltaResultado}
             />
 
             {bills.length === 0 ? (

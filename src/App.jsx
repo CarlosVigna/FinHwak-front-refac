@@ -32,9 +32,9 @@ function App() {
   // No public landing in corporate mode: always private app
 
   return (
-    <div className="app-shell">
-      {isAuthenticated && <MenuHome isAuthenticated={isAuthenticated} />}
-      <div className="app-content">
+    <div className="app-layout">
+      {isAuthenticated && <MenuHome />}
+      <div className={`app-main${!isAuthenticated ? ' app-main-full' : ''}`}>
         <main>
           <Routes>
             <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />} />
@@ -192,6 +192,7 @@ function App() {
       </div>
     </div>
   );
+
 }
 
 function AppWrapper() {
