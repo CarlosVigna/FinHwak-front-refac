@@ -34,6 +34,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     setUnauthorizedHandler(() => {
       localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
       localStorage.removeItem('accountId');
       setToken(null);
       setUser(null);
@@ -42,16 +43,17 @@ export function AuthProvider({ children }) {
     return () => setUnauthorizedHandler(null);
   }, []);
 
-  const login = (newToken) => {
+  const login = (newToken, newRefreshToken) => {
     localStorage.setItem('token', newToken);
+    if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
     localStorage.removeItem('accountId');
     setToken(newToken);
     setIsAuthenticated(true);
-    // user será carregado pelo useEffect acima ao detectar a mudança de token
   };
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('accountId');
     localStorage.removeItem('accountName');
     localStorage.removeItem('dashboardShowConsolidated');

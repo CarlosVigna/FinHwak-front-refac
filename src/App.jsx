@@ -6,6 +6,7 @@ import AccountRoute from './pages/Login/AccountRoute';
 import LandingPage from './pages/LandingPage';
 import MenuHome from './componentes/MenuHome';
 import Footer from './componentes/Footer';
+import PlanModal from './componentes/PlanModal';
 import AuthTabs from './pages/AuthTabs';
 import EsqueciSenha from './pages/EsqueciSenha';
 import ResetSenha from './pages/ResetSenha';
@@ -128,6 +129,7 @@ function AppWrapper() {
     <AuthProvider>
       <Router>
         <App />
+        <PlanModal />
       </Router>
     </AuthProvider>
   );

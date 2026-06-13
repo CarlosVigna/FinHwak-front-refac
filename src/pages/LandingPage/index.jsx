@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../Login/AuthContext';
 import './LandingPage.css';
@@ -60,8 +61,27 @@ const STEPS = [
     },
 ];
 
+const FREE_FEATURES = [
+    { ok: true,  text: '1 conta financeira' },
+    { ok: true,  text: '100 lançamentos no total' },
+    { ok: true,  text: '5 itens no checklist mensal' },
+    { ok: true,  text: 'Dashboard e gráficos' },
+    { ok: true,  text: 'Semáforo de vencimentos' },
+    { ok: false, text: 'Exportação CSV e PDF' },
+];
+
+const PRO_FEATURES = [
+    { ok: true, text: 'Contas ilimitadas' },
+    { ok: true, text: 'Lançamentos ilimitados' },
+    { ok: true, text: 'Checklist sem limite' },
+    { ok: true, text: 'Dashboard e gráficos' },
+    { ok: true, text: 'Semáforo de vencimentos' },
+    { ok: true, text: 'Exportação CSV e PDF' },
+];
+
 function LandingPage() {
     const { isAuthenticated } = useAuth();
+    const [annual, setAnnual] = useState(false);
 
     return (
         <div className="landing">
@@ -186,7 +206,94 @@ function LandingPage() {
                 </section>
             </div>
 
-            {/* ── 7. CTA final ── */}
+            {/* ── 7. Preços ── */}
+            <section className="landing-section" id="precos">
+                <div className="pricing-header">
+                    <h2>Planos simples, sem surpresas</h2>
+                    <p>Comece grátis. Faça upgrade quando precisar de mais.</p>
+                </div>
+
+                <div className="pricing-toggle">
+                    <span className={`pricing-toggle-label${!annual ? ' active' : ''}`} onClick={() => setAnnual(false)}>
+                        Mensal
+                    </span>
+                    <button
+                        className="pricing-toggle-switch"
+                        data-annual={annual}
+                        onClick={() => setAnnual(a => !a)}
+                        aria-label="Alternar período"
+                    />
+                    <span className={`pricing-toggle-label${annual ? ' active' : ''}`} onClick={() => setAnnual(true)}>
+                        Anual <span className="pricing-toggle-badge">–37%</span>
+                    </span>
+                </div>
+
+                <div className="pricing-cards">
+                    {/* Free */}
+                    <div className="pricing-card">
+                        <div className="pricing-card-plan">Gratuito</div>
+                        <div className="pricing-card-price">R$ 0</div>
+                        <div className="pricing-card-period">para sempre</div>
+                        <div className="pricing-card-saving">&nbsp;</div>
+                        <ul className="pricing-card-features">
+                            {FREE_FEATURES.map(f => (
+                                <li key={f.text}>
+                                    <span className={f.ok ? 'check' : 'cross'}>{f.ok ? '✓' : '×'}</span>
+                                    <span style={{ color: f.ok ? 'var(--text)' : 'var(--muted)' }}>{f.text}</span>
+                                </li>
+                            ))}
+                        </ul>
+                        <Link to="/cadastro" className="pricing-card-cta">
+                            Criar conta grátis
+                        </Link>
+                    </div>
+
+                    {/* Pro */}
+                    <div className="pricing-card pricing-card--pro">
+                        <div className="pricing-card-badge">PRO</div>
+                        <div className="pricing-card-plan">Pro</div>
+                        <div className="pricing-card-price">
+                            <sup>R$</sup>
+                            {annual ? '149' : '19'}
+                            <span className="pricing-card-price-cents">{annual ? ',00' : ',90'}</span>
+                        </div>
+                        <div className="pricing-card-period">{annual ? 'por ano' : 'por mês'}</div>
+                        <div className="pricing-card-saving">
+                            {annual ? 'Economize R$ 90,80 vs mensal' : ' '}
+                        </div>
+                        <ul className="pricing-card-features">
+                            {PRO_FEATURES.map(f => (
+                                <li key={f.text}>
+                                    <span className="check">✓</span>
+                                    {f.text}
+                                </li>
+                            ))}
+                        </ul>
+                        {isAuthenticated ? (
+                            <button
+                                className="pricing-card-cta pricing-card-cta--primary"
+                                onClick={() => {
+                                    const token = localStorage.getItem('token');
+                                    fetch(`${import.meta.env.VITE_API_URL}/stripe/checkout?period=${annual ? 'annual' : 'monthly'}`, {
+                                        method: 'POST',
+                                        headers: { Authorization: `Bearer ${token}` }
+                                    })
+                                        .then(r => r.json())
+                                        .then(d => { if (d.url) window.location.href = d.url; });
+                                }}
+                            >
+                                Assinar {annual ? 'anual' : 'mensal'} →
+                            </button>
+                        ) : (
+                            <Link to="/cadastro" className="pricing-card-cta pricing-card-cta--primary">
+                                Começar agora →
+                            </Link>
+                        )}
+                    </div>
+                </div>
+            </section>
+
+            {/* ── 8. CTA final ── */}
             <section className="landing-section cta-section">
                 <h2 className="cta-h2">Comece agora. É grátis.</h2>
                 <p className="cta-sub">
@@ -204,7 +311,7 @@ function LandingPage() {
                 </div>
             </section>
 
-            {/* ── 8. Footer ── */}
+            {/* ── 9. Footer ── */}
             <footer className="landing-footer">
                 <Link to="/" className="landing-footer-brand">
                     <div className="sb-logo-mark">FH</div>

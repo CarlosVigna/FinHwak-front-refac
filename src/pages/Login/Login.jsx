@@ -50,10 +50,10 @@ const Login = () => {
             }
 
             const data = await response.json();
-            const { token } = data;
+            const { token, refreshToken } = data;
 
             localStorage.removeItem('accountId');
-            login(token);
+            login(token, refreshToken);
 
             setValores({ email: '', password: '' });
             setErro('');
