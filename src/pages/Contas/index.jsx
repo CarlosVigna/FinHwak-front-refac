@@ -3,11 +3,65 @@ import { useNavigate } from 'react-router-dom';
 import Card from '../../componentes/Card';
 import { api } from '../../services/api';
 
+const WelcomeBanner = ({ onDismiss }) => (
+  <div className="welcome-banner">
+    <div className="welcome-banner-content">
+      <span className="welcome-banner-icon">🎉</span>
+      <div>
+        <strong>Bem-vindo ao FinHawk!</strong>
+        <p>
+          Comece criando sua primeira conta financeira. Depois, cadastre categorias
+          de receita e despesa e registre seus primeiros lançamentos.
+        </p>
+      </div>
+    </div>
+    <button className="welcome-banner-close" onClick={onDismiss} aria-label="Fechar">
+      ✕
+    </button>
+  </div>
+);
+
+const PrimeirosPassos = ({ onDismiss }) => (
+  <div className="primeiros-passos">
+    <div className="primeiros-passos-header">
+      <span>🚀 Primeiros passos</span>
+      <button className="primeiros-passos-fechar" onClick={onDismiss}>
+        Fechar
+      </button>
+    </div>
+    <ol className="primeiros-passos-lista">
+      <li className="primeiros-passos-item done">
+        <span className="primeiros-passos-badge completed">✓</span>
+        Criar uma conta financeira
+      </li>
+      <li className="primeiros-passos-item">
+        <span className="primeiros-passos-badge pending">2</span>
+        Clique em <strong>Entrar</strong> em uma conta para selecioná-la
+      </li>
+      <li className="primeiros-passos-item">
+        <span className="primeiros-passos-badge pending">3</span>
+        Cadastre suas categorias de receita e despesa
+      </li>
+      <li className="primeiros-passos-item">
+        <span className="primeiros-passos-badge pending">4</span>
+        Registre seus primeiros lançamentos e explore o Dashboard
+      </li>
+    </ol>
+  </div>
+);
+
 const Contas = () => {
   const [contas, setContas] = useState([]);
   const [erro, setErro] = useState(null);
   const [sucesso, setSucesso] = useState('');
   const navigate = useNavigate();
+
+  const [isNewUser, setIsNewUser] = useState(
+    () => localStorage.getItem('finhawk-new-user') === 'true'
+  );
+  const [showChecklist, setShowChecklist] = useState(
+    () => localStorage.getItem('finhawk-onboarding-done') !== 'true'
+  );
 
   useEffect(() => {
     localStorage.removeItem('accountId');
@@ -31,6 +85,16 @@ const Contas = () => {
 
     fetchContas();
   }, []);
+
+  const dismissWelcome = () => {
+    localStorage.removeItem('finhawk-new-user');
+    setIsNewUser(false);
+  };
+
+  const dismissChecklist = () => {
+    localStorage.setItem('finhawk-onboarding-done', 'true');
+    setShowChecklist(false);
+  };
 
   const handleEntrar = (idConta) => {
     const conta = contas.find(c => c.id === idConta);
@@ -87,6 +151,8 @@ const Contas = () => {
     <div className="contas-container">
       <h1 className="titulo-contas">Minhas Contas</h1>
 
+      {isNewUser && <WelcomeBanner onDismiss={dismissWelcome} />}
+
       {erro && <div className="erro-mensagem">{erro}</div>}
       {sucesso && (
         <div className="sucesso-mensagem">
@@ -107,6 +173,8 @@ const Contas = () => {
         </div>
       ) : (
         <>
+          {showChecklist && <PrimeirosPassos onDismiss={dismissChecklist} />}
+
           <div className="cards-container">
             {contas.map((conta) => (
               <Card

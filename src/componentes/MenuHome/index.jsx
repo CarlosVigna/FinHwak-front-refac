@@ -2,11 +2,13 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../pages/Login/AuthContext';
 import Botao from '../../componentes/Botao';
 import { useState, useEffect } from 'react';
+import { useTheme } from '../../hooks/useTheme';
 
 function MenuHome() {
     const { isAuthenticated, logout } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const { theme, toggleTheme } = useTheme();
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -185,6 +187,15 @@ function MenuHome() {
             </ul>
 
             <div className='buttons'>
+                <button
+                    className="theme-toggle"
+                    onClick={toggleTheme}
+                    title={theme === 'dark' ? 'Mudar para modo claro' : 'Mudar para modo escuro'}
+                    aria-label="Alternar tema"
+                >
+                    {theme === 'dark' ? '☀️' : '🌙'}
+                </button>
+
                 {!isAuthenticated ? (
                     <Link to='/login'>
                         <Botao texto="Login" />

@@ -56,13 +56,7 @@
 .titulo-contas,
 .auth-brand-title span,
 .fh-title span {
-  background: linear-gradient(
-    135deg,
-    #ffffff 0%,
-    #c9d8ff 46%,
-    var(--secondary) 100%
-  );
-
+  background: var(--heading-gradient);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -605,7 +599,7 @@ textarea:focus-visible {
   gap: 18px;
   padding: 12px 24px;
   border-bottom: 1px solid var(--border-color);
-  background: rgba(8, 11, 18, 0.78);
+  background: var(--nav-bg);
   backdrop-filter: blur(18px);
 }
 
@@ -1154,4 +1148,177 @@ footer {
   .botao-excluir {
     width: 100%;
   }
+}
+
+/* ══════════════════════════════════════════
+   Theme toggle button
+══════════════════════════════════════════ */
+.theme-toggle {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0;
+  background: var(--muted);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.theme-toggle:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
+}
+
+/* ══════════════════════════════════════════
+   Welcome banner — /contas
+══════════════════════════════════════════ */
+.welcome-banner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-lg);
+  animation: fadeInUp 0.35s ease-out both;
+}
+
+.welcome-banner-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.welcome-banner-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.welcome-banner-content strong {
+  display: block;
+  color: var(--text-color);
+  font-size: 0.97rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.welcome-banner-content p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}
+
+.welcome-banner-close {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.welcome-banner-close:hover {
+  background: var(--muted);
+  color: var(--text-color);
+}
+
+/* ══════════════════════════════════════════
+   Primeiros passos — /contas
+══════════════════════════════════════════ */
+.primeiros-passos {
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-left: 3px solid var(--primary);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  margin-bottom: 20px;
+  animation: fadeInUp 0.35s ease-out both;
+}
+
+.primeiros-passos-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.primeiros-passos-header span {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.primeiros-passos-fechar {
+  background: transparent;
+  border: none;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.primeiros-passos-fechar:hover {
+  background: var(--muted);
+  color: var(--text-color);
+}
+
+.primeiros-passos-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.primeiros-passos-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.primeiros-passos-item.done {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.primeiros-passos-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border-radius: 50%;
+  font-size: 0.78rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.primeiros-passos-badge.completed {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.primeiros-passos-badge.pending {
+  background: var(--muted);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
 }

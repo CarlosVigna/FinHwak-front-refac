@@ -68,6 +68,7 @@ function CadastroUsuario() {
 
             const { token } = await loginRes.json();
             login(token);
+            localStorage.setItem('finhawk-new-user', 'true');
             navigate('/contas');
         } catch {
             setErro("Erro de conexão com o servidor.");
