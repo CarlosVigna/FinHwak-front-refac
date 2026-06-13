@@ -170,75 +170,196 @@
 }
 
 /* ========================================= */
-/* AUTH                                      */
+/* AUTH — Login frame (Sprint 14 Etapa 7)   */
 /* ========================================= */
 
-.auth-page {
-  height: 100dvh;
-  overflow: hidden;
+.login-frame {
+  min-height: 100dvh;
+  display: flex;
+  background: var(--bg);
+}
 
+/* Lado esquerdo — hero */
+.login-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(32px, 5vw, 64px);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+}
+
+.login-left-body {
+  max-width: 520px;
+}
+
+.login-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  color: var(--muted2);
+  margin-bottom: 20px;
+}
+
+.login-tag-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+}
+
+.login-headline {
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+}
+
+.login-sub {
+  font-size: 0.95rem;
+  color: var(--muted2);
+  line-height: 1.6;
+  max-width: 460px;
+}
+
+.login-stats {
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(420px, 520px);
-
-  background:
-    linear-gradient(135deg, rgba(91, 140, 255, 0.14), transparent 36%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 46%),
-    var(--background-color);
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 40px;
 }
 
-.auth-brand {
+.login-stat {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+
+.login-stat-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.login-stat-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+.login-stat-delta {
+  font-size: 0.72rem;
+  color: var(--muted2);
+  margin-top: 4px;
+}
+
+/* Lado direito — form */
+.login-right {
+  width: clamp(280px, 30vw, 360px);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(28px, 4vw, 48px) clamp(20px, 3vw, 36px);
+  background: var(--bg);
+}
+
+.login-right-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.login-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+}
+
+.login-tab {
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: calc(var(--radius-md) - 2px);
+  border: none;
+  background: transparent;
+  color: var(--muted2);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: auto;
+  box-shadow: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.login-tab.active {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.login-form-area {
+  flex: 1;
+}
+
+/* ── Compat: EsqueciSenha / ResetSenha (usam auth-page) ── */
+.auth-page {
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  padding: clamp(32px, 6vw, 80px);
+  background: var(--bg);
+  padding: 24px;
 }
-
-.auth-brand-content {
-  width: min(620px, 100%);
-  margin: 0 auto;
-}
-
+.auth-brand { display: none; }
+.auth-brand-content { display: none; }
 .auth-card-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: clamp(20px, 4vw, 48px);
-
-  border-left: 1px solid var(--border-color);
-
-  background: rgba(8, 11, 18, 0.66);
-  backdrop-filter: blur(22px);
+  width: min(480px, 100%);
+  padding: 32px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
 }
 
 /* ========================================= */
-/* RESPONSIVO                                */
+/* RESPONSIVO AUTH                           */
 /* ========================================= */
 
-@media (max-width: 1100px) {
-  .auth-page {
-    min-height: 100dvh;
-    height: auto;
-
-    overflow: auto;
-
-    grid-template-columns: 1fr;
+@media (max-width: 860px) {
+  .login-frame {
+    flex-direction: column;
   }
 
-  .auth-brand {
-    padding: 48px 24px 16px;
-    text-align: center;
+  .login-left {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 32px 24px 28px;
   }
 
-  .auth-brand-content {
+  .login-stats {
+    margin-top: 24px;
+  }
+
+  .login-right {
     width: 100%;
-    max-width: 700px;
-  }
-
-  .auth-card-container {
-    border-left: 0;
-    padding: 16px 24px 48px;
+    padding: 28px 24px 40px;
   }
 }
 

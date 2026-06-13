@@ -153,7 +153,7 @@ const ContasPagas = () => {
             <div className='historico-container'>
 
                 <div className='titulo-relatorio-header'>
-                    <FaExclamationTriangle size={30} color="#ef4444" />
+                    <FaExclamationTriangle size={30} style={{ color: 'var(--red)' }} />
                     <h2 className="historico-titulo">Relatório de Contas Pagas</h2>
                 </div>
 

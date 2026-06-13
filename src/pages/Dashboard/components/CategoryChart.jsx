@@ -4,16 +4,16 @@ import { formatCurrency, formatPercentage } from '../utils/formatters';
 import './CategoryChart.css';
 
 const COLORS = [
-    '#10b981', // Green
-    '#06b6d4', // Cyan
-    '#8b5cf6', // Purple
-    '#f59e0b', // Amber
-    '#ef4444', // Red
-    '#ec4899', // Pink
-    '#14b8a6', // Teal
-    '#f97316', // Orange
-    '#6366f1', // Indigo
-    '#84cc16', // Lime
+    'var(--green)',
+    'var(--blue)',
+    'var(--accent)',
+    'var(--amber)',
+    'var(--red)',
+    'var(--muted2)',
+    'var(--green)',
+    'var(--blue)',
+    'var(--accent)',
+    'var(--amber)',
 ];
 
 const CategoryChart = ({ data, title }) => {
@@ -79,7 +79,7 @@ const CategoryChart = ({ data, title }) => {
                             label={CustomLabel}
                             outerRadius={100}
                             innerRadius={60}
-                            fill="#8884d8"
+                            fill="var(--accent)"
                             dataKey="value"
                             animationBegin={0}
                             animationDuration={800}

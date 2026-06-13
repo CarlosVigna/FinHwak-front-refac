@@ -3,53 +3,82 @@ import Login from '../Login/Login';
 import CadastroUsuario from '../CadastroUsuario';
 import PropTypes from 'prop-types';
 
+const STATS = [
+    { label: 'Dashboard em tempo real', value: 'R$ 3.290', delta: 'resultado do mês' },
+    { label: 'Checklist mensal',        value: '7/9',      delta: 'itens concluídos' },
+    { label: 'Vencimentos controlados', value: '2',        delta: 'títulos pendentes' },
+    { label: 'Multi-conta',             value: '3',        delta: 'contas ativas' },
+];
+
 const AuthTabs = ({ initialTab = 'login' }) => {
-  const [active, setActive] = useState(initialTab);
+    const [active, setActive] = useState(initialTab);
 
-  useEffect(() => {
-    setActive(initialTab);
-  }, [initialTab]);
+    useEffect(() => {
+        setActive(initialTab);
+    }, [initialTab]);
 
-  return (
-    <div className="auth-page">
-      <section className="auth-brand">
-        <div className="auth-brand-content">
-          <h1 className="auth-brand-title">
-            Fin<span>Hawk</span>
-          </h1>
-          <p className="auth-brand-subtitle">
-            Controle financeiro inteligente para organizar contas, receitas, despesas e relatorios em um unico lugar.
-          </p>
-          <div className="auth-features">
-            <div className="auth-feature">Dashboard financeiro</div>
-            <div className="auth-feature">Controle de contas</div>
-            <div className="auth-feature">Relatorios e indicadores</div>
-            <div className="auth-feature">Ambiente seguro</div>
-          </div>
-        </div>
-      </section>
+    return (
+        <div className="login-frame">
 
-      <section className="auth-card-container">
-        <div className="auth-tabs-card">
-          <div className="auth-header">
-            <h1 className="brand">FinHawk</h1>
-            <div className="tabs">
-              <button className={`tab ${active === 'login' ? 'active' : ''}`} onClick={() => setActive('login')}>Login</button>
-              <button className={`tab ${active === 'cadastro' ? 'active' : ''}`} onClick={() => setActive('cadastro')}>Cadastro</button>
+            {/* ── Lado esquerdo: hero + stats ── */}
+            <div className="login-left">
+                <div className="login-left-body">
+                    <span className="login-tag">
+                        <span className="login-tag-dot" />
+                        Sistema financeiro pessoal
+                    </span>
+                    <h1 className="login-headline">
+                        Controle total<br />do seu dinheiro
+                    </h1>
+                    <p className="login-sub">
+                        Organize contas, receitas, despesas e relatórios em um único lugar, com visão em tempo real das suas finanças.
+                    </p>
+                </div>
+
+                <div className="login-stats">
+                    {STATS.map((s) => (
+                        <div className="login-stat" key={s.label}>
+                            <div className="login-stat-label">{s.label}</div>
+                            <div className="login-stat-value">{s.value}</div>
+                            <div className="login-stat-delta">{s.delta}</div>
+                        </div>
+                    ))}
+                </div>
             </div>
-          </div>
 
-          <div className="auth-content">
-            {active === 'login' ? <Login /> : <CadastroUsuario />}
-          </div>
+            {/* ── Lado direito: form ── */}
+            <div className="login-right">
+                <div className="login-right-brand">
+                    <div className="sb-logo-mark">FH</div>
+                    <span className="sb-logo-name">FinHawk</span>
+                </div>
+
+                <div className="login-tabs">
+                    <button
+                        className={`login-tab${active === 'login' ? ' active' : ''}`}
+                        onClick={() => setActive('login')}
+                    >
+                        Entrar
+                    </button>
+                    <button
+                        className={`login-tab${active === 'cadastro' ? ' active' : ''}`}
+                        onClick={() => setActive('cadastro')}
+                    >
+                        Criar conta
+                    </button>
+                </div>
+
+                <div className="login-form-area">
+                    {active === 'login' ? <Login /> : <CadastroUsuario />}
+                </div>
+            </div>
+
         </div>
-      </section>
-    </div>
-  );
+    );
 };
 
 AuthTabs.propTypes = {
-  initialTab: PropTypes.string,
+    initialTab: PropTypes.string,
 };
 
 export default AuthTabs;

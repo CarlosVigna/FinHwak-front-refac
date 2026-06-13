@@ -78,7 +78,7 @@
 .tabela-titulos tbody tr:hover,
 .table tbody tr:hover,
 .historico-container table tbody tr:hover {
-  background: rgba(91, 140, 255, 0.08);
+  background: var(--accent-soft);
 }
 
 .coluna-acoes {

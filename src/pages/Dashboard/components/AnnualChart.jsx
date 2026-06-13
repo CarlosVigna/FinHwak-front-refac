@@ -12,7 +12,7 @@ const CustomizedTick = ({ x, y, payload, chartData }) => {
             y={y + 12}
             textAnchor="middle"
             style={{
-                fill: isCurrent ? '#10b981' : '#64748b',
+                fill: isCurrent ? 'var(--green)' : 'var(--muted2)',
                 fontSize: '0.875rem',
                 fontWeight: isCurrent ? '800' : '600',
             }}
@@ -70,14 +70,14 @@ const AnnualChart = ({ monthData }) => {
                         data={chartData}
                         margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                     >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                         <XAxis
                             dataKey="name"
-                            stroke="#64748b"
+                            stroke="var(--muted)"
                             tick={<CustomizedTick chartData={chartData} />}
                         />
                         <YAxis
-                            stroke="#64748b"
+                            stroke="var(--muted)"
                             style={{ fontSize: '0.875rem' }}
                             tickFormatter={(value) => {
                                 if (value >= 1000) {
@@ -92,14 +92,14 @@ const AnnualChart = ({ monthData }) => {
                         />
                         <Bar
                             dataKey="Receitas"
-                            fill="#10b981"
+                            fill="var(--green)"
                             radius={[8, 8, 0, 0]}
                             animationBegin={0}
                             animationDuration={800}
                         />
                         <Bar
                             dataKey="Despesas"
-                            fill="#ef4444"
+                            fill="var(--red)"
                             radius={[8, 8, 0, 0]}
                             animationBegin={100}
                             animationDuration={800}
