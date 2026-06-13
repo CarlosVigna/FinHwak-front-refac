@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { api } from '../../services/api';
 import FormularioCategoria from '../../componentes/FormularioCategoria';
 import ListaCategorias from '../ListaCategorias';
@@ -6,6 +7,9 @@ import ListaCategorias from '../ListaCategorias';
 const VALORES_VAZIOS = { name: '', type: 'RECEIPT' };
 
 const CadastroCategoria = () => {
+  const location = useLocation();
+  const fromNewAccount = !!location.state?.fromNewAccount;
+
   const [valores, setValores] = useState(VALORES_VAZIOS);
   const [categoriaParaEditar, setCategoriaParaEditar] = useState(null);
   const [erro, setErro] = useState('');
@@ -87,6 +91,13 @@ const CadastroCategoria = () => {
 
   return (
     <div className="cadastro-categoria-vertical">
+      {fromNewAccount && (
+        <div className="banner-guiado">
+          <strong>Conta criada com sucesso!</strong>
+          <p>Agora cadastre uma categoria para começar a registrar seus lançamentos.</p>
+        </div>
+      )}
+
       <div className="secao-superior">
         <h2>{categoriaParaEditar ? 'Editar Categoria' : 'Cadastrar Nova Categoria'}</h2>
         <FormularioCategoria

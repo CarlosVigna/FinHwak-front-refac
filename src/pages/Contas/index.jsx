@@ -11,6 +11,7 @@ const Contas = () => {
 
   useEffect(() => {
     localStorage.removeItem('accountId');
+    localStorage.removeItem('accountName');
 
     const fetchContas = async () => {
       try {
@@ -32,7 +33,9 @@ const Contas = () => {
   }, []);
 
   const handleEntrar = (idConta) => {
+    const conta = contas.find(c => c.id === idConta);
     localStorage.setItem('accountId', String(idConta));
+    localStorage.setItem('accountName', conta?.name || '');
     navigate('/dashboard');
   };
 
@@ -59,6 +62,10 @@ const Contas = () => {
       if (response.status === 204) {
         setContas((prevContas) => prevContas.filter((conta) => conta.id !== idConta));
         setSucesso('Conta e seus títulos foram excluídos com sucesso');
+        if (String(idConta) === localStorage.getItem('accountId')) {
+          localStorage.removeItem('accountId');
+          localStorage.removeItem('accountName');
+        }
         return;
       }
 
@@ -87,30 +94,39 @@ const Contas = () => {
         </div>
       )}
 
-      <div className="cards-container">
-        {contas.length > 0 ? (
-          contas.map((conta) => (
-            <Card
-              key={conta.id}
-              className="conta-card"
-              conta={conta}
-              onEntrar={handleEntrar}
-              onEditar={handleEditar}
-              onExcluir={handleExcluir}
-            />
-          ))
-        ) : (
-          <div>
-            <p>Nenhuma conta encontrada.</p>
+      {contas.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-state-icon">🏦</div>
+          <h3>Nenhuma conta ainda</h3>
+          <p>Crie sua primeira conta para começar a organizar suas finanças.</p>
+          <div className="empty-state-actions">
+            <button className="botao-nova-conta" onClick={handleCriarConta}>
+              + Criar Primeira Conta
+            </button>
           </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        <>
+          <div className="cards-container">
+            {contas.map((conta) => (
+              <Card
+                key={conta.id}
+                className="conta-card"
+                conta={conta}
+                onEntrar={handleEntrar}
+                onEditar={handleEditar}
+                onExcluir={handleExcluir}
+              />
+            ))}
+          </div>
 
-      <div className="botao-criar-conta-container">
-        <button className="botao-nova-conta" onClick={handleCriarConta}>
-          Adicionar Nova Conta
-        </button>
-      </div>
+          <div className="botao-criar-conta-container">
+            <button className="botao-nova-conta" onClick={handleCriarConta}>
+              Adicionar Nova Conta
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };

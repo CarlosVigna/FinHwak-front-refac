@@ -236,6 +236,7 @@ const ContasPendentes = () => {
                   size="3x"
                   className="empty-state-icon"
                 />
+                <h3>Tudo em dia!</h3>
                 <p>Nenhuma conta pendente no período informado.</p>
               </div>
             ) : (

@@ -1,29 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Formulario from '../../componentes/Formulario';
+import { useAuth } from '../Login/AuthContext';
 
-const URL = `${import.meta.env.VITE_API_URL}`;
-
-async function cadastrarUsuario(usuarioPayload) {
-    const response = await fetch(URL + "/auth/register", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(usuarioPayload),
-    });
-
-    if (response.ok) {
-        return { sucesso: true };
-    }
-
-    
-    const data = await response.json().catch(() => null);
-    return { sucesso: false, erro: data ? data.message : "Erro desconhecido" };
-}
+const API_URL = import.meta.env.VITE_API_URL;
 
 function CadastroUsuario() {
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const [valores, setValores] = useState({
         nome: '',
@@ -33,15 +17,12 @@ function CadastroUsuario() {
     });
 
     const [erro, setErro] = useState("");
-    const [sucesso, setSucesso] = useState(""); 
+    const [sucesso, setSucesso] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        
-        setValores({
-            ...valores,
-            [name]: value
-        });
+        setValores({ ...valores, [name]: value });
     };
 
     const handleCadastro = async (e) => {
@@ -54,30 +35,44 @@ function CadastroUsuario() {
             return;
         }
 
-        const payload = {
-            name: nome,
-            email: email,
-            password: senha
-        };
+        setLoading(true);
+        setErro("");
 
         try {
-            const resultado = await cadastrarUsuario(payload);
+            // 1. Registra o usuário
+            const registerRes = await fetch(`${API_URL}/auth/register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: nome, email, password: senha }),
+            });
 
-            if (resultado.sucesso) {
-                setSucesso("Cadastro realizado com sucesso! Redirecionando para login...");
-                setValores({
-                    nome: '',
-                    email: '',
-                    senha: '',
-                    confirmarSenha: ''
-                });
-                setErro("");
-                setTimeout(() => navigate('/login'), 3000);
-            } else {
-                setErro(resultado.erro || "Erro ao cadastrar Usuário. Tente novamente.");
+            if (!registerRes.ok) {
+                const data = await registerRes.json().catch(() => null);
+                setErro(data?.message || "Erro ao cadastrar. Tente novamente.");
+                return;
             }
-        } catch (error) {
+
+            // 2. Faz login automaticamente com as mesmas credenciais
+            const loginRes = await fetch(`${API_URL}/auth/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password: senha }),
+            });
+
+            if (!loginRes.ok) {
+                // Cadastro ok, login falhou: redireciona para login manual
+                setSucesso("Cadastro realizado! Redirecionando para o login...");
+                setTimeout(() => navigate('/login'), 2000);
+                return;
+            }
+
+            const { token } = await loginRes.json();
+            login(token);
+            navigate('/contas');
+        } catch {
             setErro("Erro de conexão com o servidor.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -90,18 +85,19 @@ function CadastroUsuario() {
 
     return (
         <div className="container-cadastro">
-            <Formulario 
+            <Formulario
                 titulo="Cadastro de Usuário"
                 campos={camposCadastro}
-                botaoTexto="Enviar Cadastro" 
+                botaoTexto={loading ? "Criando conta..." : "Enviar Cadastro"}
                 className="botao-enviar-cadastro"
                 handleInputChange={handleInputChange}
                 valores={valores}
                 onSubmit={handleCadastro}
-                layout="vertical" 
+                layout="vertical"
                 customClass="auth-card cadastro-usuario"
                 erro={erro}
                 sucesso={sucesso}
+                disabled={loading}
             />
         </div>
     );

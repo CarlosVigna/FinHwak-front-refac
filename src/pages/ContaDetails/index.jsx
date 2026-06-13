@@ -155,7 +155,22 @@ const AccountDetails = () => {
             <div className="lancamentos-recentes">
                 <h3>Últimos Lançamentos</h3>
                 {lancamentosRecentes.length === 0 ? (
-                    <p className="lista-vazia-texto">Nenhum lançamento encontrado para esta conta.</p>
+                    <div className="empty-state">
+                        <div className="empty-state-icon">📝</div>
+                        <h3>Nenhum lançamento ainda</h3>
+                        <p>Registre receitas e despesas para acompanhar esta conta.</p>
+                        <div className="empty-state-actions">
+                            <button
+                                className="botao-nova-conta"
+                                onClick={() => {
+                                    localStorage.setItem('accountId', String(id));
+                                    navigate('/cadastroTitulo');
+                                }}
+                            >
+                                + Criar Lançamento
+                            </button>
+                        </div>
+                    </div>
                 ) : (
                     <div className="tabela-responsiva">
                         <table className="tabela-recentes">

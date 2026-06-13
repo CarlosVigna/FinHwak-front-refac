@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaClock, FaExclamationTriangle } from 'react-icons/fa';
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import { api } from '../../services/api';
 
 const ContasReceber = () => {
+    const navigate = useNavigate();
     const [dados, setDados] = useState([]);
     const [categorias, setCategorias] = useState([]);
     const [filterStartDate, setFilterStartDate] = useState('');
@@ -110,6 +112,12 @@ const ContasReceber = () => {
         }
     };
 
+    const handleClearFilters = () => {
+        setFilterStartDate('');
+        setFilterEndDate('');
+        setFilterCategoria('');
+    };
+
     const handleExportCSV = async () => {
         const idConta = localStorage.getItem('accountId');
         if (!idConta) {
@@ -198,6 +206,17 @@ const ContasReceber = () => {
 
                 {loading ? (
                     <div className="loading-placeholder">⏳ Carregando dados do servidor...</div>
+                ) : dados.length === 0 ? (
+                    <div className="empty-state">
+                        <div className="empty-state-icon">💰</div>
+                        <h3>Nenhum recebimento pendente</h3>
+                        <p>Registre lançamentos do tipo recebimento para acompanhá-los aqui.</p>
+                        <div className="empty-state-actions">
+                            <button className="botao-nova-conta" onClick={() => navigate('/cadastroTitulo')}>
+                                + Registrar Lançamento
+                            </button>
+                        </div>
+                    </div>
                 ) : (
                     <div className="tabela-responsiva">
                         <table className="tabela-titulos">
@@ -232,7 +251,8 @@ const ContasReceber = () => {
                                 ) : (
                                     <tr>
                                         <td colSpan="6" className="empty-table-cell">
-                                            Nenhuma conta a receber encontrada para este período.
+                                            Nenhum resultado para os filtros selecionados.{' '}
+                                            <button className="btn-link" onClick={handleClearFilters}>Limpar filtros</button>
                                         </td>
                                     </tr>
                                 )}

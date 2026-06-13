@@ -171,6 +171,8 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh, busca = '' }) 
         }
     };
 
+    const filtersActive = tipoTransacao !== 'todos' || busca.trim() !== '';
+
     if (loading) return <div className="lista-titulo-container">⏳ Carregando...</div>;
 
     return (
@@ -179,10 +181,11 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh, busca = '' }) 
 
             {titulosFiltrados.length === 0 && !error ? (
                 <div className="lista-vazia">
-                    <p>Nenhum lançamento encontrado para os filtros selecionados.</p>
-                    <p className="lista-vazia-meta">
-                        📌 Conta selecionada: <strong>{accountId}</strong>
-                    </p>
+                    {titulos.length === 0
+                        ? "Nenhum lançamento cadastrado. Use o formulário acima para criar o primeiro."
+                        : filtersActive
+                            ? "Nenhum resultado para os filtros selecionados."
+                            : "Nenhum lançamento encontrado."}
                 </div>
             ) : (
                 <div className="tabela-responsiva">

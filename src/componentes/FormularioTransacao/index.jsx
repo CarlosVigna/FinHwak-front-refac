@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
 
 const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao }) => {
+    const navigate = useNavigate();
     const [categorias, setCategorias] = useState([]);
+    const [loadingCategorias, setLoadingCategorias] = useState(true);
     const [checklistSuggestion, setChecklistSuggestion] = useState(null);
 
     const [valores, setValores] = useState({
@@ -29,6 +32,7 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
 
     useEffect(() => {
         const fetchCategorias = async () => {
+            setLoadingCategorias(true);
             try {
                 const accountId = localStorage.getItem('accountId');
 
@@ -47,6 +51,8 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
 
             } catch (error) {
                 setErro("Erro ao carregar categorias: " + error.message);
+            } finally {
+                setLoadingCategorias(false);
             }
         };
 
@@ -243,19 +249,34 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
 
                 <div className="campo-formulario">
                     <label>Categoria</label>
-                    <select
-                        name="categoryId"
-                        value={valores.categoryId}
-                        onChange={handleInputChange}
-                        required
-                    >
-                        <option value="">Selecione uma categoria</option>
-                        {categoriasFiltradas.map(cat => (
-                            <option key={cat.id} value={cat.id}>
-                                {cat.name}
-                            </option>
-                        ))}
-                    </select>
+                    {loadingCategorias ? (
+                        <select disabled><option>Carregando...</option></select>
+                    ) : categoriasFiltradas.length === 0 ? (
+                        <div className="aviso-sem-categoria">
+                            <p>Nenhuma categoria cadastrada para este tipo.</p>
+                            <button
+                                type="button"
+                                className="btn-link"
+                                onClick={() => navigate('/cadastrarCategoria')}
+                            >
+                                Criar categoria agora
+                            </button>
+                        </div>
+                    ) : (
+                        <select
+                            name="categoryId"
+                            value={valores.categoryId}
+                            onChange={handleInputChange}
+                            required
+                        >
+                            <option value="">Selecione uma categoria</option>
+                            {categoriasFiltradas.map(cat => (
+                                <option key={cat.id} value={cat.id}>
+                                    {cat.name}
+                                </option>
+                            ))}
+                        </select>
+                    )}
                 </div>
             </div>
 

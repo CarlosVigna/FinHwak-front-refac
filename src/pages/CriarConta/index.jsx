@@ -31,8 +31,10 @@ const CriarConta = () => {
                 throw new Error(errorData.message || "Erro ao criar conta.");
             }
 
-            await response.json();
-            navigate('/contas');
+            const data = await response.json();
+            localStorage.setItem('accountId', String(data.id));
+            localStorage.setItem('accountName', data.name);
+            navigate('/cadastrarCategoria', { state: { fromNewAccount: true } });
 
         } catch (error) {
             console.error("Erro ao criar conta:", error);

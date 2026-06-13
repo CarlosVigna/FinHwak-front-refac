@@ -6,6 +6,8 @@ import AccountRoute from './pages/Login/AccountRoute';
 import MenuHome from './componentes/MenuHome';
 import Footer from './componentes/Footer';
 import AuthTabs from './pages/AuthTabs';
+import EsqueciSenha from './pages/EsqueciSenha';
+import ResetSenha from './pages/ResetSenha';
 import Contas from './pages/Contas';
 import CadastroTitulo from './pages/CadastroTitulo';
 import CadastroCategoria from './pages/CadastroCategoria';
@@ -20,6 +22,7 @@ import ContasPendentes from './pages/ContasPendentes';
 
 import Dashboard from './pages/Dashboard';
 import ChecklistMensal from './pages/ChecklistMensal/index.jsx';
+import Configuracoes from './pages/Configuracoes';
  
 function App() { 
   const { isAuthenticated } = useAuth();
@@ -35,6 +38,8 @@ function App() {
             <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />} />
             <Route path="/login" element={<AuthTabs />} />
             <Route path="/cadastro" element={<AuthTabs initialTab="cadastro" />} />
+            <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+            <Route path="/reset-senha" element={<ResetSenha />} />
 
             <Route
               path="/contas"
@@ -165,6 +170,15 @@ function App() {
                   <AccountRoute>
                     <ChecklistMensal />
                   </AccountRoute>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/configuracoes"
+              element={
+                <PrivateRoute>
+                  <Configuracoes />
                 </PrivateRoute>
               }
             />

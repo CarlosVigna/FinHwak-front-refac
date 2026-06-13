@@ -12,16 +12,19 @@ function MenuHome() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const accountId = localStorage.getItem('accountId');
+    const accountName = localStorage.getItem('accountName');
     const hasActiveAccount = !!accountId;
 
     const handleLogout = () => {
         localStorage.removeItem('accountId');
+        localStorage.removeItem('accountName');
         logout();
         navigate('/login');
     };
 
     const handleIrParaContas = () => {
         localStorage.removeItem('accountId');
+        localStorage.removeItem('accountName');
         setIsMenuOpen(false);
         setIsDropdownOpen(false);
         navigate('/contas');
@@ -104,8 +107,18 @@ function MenuHome() {
                             </button>
                         </li>
 
+                        <li className={isActive('/configuracoes') ? 'active' : ''}>
+                            <Link to="/configuracoes" onClick={handleLinkClick}>Configurações</Link>
+                        </li>
+
                         {hasActiveAccount && (
                             <>
+                                {accountName && (
+                                    <li className="conta-ativa-indicator">
+                                        <span className="conta-ativa-label">🏦 {accountName}</span>
+                                    </li>
+                                )}
+
                                 <li className={isActive('/dashboard') ? 'active' : ''}>
                                     <Link to="/dashboard" onClick={handleLinkClick}>Dashboard</Link>
                                 </li>

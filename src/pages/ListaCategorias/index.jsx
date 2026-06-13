@@ -128,7 +128,11 @@ const ListaCategorias = ({ refresh, onEdit }) => {
                 {loading && <div className="loading">Carregando...</div>}
 
                 {!loading && filteredData.length === 0 && !error && (
-                    <div className="lista-vazia">Nenhuma categoria encontrada para esta conta.</div>
+                    <div className="lista-vazia">
+                        {dados.length === 0
+                            ? "Nenhuma categoria cadastrada ainda. Use o formulário acima para criar sua primeira."
+                            : "Nenhuma categoria do tipo selecionado."}
+                    </div>
                 )}
 
                 {error && <p className="erro-mensagem">{error}</p>}

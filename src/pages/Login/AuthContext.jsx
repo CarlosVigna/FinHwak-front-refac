@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { setUnauthorizedHandler } from '../../services/api';
+import { setUnauthorizedHandler, api } from '../../services/api';
 
 const AuthContext = createContext();
 
@@ -9,7 +9,21 @@ export function AuthProvider({ children }) {
   };
 
   const [token, setToken] = useState(localStorage.getItem('token'));
+  const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(isTokenValid(localStorage.getItem('token')));
+
+  // Busca os dados do usuário sempre que um token válido estiver presente
+  useEffect(() => {
+    if (!isTokenValid(token)) {
+      setUser(null);
+      return;
+    }
+
+    api.get('/user/me')
+      .then(res => (res.ok ? res.json() : null))
+      .then(data => { if (data) setUser(data); })
+      .catch(() => {});
+  }, [token]);
 
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
@@ -22,6 +36,7 @@ export function AuthProvider({ children }) {
       localStorage.removeItem('token');
       localStorage.removeItem('accountId');
       setToken(null);
+      setUser(null);
       setIsAuthenticated(false);
     });
     return () => setUnauthorizedHandler(null);
@@ -32,21 +47,34 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('accountId');
     setToken(newToken);
     setIsAuthenticated(true);
+    // user será carregado pelo useEffect acima ao detectar a mudança de token
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('accountId');
     setToken(null);
+    setUser(null);
     setIsAuthenticated(false);
+  };
+
+  const refreshUser = () => {
+    const currentToken = localStorage.getItem('token');
+    if (!isTokenValid(currentToken)) return;
+    api.get('/user/me')
+      .then(res => (res.ok ? res.json() : null))
+      .then(data => { if (data) setUser(data); })
+      .catch(() => {});
   };
 
   const value = useMemo(() => ({
     token,
+    user,
     isAuthenticated,
     login,
-    logout
-  }), [token, isAuthenticated]);
+    logout,
+    refreshUser,
+  }), [token, user, isAuthenticated]);
 
   return (
     <AuthContext.Provider value={value}>

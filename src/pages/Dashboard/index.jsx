@@ -3,6 +3,7 @@ import React, {
     useEffect,
     useMemo
 } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
 import MonthSelector from './components/MonthSelector';
 import SummaryCards from './components/SummaryCards';
@@ -26,6 +27,7 @@ import {
 import ConsolidatedOverview from './components/ConsolidatedOverview';
 
 const Dashboard = () => {
+    const navigate = useNavigate();
     const [bills, setBills] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -217,30 +219,54 @@ const Dashboard = () => {
                 onMonthChange={handleMonthChange}
             />
 
-            <SummaryCards
-                receitas={receitas}
-                despesas={despesas}
-                saldoPrevisto={saldoPrevisto}
-                saldoRealizado={saldoRealizado}
-                saldoAcumulado={saldoAcumulado}
-            />
-
-            <TrafficLight
-                overdueBills={overdueBills}
-                dueTodayBills={dueTodayBills}
-                next7DaysBills={next7DaysBills}
-            />
-
-            <div className="dashboard-grid">
-                <div className="dashboard-grid-item">
-                    <CategoryChart data={categoryData} />
+            {bills.length === 0 ? (
+                <div className="empty-state">
+                    <div className="empty-state-icon">📊</div>
+                    <h3>Nenhum lançamento ainda</h3>
+                    <p>Adicione receitas e despesas para ver seu dashboard em ação.</p>
+                    <div className="empty-state-actions">
+                        <button
+                            className="botao-nova-conta"
+                            onClick={() => navigate('/cadastroTitulo')}
+                        >
+                            + Novo Lançamento
+                        </button>
+                        <button
+                            className="botao-cancelar"
+                            onClick={() => navigate('/cadastrarCategoria')}
+                        >
+                            Cadastrar Categoria
+                        </button>
+                    </div>
                 </div>
-                <div className="dashboard-grid-item">
-                    <WeeklyTimeline weekData={weekData} />
-                </div>
-            </div>
+            ) : (
+                <>
+                    <SummaryCards
+                        receitas={receitas}
+                        despesas={despesas}
+                        saldoPrevisto={saldoPrevisto}
+                        saldoRealizado={saldoRealizado}
+                        saldoAcumulado={saldoAcumulado}
+                    />
 
-            <AnnualChart monthData={monthData} />
+                    <TrafficLight
+                        overdueBills={overdueBills}
+                        dueTodayBills={dueTodayBills}
+                        next7DaysBills={next7DaysBills}
+                    />
+
+                    <div className="dashboard-grid">
+                        <div className="dashboard-grid-item">
+                            <CategoryChart data={categoryData} />
+                        </div>
+                        <div className="dashboard-grid-item">
+                            <WeeklyTimeline weekData={weekData} />
+                        </div>
+                    </div>
+
+                    <AnnualChart monthData={monthData} />
+                </>
+            )}
         </div>
     );
 };

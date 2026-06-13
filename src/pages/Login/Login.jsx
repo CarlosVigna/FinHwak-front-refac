@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Formulario from '../../componentes/Formulario';
 import { useAuth } from './AuthContext';
 
@@ -73,18 +73,23 @@ const Login = () => {
     ];
 
     return (
-        <Formulario
-            titulo="Entrar"
-            campos={camposLogin}
-            botaoTexto={isLoading ? 'Entrando...' : 'Entrar'}
-            handleInputChange={handleInputChange}
-            valores={valores}
-            onSubmit={handleLogin}
-            disabled={isLoading}
-            customClass="auth-card login-card"
-            layout="vertical"
-            erro={erro}
-        />
+        <>
+            <Formulario
+                titulo="Entrar"
+                campos={camposLogin}
+                botaoTexto={isLoading ? 'Entrando...' : 'Entrar'}
+                handleInputChange={handleInputChange}
+                valores={valores}
+                onSubmit={handleLogin}
+                disabled={isLoading}
+                customClass="auth-card login-card"
+                layout="vertical"
+                erro={erro}
+            />
+            <div className="auth-extra-links">
+                <Link to="/esqueci-senha" className="btn-link">Esqueci minha senha</Link>
+            </div>
+        </>
     );
 };
 

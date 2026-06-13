@@ -110,6 +110,12 @@ const ContasPagas = () => {
         }
     };
 
+    const handleClearFilters = () => {
+        setFilterStartDate('');
+        setFilterEndDate('');
+        setFilterCategoria('');
+    };
+
     const handleExportCSV = async () => {
         const idConta = localStorage.getItem('accountId');
         if (!idConta) {
@@ -198,6 +204,12 @@ const ContasPagas = () => {
 
                 {loading ? (
                     <div className="loading-placeholder">⏳ Carregando dados do servidor...</div>
+                ) : dados.length === 0 ? (
+                    <div className="empty-state">
+                        <div className="empty-state-icon">📑</div>
+                        <h3>Nenhum pagamento realizado ainda</h3>
+                        <p>Os pagamentos confirmados aparecerão aqui assim que forem marcados como pagos.</p>
+                    </div>
                 ) : (
                     <div className="tabela-responsiva">
                         <table className="tabela-titulos">
@@ -232,7 +244,8 @@ const ContasPagas = () => {
                                 ) : (
                                     <tr>
                                         <td colSpan="6" className="empty-table-cell">
-                                            Nenhuma conta paga encontrada para este período.
+                                            Nenhum resultado para os filtros selecionados.{' '}
+                                            <button className="btn-link" onClick={handleClearFilters}>Limpar filtros</button>
                                         </td>
                                     </tr>
                                 )}
