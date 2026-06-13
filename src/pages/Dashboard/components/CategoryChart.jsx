@@ -16,13 +16,13 @@ const COLORS = [
     '#84cc16', // Lime
 ];
 
-const CategoryChart = ({ data }) => {
+const CategoryChart = ({ data, title }) => {
     if (!data || data.length === 0) {
         return (
             <div className="category-chart">
-                <h3 className="category-chart-title">Para onde vai meu dinheiro?</h3>
+                <h3 className="category-chart-title">{title}</h3>
                 <div className="category-chart-empty">
-                    <p>📊 Nenhuma despesa registrada neste período</p>
+                    <p>📊 Nenhuma movimentação encontrada</p>
                 </div>
             </div>
         );
@@ -67,7 +67,7 @@ const CategoryChart = ({ data }) => {
 
     return (
         <div className="category-chart">
-            <h3 className="category-chart-title">Para onde vai meu dinheiro?</h3>
+            <h3 className="category-chart-title">{title}</h3>
             <div className="category-chart-container">
                 <ResponsiveContainer width="100%" height={300}>
                     <PieChart>

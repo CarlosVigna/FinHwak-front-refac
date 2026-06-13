@@ -8,6 +8,12 @@ import {
     calculateSaldoRealizado,
 } from '../Dashboard/utils/calculations';
 
+const parseLocalDate = (dateString) => {
+    if (!dateString) return null;
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, month - 1, day);
+};
+
 const AccountDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -16,7 +22,6 @@ const AccountDetails = () => {
     const [bills, setBills] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [exportError, setExportError] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -67,6 +72,35 @@ const AccountDetails = () => {
         }
     };
 
+    const handleExportCSV = () => {
+        const statusLabel = { PENDING: 'Pendente', PAID: 'Pago', RECEIVED: 'Recebido' };
+        const headers = ['ID', 'Descrição', 'Vencimento', 'Categoria', 'Valor', 'Status'];
+        const rows = bills.map(item => {
+            const d = parseLocalDate(item.maturity);
+            const vencimento = d ? d.toLocaleDateString('pt-BR') : '-';
+            return [
+                item.id,
+                item.description,
+                vencimento,
+                item.category?.name || '-',
+                Number(item.installmentAmount).toFixed(2).replace('.', ','),
+                statusLabel[item.status] || item.status
+            ];
+        });
+        const csv = [headers, ...rows]
+            .map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(';'))
+            .join('\n');
+        const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `finhawk_account_${id}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+    };
+
     const hoje = new Date();
     const billsDoMes = filterByMonth(bills, hoje.getMonth(), hoje.getFullYear());
     const receitasMes = calculateReceitas(billsDoMes);
@@ -92,30 +126,10 @@ const AccountDetails = () => {
                 <h1>Detalhes da Conta</h1>
                 <div className="account-details-actions">
                     <button onClick={() => navigate('/contas')}>Voltar</button>
-                    <button className="btn-export-csv" onClick={async () => {
-                        try {
-                            const response = await api.blob(`/bill/export/account/${id}`);
-
-                            if (!response.ok) {
-                                const txt = await response.text();
-                                throw new Error(txt || 'Erro ao exportar CSV');
-                            }
-
-                            const blob = await response.blob();
-                            const url = window.URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = `finhawk_account_${id}.csv`;
-                            document.body.appendChild(a);
-                            a.click();
-                            a.remove();
-                            window.URL.revokeObjectURL(url);
-                        } catch (err) {
-                            setExportError('Erro ao exportar CSV: ' + err.message);
-                        }
-                    }}>Exportar CSV</button>
+                    <button className="btn-export-csv" onClick={handleExportCSV}>
+                        Exportar CSV
+                    </button>
                 </div>
-                {exportError && <div className="mensagem-erro">{exportError}</div>}
             </div>
 
             <div className="card-detalhe">

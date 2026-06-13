@@ -2,6 +2,19 @@
  * Calculation utilities for Dashboard
  */
 
+export const calculatePendenteMes = (bills) => {
+    return bills
+        .filter(bill => bill.status === 'PENDING')
+        .reduce(
+            (acc, bill) => acc + Number(bill.installmentAmount || 0),
+            0
+        );
+};
+
+export const calculateDelta = (currentValue, previousValue) => {
+    return currentValue - previousValue;
+};
+
 /**
  * Filter bills by month and year
  * @param {Array} bills - Array of bills
@@ -93,6 +106,35 @@ export const calculateSaldoRealizado = (bills) => {
  * @param {Array} bills - Array of bills (should be filtered for PAYMENT only)
  * @returns {Array} Array of {name, value, percentage}
  */
+export const groupReceitasByCategory = (bills) => {
+    if (!bills || bills.length === 0) return [];
+
+    const receipts = bills.filter(bill => {
+        const type = bill.category?.type || bill.type;
+        return type?.toUpperCase() === 'RECEIPT';
+    });
+
+    if (receipts.length === 0) return [];
+
+    const grouped = receipts.reduce((acc, bill) => {
+        const categoryName = bill.category?.name || 'Sem Categoria';
+        const value = Number(bill.installmentAmount || 0);
+        if (!acc[categoryName]) acc[categoryName] = 0;
+        acc[categoryName] += value;
+        return acc;
+    }, {});
+
+    const total = Object.values(grouped).reduce((sum, val) => sum + val, 0);
+
+    return Object.entries(grouped)
+        .map(([name, value]) => ({
+            name,
+            value,
+            percentage: total > 0 ? (value / total) * 100 : 0
+        }))
+        .sort((a, b) => b.value - a.value);
+};
+
 export const groupByCategory = (bills) => {
     if (!bills || bills.length === 0) return [];
 
@@ -212,11 +254,11 @@ export const getBillsNext7Days = (bills) => {
  * @param {number} days - Number of days to show (default 7)
  * @returns {Array} Array of {date, dayName, receitas, despesas, bills}
  */
-export const groupByDay = (bills, days = 7) => {
+export const groupByDay = (bills, referenceDate, days = 7) => {
     if (!bills) bills = [];
 
     const result = [];
-    const today = new Date();
+    const today = new Date(referenceDate);
     today.setHours(0, 0, 0, 0);
 
     for (let i = 0; i < days; i++) {

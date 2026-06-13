@@ -307,8 +307,8 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
                     <label>Status</label>
                     <select name="status" value={valores.status} onChange={handleInputChange}>
                         <option value="PENDING">Pendente</option>
-                        <option value="PAID">Pago</option>
-                        <option value="RECEIVED">Recebido</option>
+                        {valores.type === 'PAYMENT' && <option value="PAID">Pago</option>}
+                        {valores.type === 'RECEIPT' && <option value="RECEIVED">Recebido</option>}
                     </select>
                 </div>
             </div>

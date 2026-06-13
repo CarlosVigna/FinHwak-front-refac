@@ -907,6 +907,35 @@ footer {
   font-size: 0.875rem;
 }
 
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(4px);
+  padding: 24px;
+}
+
+.modal-overlay .status-modal {
+  width: min(460px, 100%);
+}
+
+.modal-titulo {
+  margin: 0 0 10px;
+  font-size: 1.15rem;
+  color: var(--text-color);
+}
+
+.modal-descricao {
+  margin: 0 0 20px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
 .aviso-sem-categoria {
   display: flex;
   flex-direction: column;

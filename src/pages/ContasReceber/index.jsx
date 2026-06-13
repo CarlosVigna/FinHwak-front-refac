@@ -74,11 +74,17 @@ const ContasReceber = () => {
         fetchCategorias();
     }, [fetchDados, fetchCategorias]);
 
+    const parseLocalDate = (dateString) => {
+        if (!dateString) return null;
+        const [year, month, day] = dateString.split('-').map(Number);
+        return new Date(year, month - 1, day);
+    };
+
     // 3. Lógica de Filtro em tela
     const filteredData = dados.filter((item) => {
-        const itemVenc = new Date(item.maturity);
-        const startDate = filterStartDate ? new Date(filterStartDate) : null;
-        const endDate = filterEndDate ? new Date(filterEndDate) : null;
+        const itemVenc = parseLocalDate(item.maturity);
+        const startDate = filterStartDate ? parseLocalDate(filterStartDate) : null;
+        const endDate = filterEndDate ? parseLocalDate(filterEndDate) : null;
 
         const dateMatch = (!startDate || itemVenc >= startDate) && (!endDate || itemVenc <= endDate);
         const catMatch = !filterCategoria || item.category?.name === filterCategoria;
@@ -118,33 +124,30 @@ const ContasReceber = () => {
         setFilterCategoria('');
     };
 
-    const handleExportCSV = async () => {
+    const handleExportCSV = () => {
         const idConta = localStorage.getItem('accountId');
-        if (!idConta) {
-            setError('Nenhuma conta selecionada.');
-            return;
-        }
-
-        try {
-            const response = await api.blob(`/bill/export/account/${idConta}`);
-
-            if (!response.ok) {
-                const txt = await response.text();
-                throw new Error(txt || 'Erro ao exportar CSV');
-            }
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `relatorio_contas_receber_${idConta}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-        } catch (err) {
-            setError('Erro ao exportar CSV: ' + err.message);
-        }
+        const statusLabel = { PENDING: 'Pendente', PAID: 'Pago', RECEIVED: 'Recebido' };
+        const headers = ['ID', 'Descrição', 'Vencimento', 'Categoria', 'Valor', 'Status'];
+        const rows = filteredData.map(item => [
+            item.id,
+            item.description,
+            new Date(item.maturity).toLocaleDateString('pt-BR'),
+            item.category?.name || '-',
+            Number(item.installmentAmount).toFixed(2).replace('.', ','),
+            statusLabel[item.status] || item.status
+        ]);
+        const csv = [headers, ...rows]
+            .map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(';'))
+            .join('\n');
+        const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `relatorio_contas_receber_${idConta}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
     };
 
     return (
@@ -236,7 +239,7 @@ const ContasReceber = () => {
                                         <tr key={item.id}>
                                             <td data-label="ID">#{item.id}</td>
                                             <td data-label="Descrição">{item.description}</td>
-                                            <td data-label="Vencimento">{new Date(item.maturity).toLocaleDateString('pt-BR')}</td>
+                                            <td data-label="Vencimento">{parseLocalDate(item.maturity).toLocaleDateString('pt-BR')}</td>
                                             <td data-label="Categoria">{item.category?.name || '-'}</td>
                                             <td data-label="Valor" className="valor-entrada">
                                                 {formatCurrency(item.installmentAmount)}

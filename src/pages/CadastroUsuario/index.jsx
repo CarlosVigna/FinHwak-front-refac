@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Formulario from '../../componentes/Formulario';
 import { useAuth } from '../Login/AuthContext';
 
@@ -99,6 +99,12 @@ function CadastroUsuario() {
                 sucesso={sucesso}
                 disabled={loading}
             />
+            <div className="auth-extra-links" style={{ marginTop: '12px' }}>
+                Ao criar uma conta, você concorda com nossos{' '}
+                <Link to="/termos" className="btn-link">Termos de Uso</Link>
+                {' '}e{' '}
+                <Link to="/privacidade" className="btn-link">Política de Privacidade</Link>
+            </div>
         </div>
     );
 }

@@ -89,6 +89,12 @@ const Login = () => {
             <div className="auth-extra-links">
                 <Link to="/esqueci-senha" className="btn-link">Esqueci minha senha</Link>
             </div>
+            <div className="auth-extra-links" style={{ marginTop: '8px' }}>
+                Ao continuar, você concorda com nossos{' '}
+                <Link to="/termos" className="btn-link">Termos de Uso</Link>
+                {' '}e{' '}
+                <Link to="/privacidade" className="btn-link">Política de Privacidade</Link>
+            </div>
         </>
     );
 };

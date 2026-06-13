@@ -8,6 +8,12 @@ import {
   faInbox,
 } from '@fortawesome/free-solid-svg-icons';
 
+const parseLocalDate = (dateString) => {
+  if (!dateString) return null;
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day);
+};
+
 const ContasPendentes = () => {
   const hoje = new Date();
   const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
@@ -56,7 +62,7 @@ const ContasPendentes = () => {
         return isPayment && isPending;
       });
 
-      pendentes.sort((a, b) => new Date(a.maturity) - new Date(b.maturity));
+      pendentes.sort((a, b) => parseLocalDate(a.maturity) - parseLocalDate(b.maturity));
 
       setContas(pendentes);
       setError(null);
@@ -140,33 +146,34 @@ const ContasPendentes = () => {
     return { label: 'Em Dia', class: 'em-dia', icon: null };
   };
 
-  const handleExportCSV = async () => {
+  const handleExportCSV = () => {
     const idConta = localStorage.getItem('accountId');
-    if (!idConta) {
-      setError('Nenhuma conta selecionada.');
-      return;
-    }
-
-    try {
-      const response = await api.blob(`/bill/export/account/${idConta}`);
-
-      if (!response.ok) {
-        const txt = await response.text();
-        throw new Error(txt || 'Erro ao exportar CSV');
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `relatorio_contas_pendentes_${idConta}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      setError('Erro ao exportar CSV: ' + err.message);
-    }
+    const statusLabel = { PENDING: 'Pendente', PAID: 'Pago', RECEIVED: 'Recebido' };
+    const headers = ['ID', 'Descrição', 'Vencimento', 'Categoria', 'Valor', 'Status'];
+    const rows = contas.map(item => {
+      const d = parseLocalDate(item.maturity);
+      const vencimento = d ? d.toLocaleDateString('pt-BR') : '-';
+      return [
+        item.id,
+        item.description,
+        vencimento,
+        item.category?.name || '-',
+        Number(item.installmentAmount).toFixed(2).replace('.', ','),
+        statusLabel[item.status] || item.status
+      ];
+    });
+    const csv = [headers, ...rows]
+      .map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(';'))
+      .join('\n');
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `relatorio_contas_pendentes_${idConta}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
   };
 
   return (

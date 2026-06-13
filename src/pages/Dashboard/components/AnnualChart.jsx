@@ -3,6 +3,25 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { formatCurrency, getShortMonthName } from '../utils/formatters';
 import './AnnualChart.css';
 
+const CustomizedTick = ({ x, y, payload, chartData }) => {
+    const item = chartData.find(d => d.name === payload.value);
+    const isCurrent = item?.isCurrent;
+    return (
+        <text
+            x={x}
+            y={y + 12}
+            textAnchor="middle"
+            style={{
+                fill: isCurrent ? '#10b981' : '#64748b',
+                fontSize: '0.875rem',
+                fontWeight: isCurrent ? '800' : '600',
+            }}
+        >
+            {isCurrent ? `● ${payload.value}` : payload.value}
+        </text>
+    );
+};
+
 const AnnualChart = ({ monthData }) => {
     if (!monthData || monthData.length === 0) {
         return (
@@ -15,7 +34,6 @@ const AnnualChart = ({ monthData }) => {
         );
     }
 
-    // Format data for chart
     const chartData = monthData.map(item => ({
         name: getShortMonthName(item.month),
         Receitas: item.receitas,
@@ -56,7 +74,7 @@ const AnnualChart = ({ monthData }) => {
                         <XAxis
                             dataKey="name"
                             stroke="#64748b"
-                            style={{ fontSize: '0.875rem', fontWeight: 600 }}
+                            tick={<CustomizedTick chartData={chartData} />}
                         />
                         <YAxis
                             stroke="#64748b"

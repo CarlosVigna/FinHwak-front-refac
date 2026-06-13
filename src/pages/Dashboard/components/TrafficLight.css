@@ -188,6 +188,20 @@
     font-style: italic;
 }
 
+.traffic-item-clickable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.traffic-item-clickable:hover {
+    transform: translateY(-1px);
+    opacity: 0.9;
+}
+
+.traffic-item-clickable:active {
+    transform: translateY(0);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .traffic-light {

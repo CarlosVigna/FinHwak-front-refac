@@ -8,6 +8,8 @@ import Footer from './componentes/Footer';
 import AuthTabs from './pages/AuthTabs';
 import EsqueciSenha from './pages/EsqueciSenha';
 import ResetSenha from './pages/ResetSenha';
+import Privacidade from './pages/Privacidade';
+import Termos from './pages/Termos';
 import Contas from './pages/Contas';
 import CadastroTitulo from './pages/CadastroTitulo';
 import CadastroCategoria from './pages/CadastroCategoria';
@@ -40,6 +42,8 @@ function App() {
             <Route path="/cadastro" element={<AuthTabs initialTab="cadastro" />} />
             <Route path="/esqueci-senha" element={<EsqueciSenha />} />
             <Route path="/reset-senha" element={<ResetSenha />} />
+            <Route path="/privacidade" element={<Privacidade />} />
+            <Route path="/termos" element={<Termos />} />
 
             <Route
               path="/contas"

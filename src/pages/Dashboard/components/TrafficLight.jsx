@@ -8,7 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import './TrafficLight.css';
 
-const TrafficLight = ({ overdueBills, dueTodayBills, next7DaysBills }) => {
+const TrafficLight = ({ overdueBills, dueTodayBills, next7DaysBills, onBillClick }) => {
     const sections = [
         {
             title: 'Atrasadas',
@@ -57,7 +57,11 @@ const TrafficLight = ({ overdueBills, dueTodayBills, next7DaysBills }) => {
                             ) : (
                                 <ul className="traffic-list">
                                     {section.bills.slice(0, 5).map((bill, idx) => (
-                                        <li key={idx} className="traffic-item">
+                                        <li
+                                            key={idx}
+                                            className="traffic-item traffic-item-clickable"
+                                            onClick={onBillClick}
+                                        >
                                             <div className="traffic-item-info">
                                                 <span className="traffic-item-description">
                                                     {bill.description}

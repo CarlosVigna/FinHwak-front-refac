@@ -1,7 +1,8 @@
 import React, {
     useState,
     useEffect,
-    useMemo
+    useMemo,
+    useCallback
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
@@ -17,13 +18,17 @@ import {
     calculateDespesas,
     calculateSaldoPrevisto,
     calculateSaldoRealizado,
+    calculatePendenteMes,
+    calculateDelta,
     groupByCategory,
+    groupReceitasByCategory,
     getOverdueBills,
     getBillsDueToday,
     getBillsNext7Days,
     groupByDay,
     groupByMonth
 } from './utils/calculations';
+import DashboardExecutive from './components/DashboardExecutive';
 import ConsolidatedOverview from './components/ConsolidatedOverview';
 
 const Dashboard = () => {
@@ -33,17 +38,13 @@ const Dashboard = () => {
     const [error, setError] = useState(null);
     const [showConsolidated, setShowConsolidated] = useState(false);
 
-    // Month filter state - default to current month
     const currentDate = new Date();
     const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
     const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
 
-    // Fetch bills on component mount
     useEffect(() => {
         const accountId = localStorage.getItem('accountId');
-
-        const requestConsolidated =
-            localStorage.getItem('dashboardShowConsolidated');
+        const requestConsolidated = localStorage.getItem('dashboardShowConsolidated');
 
         if (requestConsolidated === 'true') {
             setShowConsolidated(true);
@@ -91,43 +92,153 @@ const Dashboard = () => {
         setSelectedYear(year);
     };
 
-    // Filter bills by selected month for summary cards and category chart
+    const handleOpenPendingBills = useCallback(() => {
+        navigate('/contas-pendentes');
+    }, [navigate]);
+
+    const handleShowConsolidated = useCallback(() => {
+        const currentAccountId = localStorage.getItem('accountId');
+        if (currentAccountId) {
+            localStorage.setItem('lastAccountId', currentAccountId);
+        }
+        localStorage.setItem('dashboardShowConsolidated', 'true');
+        setShowConsolidated(true);
+    }, []);
+
+    const handleBackToDashboard = useCallback(() => {
+        localStorage.removeItem('dashboardShowConsolidated');
+        const lastAccountId = localStorage.getItem('lastAccountId');
+        if (lastAccountId) {
+            localStorage.setItem('accountId', lastAccountId);
+        }
+        setShowConsolidated(false);
+        fetchBills();
+    }, []);
+
+    const handleSelectAccount = useCallback((id) => {
+        localStorage.setItem('accountId', String(id));
+        localStorage.removeItem('dashboardShowConsolidated');
+        setShowConsolidated(false);
+        fetchBills();
+    }, []);
+
     const filteredBills = useMemo(
-        () =>
-            filterByMonth(
-                bills,
-                selectedMonth,
-                selectedYear
-            ),
+        () => filterByMonth(bills, selectedMonth, selectedYear),
         [bills, selectedMonth, selectedYear]
     );
 
-    // Calculate summary metrics
-    const receitas = calculateReceitas(filteredBills);
-    const despesas = calculateDespesas(filteredBills);
-    const saldoPrevisto = calculateSaldoPrevisto(filteredBills);
-    const saldoRealizado = calculateSaldoRealizado(filteredBills);
-    const saldoAcumulado = calculateSaldoRealizado(bills);
+    const previousMonth = selectedMonth === 0 ? 11 : selectedMonth - 1;
+    const previousYear = selectedMonth === 0 ? selectedYear - 1 : selectedYear;
 
-    // Traffic light data (always uses all bills, not filtered by month)
-    const overdueBills = getOverdueBills(bills);
-    const dueTodayBills = getBillsDueToday(bills);
-    const next7DaysBills = getBillsNext7Days(bills);
+    const previousBills = useMemo(
+        () => filterByMonth(bills, previousMonth, previousYear),
+        [bills, previousMonth, previousYear]
+    );
 
-    // Category chart data (uses filtered bills)
-    const categoryData = groupByCategory(filteredBills);
+    const receitas = useMemo(
+        () => calculateReceitas(filteredBills),
+        [filteredBills]
+    );
 
-    // Weekly timeline data (always shows next 7 days from today)
-    const weekData = useMemo(
-        () => groupByDay(bills, 7),
+    const despesas = useMemo(
+        () => calculateDespesas(filteredBills),
+        [filteredBills]
+    );
+
+    const saldoPrevisto = useMemo(
+        () => calculateSaldoPrevisto(filteredBills),
+        [filteredBills]
+    );
+
+    const saldoRealizado = useMemo(
+        () => calculateSaldoRealizado(filteredBills),
+        [filteredBills]
+    );
+
+    const saldoAcumulado = useMemo(
+        () => calculateSaldoRealizado(bills),
         [bills]
     );
 
-    // Annual chart data (shows 12 months)
+    const pendenteMes = useMemo(
+        () => calculatePendenteMes(filteredBills),
+        [filteredBills]
+    );
+
+    const receitasMesAnterior = useMemo(
+        () => calculateReceitas(previousBills),
+        [previousBills]
+    );
+
+    const despesasMesAnterior = useMemo(
+        () => calculateDespesas(previousBills),
+        [previousBills]
+    );
+
+    const saldoRealizadoMesAnterior = useMemo(
+        () => calculateSaldoRealizado(previousBills),
+        [previousBills]
+    );
+
+    const deltaReceitas = useMemo(
+        () => calculateDelta(receitas, receitasMesAnterior),
+        [receitas, receitasMesAnterior]
+    );
+
+    const deltaDespesas = useMemo(
+        () => calculateDelta(despesas, despesasMesAnterior),
+        [despesas, despesasMesAnterior]
+    );
+
+    const deltaResultado = useMemo(
+        () => calculateDelta(saldoRealizado, saldoRealizadoMesAnterior),
+        [saldoRealizado, saldoRealizadoMesAnterior]
+    );
+
+    const overdueBills = useMemo(
+        () => getOverdueBills(bills),
+        [bills]
+    );
+
+    const dueTodayBills = useMemo(
+        () => getBillsDueToday(bills),
+        [bills]
+    );
+
+    const next7DaysBills = useMemo(
+        () => getBillsNext7Days(bills),
+        [bills]
+    );
+
+    const categoryData = useMemo(
+        () => groupByCategory(filteredBills),
+        [filteredBills]
+    );
+
+    const receitasCategoryData = useMemo(
+        () => groupReceitasByCategory(filteredBills),
+        [filteredBills]
+    );
+
+    const timelineReferenceDate = useMemo(() => {
+        const now = new Date();
+        const isCurrentMonth =
+            selectedMonth === now.getMonth() &&
+            selectedYear === now.getFullYear();
+        return isCurrentMonth
+            ? now
+            : new Date(selectedYear, selectedMonth, 1);
+    }, [selectedMonth, selectedYear]);
+
+    const weekData = useMemo(
+        () => groupByDay(filteredBills, timelineReferenceDate, 7),
+        [filteredBills, timelineReferenceDate]
+    );
+
     const monthData = useMemo(
-    () => groupByMonth(bills, 6, 5),
-    [bills]
-);
+        () => groupByMonth(bills, 6, 5),
+        [bills]
+    );
 
     if (loading) {
         return (
@@ -156,33 +267,8 @@ const Dashboard = () => {
             </div>
         );
     }
+
     const accountId = localStorage.getItem('accountId');
-
-    const handleSelectAccount = (id) => {
-        localStorage.setItem('accountId', String(id));
-        localStorage.removeItem('dashboardShowConsolidated');
-        setShowConsolidated(false);
-        fetchBills();
-    };
-
-    const handleBackToDashboard = () => {
-        localStorage.removeItem('dashboardShowConsolidated');
-        const lastAccountId = localStorage.getItem('lastAccountId');
-        if (lastAccountId) {
-            localStorage.setItem('accountId', lastAccountId);
-        }
-        setShowConsolidated(false);
-        fetchBills();
-    };
-
-    const handleShowConsolidated = () => {
-        const currentAccountId = localStorage.getItem('accountId');
-        if (currentAccountId) {
-            localStorage.setItem('lastAccountId', currentAccountId);
-        }
-        localStorage.setItem('dashboardShowConsolidated', 'true');
-        setShowConsolidated(true);
-    };
 
     if (showConsolidated || !accountId) {
         return (
@@ -219,6 +305,16 @@ const Dashboard = () => {
                 onMonthChange={handleMonthChange}
             />
 
+            <DashboardExecutive
+                receitas={receitas}
+                despesas={despesas}
+                pendenteMes={pendenteMes}
+                saldoRealizado={saldoRealizado}
+                deltaReceitas={deltaReceitas}
+                deltaDespesas={deltaDespesas}
+                deltaResultado={deltaResultado}
+            />
+
             {bills.length === 0 ? (
                 <div className="empty-state">
                     <div className="empty-state-icon">📊</div>
@@ -244,25 +340,38 @@ const Dashboard = () => {
                     <SummaryCards
                         receitas={receitas}
                         despesas={despesas}
+                        pendenteMes={pendenteMes}
                         saldoPrevisto={saldoPrevisto}
                         saldoRealizado={saldoRealizado}
                         saldoAcumulado={saldoAcumulado}
+                        deltaReceitas={deltaReceitas}
+                        deltaDespesas={deltaDespesas}
+                        deltaResultado={deltaResultado}
                     />
 
                     <TrafficLight
                         overdueBills={overdueBills}
                         dueTodayBills={dueTodayBills}
                         next7DaysBills={next7DaysBills}
+                        onBillClick={handleOpenPendingBills}
                     />
 
                     <div className="dashboard-grid">
                         <div className="dashboard-grid-item">
-                            <CategoryChart data={categoryData} />
+                            <CategoryChart
+                                title="Para onde vai meu dinheiro?"
+                                data={categoryData}
+                            />
                         </div>
                         <div className="dashboard-grid-item">
-                            <WeeklyTimeline weekData={weekData} />
+                            <CategoryChart
+                                title="De onde vem meu dinheiro?"
+                                data={receitasCategoryData}
+                            />
                         </div>
                     </div>
+
+                    <WeeklyTimeline weekData={weekData} />
 
                     <AnnualChart monthData={monthData} />
                 </>

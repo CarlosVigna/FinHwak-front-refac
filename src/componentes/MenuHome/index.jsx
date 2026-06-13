@@ -16,8 +16,6 @@ function MenuHome() {
     const hasActiveAccount = !!accountId;
 
     const handleLogout = () => {
-        localStorage.removeItem('accountId');
-        localStorage.removeItem('accountName');
         logout();
         navigate('/login');
     };
@@ -36,10 +34,7 @@ function MenuHome() {
     };
 
     const isActive = (path) => {
-        if (path === '/home') {
-            return location.pathname === path;
-        }
-        return location.pathname.startsWith(path);
+        return location.pathname === path;
     };
 
     const closeDropdown = (e) => {

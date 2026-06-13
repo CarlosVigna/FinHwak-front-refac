@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../Login/AuthContext';
 import { api } from '../../services/api';
@@ -21,6 +21,23 @@ const Configuracoes = () => {
   const [salvandoSenha, setSalvandoSenha] = useState(false);
   const [senhaSucesso, setSenhaSucesso] = useState('');
   const [senhaErro, setSenhaErro] = useState('');
+
+  // ── Seção 3: Exportação de dados ─────────────────────────────
+  const [exportando, setExportando] = useState(false);
+  const [exportErro, setExportErro] = useState('');
+
+  // ── Seção 3b: Importação de dados ────────────────────────────
+  const importInputRef = useRef(null);
+  const [importando, setImportando] = useState(false);
+  const [importErro, setImportErro] = useState('');
+  const [importSucesso, setImportSucesso] = useState('');
+
+  // ── Seção 4: Exclusão de conta ────────────────────────────────
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [emailConfirmacao, setEmailConfirmacao] = useState('');
+  const [deletando, setDeletando] = useState(false);
+  const [deleteErro, setDeleteErro] = useState('');
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
 
   // Pré-preenche formulário com dados do usuário logado
   useEffect(() => {
@@ -124,6 +141,112 @@ const Configuracoes = () => {
     }
   };
 
+  const handleExportarDados = async () => {
+    setExportando(true);
+    setExportErro('');
+    try {
+      const response = await api.get('/user/export');
+      if (!response.ok) {
+        throw new Error('Erro ao exportar dados.');
+      }
+      const data = await response.json();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const today = new Date().toISOString().split('T')[0];
+      a.download = `finhawk-backup-${today}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setExportErro(err.message || 'Erro ao exportar dados.');
+    } finally {
+      setExportando(false);
+    }
+  };
+
+  const handleImportarBackup = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    e.target.value = '';
+    setImportErro('');
+    setImportSucesso('');
+    setImportando(true);
+
+    try {
+      const text = await file.text();
+      let parsed;
+      try {
+        parsed = JSON.parse(text);
+      } catch {
+        throw new Error('Arquivo inválido. Selecione um backup JSON gerado pelo FinHawk.');
+      }
+
+      const response = await api.post('/user/import', parsed);
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.message || 'Erro ao importar backup.');
+      }
+
+      setImportSucesso('Backup importado com sucesso!');
+      setTimeout(() => setImportSucesso(''), 5000);
+    } catch (err) {
+      setImportErro(err.message || 'Erro ao importar backup.');
+    } finally {
+      setImportando(false);
+    }
+  };
+
+  const handleAbrirModalExclusao = () => {
+    setShowDeleteModal(true);
+    setEmailConfirmacao('');
+    setDeleteErro('');
+    setDeleteSuccess(false);
+  };
+
+  const handleFecharModalExclusao = () => {
+    if (deletando) return;
+    setShowDeleteModal(false);
+    setEmailConfirmacao('');
+    setDeleteErro('');
+    setDeleteSuccess(false);
+  };
+
+  const handleExcluirConta = async () => {
+    if (emailConfirmacao.trim() !== user?.email) {
+      setDeleteErro('O e-mail digitado não confere. Verifique e tente novamente.');
+      return;
+    }
+
+    setDeletando(true);
+    setDeleteErro('');
+
+    try {
+      const response = await api.delete('/user/me');
+
+      if (response.status === 204) {
+        setDeleteSuccess(true);
+        setTimeout(() => {
+          localStorage.removeItem('accountName');
+          logout();
+          navigate('/login');
+        }, 1500);
+        return;
+      }
+
+      throw new Error('Não foi possível excluir sua conta. Tente novamente.');
+    } catch (err) {
+      if (!deleteSuccess) {
+        setDeleteErro(err.message || 'Não foi possível excluir sua conta. Tente novamente.');
+      }
+    } finally {
+      setDeletando(false);
+    }
+  };
+
   if (!user) {
     return (
       <div className="fh-page">
@@ -219,7 +342,128 @@ const Configuracoes = () => {
           </form>
         </div>
 
+        {/* ── Privacidade e Dados ────────────────────────────── */}
+        <div className="secao-superior">
+          <h2 className="historico-titulo">Privacidade e Dados</h2>
+
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '0 0 16px' }}>
+            Exporte todos os seus dados em um arquivo JSON (contas, categorias, lançamentos e checklist).
+          </p>
+
+          <button
+            type="button"
+            className="botao-salvar"
+            onClick={handleExportarDados}
+            disabled={exportando}
+            style={{ marginBottom: '24px' }}
+          >
+            {exportando ? 'Exportando...' : 'Exportar Meus Dados'}
+          </button>
+
+          {exportErro && <div className="error-message" style={{ marginBottom: '16px' }}>{exportErro}</div>}
+
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '0 0 16px' }}>
+            Restaure um backup JSON exportado anteriormente. Os dados importados serão adicionados aos dados existentes.
+          </p>
+
+          <input
+            ref={importInputRef}
+            type="file"
+            accept=".json,application/json"
+            style={{ display: 'none' }}
+            onChange={handleImportarBackup}
+          />
+
+          <button
+            type="button"
+            className="botao-salvar"
+            onClick={() => importInputRef.current?.click()}
+            disabled={importando}
+            style={{ marginBottom: '24px' }}
+          >
+            {importando ? 'Importando...' : 'Importar Backup'}
+          </button>
+
+          {importErro && <div className="error-message" style={{ marginBottom: '16px' }}>{importErro}</div>}
+          {importSucesso && <div className="success-message" style={{ marginBottom: '16px' }}>{importSucesso}</div>}
+
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '0 0 10px' }}>
+            Esta ação removerá permanentemente todos os seus dados do FinHawk:
+          </p>
+          <ul style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', margin: '0 0 20px', paddingLeft: '20px', lineHeight: '1.8' }}>
+            <li>Contas</li>
+            <li>Categorias</li>
+            <li>Lançamentos</li>
+            <li>Checklist</li>
+            <li>Histórico</li>
+          </ul>
+
+          <button
+            type="button"
+            className="btn-excluir"
+            onClick={handleAbrirModalExclusao}
+          >
+            Excluir Minha Conta
+          </button>
+        </div>
+
       </div>
+
+      {/* ── Modal de confirmação de exclusão ─────────────────── */}
+      {showDeleteModal && (
+        <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) handleFecharModalExclusao(); }}>
+          <div className="status-modal">
+            <h3 className="modal-titulo">Excluir Conta</h3>
+
+            {deleteSuccess ? (
+              <div className="success-message">
+                Sua conta foi removida com sucesso. Redirecionando...
+              </div>
+            ) : (
+              <>
+                <p className="modal-descricao">
+                  Esta ação é permanente. Todos os seus dados serão removidos e não poderão ser recuperados.
+                </p>
+                <p className="modal-descricao" style={{ marginBottom: '16px' }}>
+                  Digite seu e-mail para confirmar.
+                </p>
+
+                <div className="campo-formulario">
+                  <label>E-mail de confirmação</label>
+                  <input
+                    type="email"
+                    value={emailConfirmacao}
+                    onChange={(e) => setEmailConfirmacao(e.target.value)}
+                    placeholder={user.email}
+                    disabled={deletando}
+                    autoComplete="off"
+                  />
+                </div>
+
+                {deleteErro && <div className="error-message" style={{ marginTop: '10px' }}>{deleteErro}</div>}
+
+                <div className="botoes-formulario" style={{ marginTop: '20px' }}>
+                  <button
+                    type="button"
+                    onClick={handleFecharModalExclusao}
+                    disabled={deletando}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-excluir"
+                    onClick={handleExcluirConta}
+                    disabled={deletando}
+                  >
+                    {deletando ? 'Excluindo...' : 'Excluir Conta'}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

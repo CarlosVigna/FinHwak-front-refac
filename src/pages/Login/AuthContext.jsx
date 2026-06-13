@@ -53,6 +53,9 @@ export function AuthProvider({ children }) {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('accountId');
+    localStorage.removeItem('accountName');
+    localStorage.removeItem('dashboardShowConsolidated');
+    localStorage.removeItem('lastAccountId');
     setToken(null);
     setUser(null);
     setIsAuthenticated(false);

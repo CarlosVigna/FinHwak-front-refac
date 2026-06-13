@@ -5,24 +5,59 @@ import {
     faArrowTrendUp,
     faArrowTrendDown,
     faScaleBalanced,
-    faWallet
+    faWallet,
+    faClock
 } from '@fortawesome/free-solid-svg-icons';
 
-const SummaryCards = ({ receitas, despesas, saldoPrevisto, saldoRealizado, saldoAcumulado }) => {
+const DeltaBadge = ({ delta }) => {
+    if (delta === 0) return null;
+    const positive = delta > 0;
+    const arrow = positive ? '↑' : '↓';
+    const color = positive ? '#10b981' : '#ef4444';
+    return (
+        <span className="summary-card-delta" style={{ color }}>
+            {arrow} {formatCurrency(Math.abs(delta))} vs mês anterior
+        </span>
+    );
+};
+
+const SummaryCards = ({
+    receitas,
+    despesas,
+    pendenteMes,
+    saldoPrevisto,
+    saldoRealizado,
+    saldoAcumulado,
+    deltaReceitas,
+    deltaDespesas,
+    deltaResultado
+}) => {
     const cards = [
         {
             title: 'Receitas',
             value: receitas,
             icon: faArrowTrendUp,
             color: 'success',
-            gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+            gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            delta: deltaReceitas
         },
         {
             title: 'Despesas',
             value: despesas,
             icon: faArrowTrendDown,
             color: 'danger',
-            gradient: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+            gradient: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            delta: deltaDespesas
+        },
+        {
+            title: 'Pendente do Mês',
+            value: pendenteMes,
+            icon: faClock,
+            color: pendenteMes > 0 ? 'warning' : 'success',
+            gradient: pendenteMes > 0
+                ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            delta: null
         },
         {
             title: 'Resultado Previsto',
@@ -31,7 +66,8 @@ const SummaryCards = ({ receitas, despesas, saldoPrevisto, saldoRealizado, saldo
             color: saldoPrevisto >= 0 ? 'success' : 'danger',
             gradient: saldoPrevisto >= 0
                 ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-                : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+                : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            delta: null
         },
         {
             title: 'Resultado Realizado',
@@ -40,7 +76,8 @@ const SummaryCards = ({ receitas, despesas, saldoPrevisto, saldoRealizado, saldo
             color: saldoRealizado >= 0 ? 'success' : 'danger',
             gradient: saldoRealizado >= 0
                 ? 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)'
-                : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+            delta: deltaResultado
         },
         {
             title: 'Saldo Acumulado',
@@ -49,7 +86,8 @@ const SummaryCards = ({ receitas, despesas, saldoPrevisto, saldoRealizado, saldo
             color: saldoAcumulado >= 0 ? 'success' : 'danger',
             gradient: saldoAcumulado >= 0
                 ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)'
-                : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+                : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            delta: null
         }
     ];
 
@@ -74,6 +112,9 @@ const SummaryCards = ({ receitas, despesas, saldoPrevisto, saldoRealizado, saldo
                         <span className={`summary-card-value ${card.color}`}>
                             {formatCurrency(card.value)}
                         </span>
+                        {card.delta != null && (
+                            <DeltaBadge delta={card.delta} />
+                        )}
                     </div>
                 </div>
             ))}
