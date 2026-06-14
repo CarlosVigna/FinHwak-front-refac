@@ -32,6 +32,7 @@ const ContasPendentes = () => {
   const [sucesso, setSucesso] = useState('');
   const [dataInicio, setDataInicio] = useState(formatInputDate(primeiroDiaMes));
   const [dataFim, setDataFim] = useState(formatInputDate(ultimoDiaMes));
+  const [confirmingId, setConfirmingId] = useState(null);
 
   const fetchContasPendentes = async () => {
     try {
@@ -83,16 +84,6 @@ const ContasPendentes = () => {
   };
 
   const handleDarBaixa = async (conta) => {
-    const valorFormatado = formatCurrency(conta.installmentAmount || conta.value);
-
-    if (
-      !window.confirm(
-        `Confirma o pagamento de "${conta.description}"?\nValor: ${valorFormatado}`
-      )
-    ) {
-      return;
-    }
-
     try {
       const response = await api.patch(`/bill/${conta.id}/status`, { status: 'PAID' });
 
@@ -102,6 +93,7 @@ const ContasPendentes = () => {
       }
 
       setContas((prev) => prev.filter((c) => c.id !== conta.id));
+      setConfirmingId(null);
       setSucesso('Conta paga com sucesso!');
       setTimeout(() => setSucesso(''), 3000);
     } catch (err) {
@@ -277,15 +269,36 @@ const ContasPendentes = () => {
                           </span>
                         </td>
                         <td>
-                          <button
-                            type="button"
-                            className="btn-baixa"
-                            onClick={() => handleDarBaixa(conta)}
-                            title="Marcar como paga"
-                          >
-                            <FontAwesomeIcon icon={faCheckCircle} />
-                            <span> Pagar</span>
-                          </button>
+                          {confirmingId === conta.id ? (
+                            <div className="action-group">
+                              <button
+                                type="button"
+                                className="btn-acao btn-criar"
+                                title="Confirmar pagamento"
+                                onClick={() => handleDarBaixa(conta)}
+                              >
+                                Sim
+                              </button>
+                              <button
+                                type="button"
+                                className="btn-acao btn-excluir"
+                                title="Cancelar"
+                                onClick={() => setConfirmingId(null)}
+                              >
+                                Não
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              className="btn-baixa"
+                              onClick={() => setConfirmingId(conta.id)}
+                              title={`Marcar "${conta.description}" como paga`}
+                            >
+                              <FontAwesomeIcon icon={faCheckCircle} />
+                              <span>Pagar</span>
+                            </button>
+                          )}
                         </td>
                       </tr>
                     );

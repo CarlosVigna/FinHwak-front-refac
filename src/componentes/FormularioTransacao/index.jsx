@@ -155,6 +155,7 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
             }
 
             setSucesso(tituloParaEditar ? 'Atualizado com sucesso!' : 'Cadastrado com sucesso!');
+            if (!tituloParaEditar) localStorage.setItem('finhawk-first-bill', 'true');
             
             if (!tituloParaEditar) {
                 setValores({
@@ -314,11 +315,11 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
             </div>
 
             <div className="botoes-formulario">
-                <button type="submit">
+                <button type="submit" className="botao-salvar">
                     {tituloParaEditar ? 'Atualizar' : 'Cadastrar'}
                 </button>
                 {tituloParaEditar && (
-                    <button type="button" onClick={onCancel}>
+                    <button type="button" className="botao-cancelar" onClick={onCancel}>
                         Cancelar
                     </button>
                 )}

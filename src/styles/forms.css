@@ -31,15 +31,30 @@
 }
 
 .campos-container.horizontal > *,
-.linha-formulario > *,
+.linha-formulario > * {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
 .campo-formulario,
 .form-group,
 .grupo-campo,
 .filtro-grupo,
 .campo-texto,
 .campo-select {
-  flex: 1 1 180px;
+  flex: 0 1 auto;
   min-width: 0;
+}
+
+.campos-container.horizontal > .campo-formulario,
+.campos-container.horizontal > .form-group,
+.linha-formulario > .campo-formulario,
+.linha-formulario > .form-group,
+.linha-formulario > .grupo-campo,
+.linha-formulario > .filtro-grupo,
+.linha-formulario > .campo-texto,
+.linha-formulario > .campo-select {
+  flex: 1 1 180px;
 }
 
 .campo-formulario,
@@ -177,6 +192,9 @@ input[type="number"] {
 .editar-conta-container {
   width: min(620px, calc(100% - 32px));
   margin: 32px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .basic-multi-select {

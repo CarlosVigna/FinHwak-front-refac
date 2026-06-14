@@ -77,8 +77,8 @@ const AnnualChart = ({ monthData }) => {
                             tick={<CustomizedTick chartData={chartData} />}
                         />
                         <YAxis
-                            stroke="var(--muted)"
-                            style={{ fontSize: '0.875rem' }}
+                            stroke="var(--border)"
+                            tick={{ fill: 'var(--muted2)', fontSize: '0.8rem' }}
                             tickFormatter={(value) => {
                                 if (value >= 1000) {
                                     return `R$ ${(value / 1000).toFixed(0)}k`;
@@ -88,7 +88,7 @@ const AnnualChart = ({ monthData }) => {
                         />
                         <Tooltip content={<CustomTooltip />} />
                         <Legend
-                            wrapperStyle={{ fontSize: '0.875rem', fontWeight: 600 }}
+                            wrapperStyle={{ fontSize: '0.82rem', fontWeight: 650, color: 'var(--muted2)' }}
                         />
                         <Bar
                             dataKey="Receitas"

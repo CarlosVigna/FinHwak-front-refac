@@ -106,6 +106,72 @@
   width: 100%;
 }
 
+.dashboard-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ── Compact month pill ── */
+.month-pill {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface2);
+  overflow: hidden;
+}
+
+.month-pill-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted2);
+  font-size: 0.72rem;
+  cursor: pointer;
+  box-shadow: none;
+  min-height: auto;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.month-pill-nav:hover {
+  color: var(--text);
+  background: var(--surface);
+}
+
+.month-pill-label {
+  padding: 0 10px;
+  height: 30px;
+  min-height: auto;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 650;
+  cursor: default;
+  box-shadow: none;
+  white-space: nowrap;
+}
+
+.month-pill-label--past {
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.month-pill-label--past:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .fh-container,
 .secao-superior,
 .historico-container,
@@ -187,6 +253,8 @@
   justify-content: space-between;
   padding: clamp(32px, 5vw, 64px);
   background: var(--surface);
+  background-image: radial-gradient(ellipse at 20% 20%, rgba(91, 140, 255, 0.10) 0%, transparent 60%),
+                    radial-gradient(ellipse at 80% 80%, rgba(53, 213, 138, 0.07) 0%, transparent 55%);
   border-right: 1px solid var(--border);
 }
 
@@ -217,8 +285,12 @@
 
 .login-headline {
   font-size: clamp(1.8rem, 3.5vw, 2.6rem);
-  font-weight: 700;
-  color: var(--text);
+  font-weight: 760;
+  background: var(--heading-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
   line-height: 1.15;
   letter-spacing: -0.02em;
   margin-bottom: 14px;
@@ -317,6 +389,25 @@
 
 .login-form-area {
   flex: 1;
+}
+
+.login-form-area .campos-container {
+  gap: 16px;
+}
+
+.login-back-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 20px;
+  font-size: 0.8rem;
+  color: var(--muted2);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.login-back-home:hover {
+  color: var(--text);
 }
 
 /* ── Compat: EsqueciSenha / ResetSenha (usam auth-page) ── */

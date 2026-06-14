@@ -113,6 +113,13 @@ body {
   --gradient-overlay: none;
   --nav-bg:           var(--surface);
   --heading-gradient: linear-gradient(135deg, #e8e8e8 0%, #b0a8ff 46%, var(--blue) 100%);
+
+  /* ── Semantic text — readable on soft backgrounds ── */
+  --success-text:  #b9f8d6;
+  --danger-text:   #ffd5d5;
+  --warning-text:  #ffe5a6;
+  --info-text:     #b9d0ff;
+  --red-soft:      rgba(248, 113, 113, 0.14);
 }
 
 /* 3. Light theme */
@@ -184,6 +191,15 @@ body {
   --gradient-overlay: none;
   --nav-bg:           var(--surface);
   --heading-gradient: linear-gradient(135deg, #111111 0%, #5f4de5 46%, #2563eb 100%);
+
+  /* ── Semantic text — readable on soft backgrounds ── */
+  --success-text:  var(--green);
+  --danger-text:   var(--red);
+  --warning-text:  var(--amber);
+  --info-text:     var(--blue);
+
+  /* ── Muted darker for light mode contrast ── */
+  --muted: #666666;
 }
 
 /* 4. Tipografia */

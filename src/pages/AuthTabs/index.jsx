@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Login from '../Login/Login';
 import CadastroUsuario from '../CadastroUsuario';
 import PropTypes from 'prop-types';
@@ -48,6 +49,8 @@ const AuthTabs = ({ initialTab = 'login' }) => {
 
             {/* ── Lado direito: form ── */}
             <div className="login-right">
+                <Link to="/" className="login-back-home">← Voltar para o início</Link>
+
                 <div className="login-right-brand">
                     <div className="sb-logo-mark">FH</div>
                     <span className="sb-logo-name">FinHawk</span>

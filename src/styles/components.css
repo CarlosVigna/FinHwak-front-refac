@@ -194,7 +194,7 @@ textarea:focus-visible {
 .botao-cancelar,
 .botao-excluir,
 .btn-excluir {
-  color: #ffd5d5;
+  color: var(--danger-text);
   border-color: rgba(255, 107, 107, 0.34);
   background: var(--danger-soft);
 }
@@ -211,7 +211,7 @@ textarea:focus-visible {
 .btn-export-csv {
   border-color: rgba(248, 195, 91, 0.32);
   background: linear-gradient(135deg, rgba(248, 195, 91, 0.22), rgba(248, 195, 91, 0.08));
-  color: #ffe7ad;
+  color: var(--warning-text);
 }
 
 .botao-salvar:hover,
@@ -242,8 +242,8 @@ textarea:focus-visible {
 
 .btn-editar,
 .botao-editar:hover {
-  color: #b9d0ff;
-  border-color: rgba(91, 140, 255, 0.36);
+  color: var(--info-text);
+  border-color: var(--accent-border);
   background: var(--accent-soft);
 }
 
@@ -289,21 +289,21 @@ textarea:focus-visible {
 .status-badge.recebida,
 .tipo-badge.receipt,
 .checklist-status-done {
-  color: #b9f8d6;
+  color: var(--success-text);
   border-color: rgba(53, 213, 138, 0.34);
   background: var(--success-soft);
 }
 
 .badge-status.status-pendente,
 .status-badge.hoje {
-  color: #ffe5a6;
+  color: var(--warning-text);
   border-color: rgba(248, 195, 91, 0.36);
   background: var(--warning-soft);
 }
 
 .status-badge.vencida,
 .tipo-badge.payment {
-  color: #ffd5d5;
+  color: var(--danger-text);
   border-color: rgba(255, 107, 107, 0.36);
   background: var(--danger-soft);
 }
@@ -915,6 +915,14 @@ footer {
   font-size: 0.875rem;
 }
 
+.login-notice {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -1064,6 +1072,64 @@ footer {
   display: flex;
   justify-content: center;
   gap: 8px;
+}
+
+/* ══════════════════════════════════════════
+   CadastroTitulo — filter bar
+══════════════════════════════════════════ */
+.botoes-filtro-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.filtro-tipo {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-filtro {
+  min-height: 36px;
+  padding: 6px 16px;
+  font-size: 0.85rem;
+}
+
+.btn-filtro.ativo {
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(91, 140, 255, 0.22);
+}
+
+.input-busca-titulo {
+  flex: 1 1 180px;
+  max-width: 300px;
+  min-height: 36px !important;
+  padding: 6px 12px !important;
+}
+
+/* ══════════════════════════════════════════
+   btn-baixa — compact primary for table cells
+══════════════════════════════════════════ */
+.btn-baixa {
+  min-height: 30px;
+  height: 30px;
+  padding: 0 10px;
+  font-size: 0.8rem;
+  gap: 5px;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(91, 140, 255, 0.18);
+  white-space: nowrap;
+}
+
+.btn-baixa:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(91, 140, 255, 0.28);
 }
 
 @media (max-width: 920px) {
@@ -1277,6 +1343,22 @@ footer {
   color: var(--text-color);
 }
 
+.primeiros-passos--float {
+  position: fixed;
+  z-index: 500;
+  width: 300px;
+  box-shadow: var(--shadow-lg);
+  user-select: none;
+}
+
+.primeiros-passos--float .primeiros-passos-header {
+  cursor: grab;
+}
+
+.primeiros-passos--float .primeiros-passos-header:active {
+  cursor: grabbing;
+}
+
 .primeiros-passos-lista {
   list-style: none;
   margin: 0;
@@ -1482,6 +1564,18 @@ footer {
   border-color: var(--accent-border);
 }
 
+.sb-item--locked {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.sb-item--locked:hover {
+  opacity: 0.65;
+  background: var(--surface2);
+  border-color: var(--border);
+  cursor: pointer;
+}
+
 .sb-icon {
   width: 7px;
   height: 7px;
@@ -1586,4 +1680,62 @@ footer {
     transform: translateX(0);
     z-index: 101;
   }
+}
+
+/* ── Accordion (relatórios por categoria) ── */
+.accordion-section {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.accordion-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--surface2);
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.88rem;
+    transition: background 0.15s;
+}
+
+.accordion-header:hover {
+    background: var(--border2);
+}
+
+.accordion-header.open {
+    border-bottom: 1px solid var(--border);
+}
+
+.accordion-chevron {
+    font-size: 0.7rem;
+    color: var(--muted2);
+    width: 14px;
+    flex-shrink: 0;
+}
+
+.accordion-cat-name {
+    flex: 1;
+}
+
+.accordion-cat-meta {
+    font-size: 0.8rem;
+    color: var(--muted2);
+    font-weight: 400;
+}
+
+.accordion-body .tabela-responsiva {
+    margin: 0;
+}
+
+.accordion-body .tabela-titulos {
+    border-radius: 0;
+    border: none;
 }

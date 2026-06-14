@@ -95,6 +95,9 @@ const Login = () => {
                 {' '}e{' '}
                 <Link to="/privacidade" className="btn-link">Política de Privacidade</Link>
             </div>
+            <p className="login-notice">
+                O servidor pode levar alguns segundos para responder na primeira requisição.
+            </p>
         </>
     );
 };

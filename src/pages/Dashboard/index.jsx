@@ -16,7 +16,6 @@ import {
     filterByMonth,
     calculateReceitas,
     calculateDespesas,
-    calculateSaldoPrevisto,
     calculateSaldoRealizado,
     calculatePendenteMes,
     calculateDelta,
@@ -141,11 +140,6 @@ const Dashboard = () => {
 
     const despesas = useMemo(
         () => calculateDespesas(filteredBills),
-        [filteredBills]
-    );
-
-    const saldoPrevisto = useMemo(
-        () => calculateSaldoPrevisto(filteredBills),
         [filteredBills]
     );
 
@@ -288,21 +282,22 @@ const Dashboard = () => {
                         <h1 className="page-title">Dashboard Financeiro</h1>
                         <p className="page-subtitle">Visão completa das suas finanças</p>
                     </div>
-                    <button
-                        className="btn-consolidated"
-                        onClick={handleShowConsolidated}
-                        title="Exibir visão consolidada de todas as contas"
-                    >
-                        📊 Visão Consolidada
-                    </button>
+                    <div className="dashboard-header-actions">
+                        <MonthSelector
+                            selectedMonth={selectedMonth}
+                            selectedYear={selectedYear}
+                            onMonthChange={handleMonthChange}
+                        />
+                        <button
+                            className="btn-consolidated"
+                            onClick={handleShowConsolidated}
+                            title="Exibir visão consolidada de todas as contas"
+                        >
+                            📊 Visão Consolidada
+                        </button>
+                    </div>
                 </div>
             </div>
-
-            <MonthSelector
-                selectedMonth={selectedMonth}
-                selectedYear={selectedYear}
-                onMonthChange={handleMonthChange}
-            />
 
             {bills.length === 0 ? (
                 <div className="empty-state">
@@ -330,7 +325,6 @@ const Dashboard = () => {
                         receitas={receitas}
                         despesas={despesas}
                         pendenteMes={pendenteMes}
-                        saldoPrevisto={saldoPrevisto}
                         saldoRealizado={saldoRealizado}
                         saldoAcumulado={saldoAcumulado}
                         deltaReceitas={deltaReceitas}

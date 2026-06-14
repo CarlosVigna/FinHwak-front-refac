@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { FaClock, FaExclamationTriangle } from 'react-icons/fa';
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
@@ -12,33 +12,24 @@ const ContasPagas = () => {
     const [filterCategoria, setFilterCategoria] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [closedSections, setClosedSections] = useState(new Set());
 
-    // 1. Busca os Títulos (Bills) - Rota que já está funcionando
     const fetchDados = useCallback(async () => {
         const idConta = localStorage.getItem('accountId');
-
         if (!idConta || idConta === "null") {
             setError("ID da conta não encontrado. Verifique se há uma conta selecionada.");
             return;
         }
-
         setLoading(true);
         try {
             const response = await api.get(`/bill/account/${idConta}`);
-
-            if (!response.ok) {
-                throw new Error(`Erro ao buscar lançamentos (${response.status})`);
-            }
-
+            if (!response.ok) throw new Error(`Erro ao buscar lançamentos (${response.status})`);
             const data = await response.json();
-
-            // Filtro rigoroso: Apenas contas do tipo PAGAMENTO que estão PAGOS
-            const pendentes = data.filter(item =>
+            const pagas = data.filter(item =>
                 item.category?.type?.toLowerCase() === 'payment' &&
                 item.status === 'PAID'
             );
-
-            setDados(pendentes);
+            setDados(pagas);
             setError(null);
         } catch (err) {
             console.error("Erro Fetch Dados:", err);
@@ -48,15 +39,11 @@ const ContasPagas = () => {
         }
     }, []);
 
-    // 2. Busca as Categorias - Ajustada para ser mais resiliente
     const fetchCategorias = useCallback(async () => {
         const idConta = localStorage.getItem('accountId');
-
         if (!idConta || idConta === "null") return;
-
         try {
             const response = await api.get(`/category/account/${idConta}`);
-
             if (response.ok) {
                 const data = await response.json();
                 setCategorias(data);
@@ -66,7 +53,6 @@ const ContasPagas = () => {
         }
     }, []);
 
-    // Inicialização
     useEffect(() => {
         fetchDados();
         fetchCategorias();
@@ -78,36 +64,48 @@ const ContasPagas = () => {
         return new Date(year, month - 1, day);
     };
 
-    // 3. Lógica de Filtro em tela
     const filteredData = dados.filter((item) => {
         const itemVenc = parseLocalDate(item.maturity);
         const startDate = filterStartDate ? parseLocalDate(filterStartDate) : null;
         const endDate = filterEndDate ? parseLocalDate(filterEndDate) : null;
-
         const dateMatch = (!startDate || itemVenc >= startDate) && (!endDate || itemVenc <= endDate);
         const catMatch = !filterCategoria || item.category?.name === filterCategoria;
-
         return dateMatch && catMatch;
     });
 
+    const groupedData = useMemo(() => {
+        const groups = {};
+        filteredData.forEach(item => {
+            const cat = item.category?.name || 'Sem categoria';
+            if (!groups[cat]) groups[cat] = [];
+            groups[cat].push(item);
+        });
+        return groups;
+    }, [filteredData]);
+
     const totalValor = filteredData.reduce((acc, item) => acc + Number(item.installmentAmount), 0);
 
-    // Formatação de Moeda
-    const formatCurrency = (valor) => {
-        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+    const toggleSection = (catName) => {
+        setClosedSections(prev => {
+            const next = new Set(prev);
+            if (next.has(catName)) next.delete(catName);
+            else next.add(catName);
+            return next;
+        });
     };
+
+    const formatCurrency = (valor) =>
+        new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
 
     const handleExportPDF = async () => {
         const input = document.getElementById('relatorio-export');
         if (!input) return;
-        
         try {
             const canvas = await html2canvas(input, { scale: 2 });
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-            
             pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
             pdf.save('relatorio_contas_pagas.pdf');
         } catch (err) {
@@ -187,80 +185,93 @@ const ContasPagas = () => {
                         </select>
                     </div>
                     <div className="grupo-campo report-actions">
-                        <button
-                            onClick={handleExportPDF} 
-                            className="btn-export-pdf btn-export-danger"
-                        >
+                        <button onClick={handleExportPDF} className="btn-export-pdf btn-export-danger">
                             📄 Exportar PDF
                         </button>
-                        <button
-                            onClick={handleExportCSV}
-                            className="btn-export-csv"
-                        >
+                        <button onClick={handleExportCSV} className="btn-export-csv">
                             📊 Exportar CSV
                         </button>
                     </div>
                 </div>
 
                 <div id="relatorio-export">
-                {error && <div className="mensagem-erro-relatorio">{error}</div>}
+                    {error && <div className="mensagem-erro-relatorio">{error}</div>}
 
-                {loading ? (
-                    <div className="loading-placeholder">⏳ Carregando dados do servidor...</div>
-                ) : dados.length === 0 ? (
-                    <div className="empty-state">
-                        <div className="empty-state-icon">📑</div>
-                        <h3>Nenhum pagamento realizado ainda</h3>
-                        <p>Os pagamentos confirmados aparecerão aqui assim que forem marcados como pagos.</p>
-                    </div>
-                ) : (
-                    <div className="tabela-responsiva">
-                        <table className="tabela-titulos">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Descrição</th>
-                                    <th>Vencimento</th>
-                                    <th>Categoria</th>
-                                    <th>Valor</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredData.length > 0 ? (
-                                    filteredData.map((item) => (
-                                        <tr key={item.id}>
-                                            <td data-label="ID">#{item.id}</td>
-                                            <td data-label="Descrição">{item.description}</td>
-                                            <td data-label="Vencimento">{parseLocalDate(item.maturity).toLocaleDateString('pt-BR')}</td>
-                                            <td data-label="Categoria">{item.category?.name || '-'}</td>
-                                            <td data-label="Valor" className="valor-saida">
-                                                {formatCurrency(item.installmentAmount)}
-                                            </td>
-                                            <td data-label="Status">
-                                                <span className="badge-status status-pago">
-                                                    <FaClock /> Pago
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="6" className="empty-table-cell">
-                                            Nenhum resultado para os filtros selecionados.{' '}
-                                            <button className="btn-link" onClick={handleClearFilters}>Limpar filtros</button>
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-
-                        <div className="totalizador-relatorio color-saida">
-                            <span>Total Pago</span>
-                            <strong>{formatCurrency(totalValor)}</strong>
+                    {loading ? (
+                        <div className="loading-placeholder">⏳ Carregando dados do servidor...</div>
+                    ) : dados.length === 0 ? (
+                        <div className="empty-state">
+                            <div className="empty-state-icon">📑</div>
+                            <h3>Nenhum pagamento realizado ainda</h3>
+                            <p>Os pagamentos confirmados aparecerão aqui assim que forem marcados como pagos.</p>
                         </div>
-                    </div>
-                )}
+                    ) : filteredData.length === 0 ? (
+                        <p className="empty-table-cell">
+                            Nenhum resultado para os filtros selecionados.{' '}
+                            <button className="btn-link" onClick={handleClearFilters}>Limpar filtros</button>
+                        </p>
+                    ) : (
+                        <div className="tabela-responsiva">
+                            {Object.entries(groupedData).map(([catName, items]) => {
+                                const isOpen = !closedSections.has(catName);
+                                const catTotal = items.reduce((acc, i) => acc + Number(i.installmentAmount), 0);
+                                return (
+                                    <div key={catName} className="accordion-section">
+                                        <button
+                                            type="button"
+                                            className={`accordion-header${isOpen ? ' open' : ''}`}
+                                            onClick={() => toggleSection(catName)}
+                                        >
+                                            <span className="accordion-chevron">{isOpen ? '▼' : '▶'}</span>
+                                            <span className="accordion-cat-name">{catName}</span>
+                                            <span className="accordion-cat-meta">
+                                                {items.length} {items.length === 1 ? 'item' : 'itens'} · {formatCurrency(catTotal)}
+                                            </span>
+                                        </button>
+                                        {isOpen && (
+                                            <div className="accordion-body">
+                                                <div className="tabela-responsiva">
+                                                    <table className="tabela-titulos">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>ID</th>
+                                                                <th>Descrição</th>
+                                                                <th>Vencimento</th>
+                                                                <th>Valor</th>
+                                                                <th>Status</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {items.map((item) => (
+                                                                <tr key={item.id}>
+                                                                    <td data-label="ID">#{item.id}</td>
+                                                                    <td data-label="Descrição">{item.description}</td>
+                                                                    <td data-label="Vencimento">{parseLocalDate(item.maturity).toLocaleDateString('pt-BR')}</td>
+                                                                    <td data-label="Valor" className="valor-saida">
+                                                                        {formatCurrency(item.installmentAmount)}
+                                                                    </td>
+                                                                    <td data-label="Status">
+                                                                        <span className="badge-status status-pago">
+                                                                            <FaClock /> Pago
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+
+                            <div className="totalizador-relatorio color-saida">
+                                <span>Total Pago</span>
+                                <strong>{formatCurrency(totalValor)}</strong>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

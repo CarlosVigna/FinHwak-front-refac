@@ -17,6 +17,7 @@ const ChecklistMensal = () => {
   const [checkedItemsState, setCheckedItemsState] = useState(new Set());
   const [loadingCompletions, setLoadingCompletions] = useState(false);
   const [savingItems, setSavingItems] = useState(new Set());
+  const [deletingId, setDeletingId] = useState(null);
 
   const accountId = localStorage.getItem('accountId');
 
@@ -140,9 +141,6 @@ const ChecklistMensal = () => {
   };
 
   const handleDelete = async (id) => {
-    const confirmar = window.confirm('Deseja excluir permanentemente este item recorrente?');
-    if (!confirmar) return;
-
     try {
       const response = await api.delete(`/checklist/${id}`);
       if (!response.ok) throw new Error('Erro ao excluir item.');
@@ -151,6 +149,7 @@ const ChecklistMensal = () => {
         next.delete(id);
         return next;
       });
+      setDeletingId(null);
       fetchItens();
     } catch (error) {
       console.error(error);
@@ -192,7 +191,7 @@ const ChecklistMensal = () => {
           </div>
 
           <div className="botoes-formulario checklist-actions">
-            <button type="submit">Adicionar Recorrência</button>
+            <button type="submit" className="botao-salvar">Adicionar Recorrência</button>
           </div>
 
           {erro && <div className="error-message">{erro}</div>}
@@ -279,14 +278,35 @@ const ChecklistMensal = () => {
                             >
                               Criar
                             </button>
-                            <button
-                              type="button"
-                              className="btn-acao btn-excluir"
-                              title="Apagar Recorrência"
-                              onClick={() => handleDelete(item.id)}
-                            >
-                              <FaTrash />
-                            </button>
+                            {deletingId === item.id ? (
+                              <>
+                                <button
+                                  type="button"
+                                  className="btn-acao btn-excluir"
+                                  title="Confirmar exclusão"
+                                  onClick={() => handleDelete(item.id)}
+                                >
+                                  <FaCheckCircle />
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn-acao"
+                                  title="Cancelar"
+                                  onClick={() => setDeletingId(null)}
+                                >
+                                  ✕
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                type="button"
+                                className="btn-acao btn-excluir"
+                                title="Apagar Recorrência"
+                                onClick={() => setDeletingId(item.id)}
+                              >
+                                <FaTrash />
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>

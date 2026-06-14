@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faArrowTrendUp,
     faArrowTrendDown,
-    faScaleBalanced,
     faWallet,
     faClock
 } from '@fortawesome/free-solid-svg-icons';
@@ -23,7 +22,6 @@ const SummaryCards = ({
     receitas,
     despesas,
     pendenteMes,
-    saldoPrevisto,
     saldoRealizado,
     saldoAcumulado,
     deltaReceitas,
@@ -31,7 +29,6 @@ const SummaryCards = ({
     deltaResultado
 }) => {
     const pendingColor = pendenteMes > 0 ? 'warning' : 'success';
-    const prevColor    = saldoPrevisto   >= 0 ? 'success' : 'danger';
     const realColor    = saldoRealizado  >= 0 ? 'success' : 'danger';
     const acumColor    = saldoAcumulado  >= 0 ? 'success' : 'danger';
 
@@ -65,14 +62,6 @@ const SummaryCards = ({
             icon: faClock,
             color: pendingColor,
             icon_: iconToken[pendingColor],
-            delta: null
-        },
-        {
-            title: 'Resultado Previsto',
-            value: saldoPrevisto,
-            icon: faScaleBalanced,
-            color: prevColor,
-            icon_: iconToken[prevColor],
             delta: null
         },
         {

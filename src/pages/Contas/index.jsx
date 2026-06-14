@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../../componentes/Card';
 import { api } from '../../services/api';
@@ -21,37 +21,76 @@ const WelcomeBanner = ({ onDismiss }) => (
   </div>
 );
 
-const PrimeirosPassos = ({ onDismiss }) => (
-  <div className="primeiros-passos">
-    <div className="primeiros-passos-header">
-      <span>🚀 Primeiros passos</span>
-      <button className="primeiros-passos-fechar" onClick={onDismiss}>
-        Fechar
-      </button>
+const PrimeirosPassos = ({ contas, categorias, onDismiss }) => {
+  const [pos, setPos] = useState({ x: 20, y: 80 });
+  const drag = useRef({ active: false, startX: 0, startY: 0, initX: 0, initY: 0 });
+
+  useEffect(() => {
+    const onMove = (e) => {
+      if (!drag.current.active) return;
+      setPos({
+        x: drag.current.initX + e.clientX - drag.current.startX,
+        y: drag.current.initY + e.clientY - drag.current.startY,
+      });
+    };
+    const onUp = () => { drag.current.active = false; };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+  }, []);
+
+  const handleDragStart = (e) => {
+    drag.current = { active: true, startX: e.clientX, startY: e.clientY, initX: pos.x, initY: pos.y };
+    e.preventDefault();
+  };
+
+  const step1 = contas.length > 0;
+  const step2 = localStorage.getItem('finhawk-account-entered') === 'true';
+  const step3 = categorias.length > 0;
+  const step4 = localStorage.getItem('finhawk-first-bill') === 'true';
+
+  const steps = [
+    { done: step1, label: <>Criar uma conta financeira</> },
+    { done: step2, label: <>Clique em <strong>Entrar</strong> em uma conta para selecioná-la</> },
+    { done: step3, label: <>Cadastre suas categorias de receita e despesa</> },
+    { done: step4, label: <>Registre seus primeiros lançamentos e explore o Dashboard</> },
+  ];
+
+  return (
+    <div
+      className="primeiros-passos primeiros-passos--float"
+      style={{ left: pos.x, top: pos.y }}
+    >
+      <div className="primeiros-passos-header" onMouseDown={handleDragStart}>
+        <span>🚀 Primeiros passos</span>
+        <button
+          className="primeiros-passos-fechar"
+          onClick={onDismiss}
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          Fechar
+        </button>
+      </div>
+      <ol className="primeiros-passos-lista">
+        {steps.map((step, i) => (
+          <li key={i} className={`primeiros-passos-item${step.done ? ' done' : ''}`}>
+            <span className={`primeiros-passos-badge ${step.done ? 'completed' : 'pending'}`}>
+              {step.done ? '✓' : i + 1}
+            </span>
+            {step.label}
+          </li>
+        ))}
+      </ol>
     </div>
-    <ol className="primeiros-passos-lista">
-      <li className="primeiros-passos-item done">
-        <span className="primeiros-passos-badge completed">✓</span>
-        Criar uma conta financeira
-      </li>
-      <li className="primeiros-passos-item">
-        <span className="primeiros-passos-badge pending">2</span>
-        Clique em <strong>Entrar</strong> em uma conta para selecioná-la
-      </li>
-      <li className="primeiros-passos-item">
-        <span className="primeiros-passos-badge pending">3</span>
-        Cadastre suas categorias de receita e despesa
-      </li>
-      <li className="primeiros-passos-item">
-        <span className="primeiros-passos-badge pending">4</span>
-        Registre seus primeiros lançamentos e explore o Dashboard
-      </li>
-    </ol>
-  </div>
-);
+  );
+};
 
 const Contas = () => {
   const [contas, setContas] = useState([]);
+  const [categorias, setCategorias] = useState([]);
   const [erro, setErro] = useState(null);
   const [sucesso, setSucesso] = useState('');
   const navigate = useNavigate();
@@ -70,13 +109,17 @@ const Contas = () => {
     const fetchContas = async () => {
       try {
         const response = await api.get('/account');
-
-        if (!response.ok) {
-          throw new Error('Erro ao carregar contas.');
-        }
-
+        if (!response.ok) throw new Error('Erro ao carregar contas.');
         const data = await response.json();
         setContas(data);
+
+        if (data.length > 0) {
+          const catRes = await api.get(`/category/account/${data[0].id}`);
+          if (catRes.ok) {
+            const catData = await catRes.json();
+            setCategorias(catData);
+          }
+        }
       } catch (error) {
         setErro('Erro ao carregar contas: ' + error.message);
         console.error('Erro ao buscar contas:', error);
@@ -100,6 +143,7 @@ const Contas = () => {
     const conta = contas.find(c => c.id === idConta);
     localStorage.setItem('accountId', String(idConta));
     localStorage.setItem('accountName', conta?.name || '');
+    localStorage.setItem('finhawk-account-entered', 'true');
     navigate('/dashboard');
   };
 
@@ -173,7 +217,7 @@ const Contas = () => {
         </div>
       ) : (
         <>
-          {showChecklist && <PrimeirosPassos onDismiss={dismissChecklist} />}
+          {showChecklist && <PrimeirosPassos contas={contas} categorias={categorias} onDismiss={dismissChecklist} />}
 
           <div className="cards-container">
             {contas.map((conta) => (
