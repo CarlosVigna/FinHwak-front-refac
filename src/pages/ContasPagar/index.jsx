@@ -181,9 +181,11 @@ const ContasPagar = () => {
                             onChange={(e) => setFilterCategoria(e.target.value)}
                         >
                             <option value="">Todas as Categorias</option>
-                            {categorias.map(cat => (
-                                <option key={cat.id} value={cat.name}>{cat.name}</option>
-                            ))}
+                            {categorias
+                                .filter(c => c.type?.toLowerCase() === 'payment')
+                                .map(cat => (
+                                    <option key={cat.id} value={cat.name}>{cat.name}</option>
+                                ))}
                         </select>
                     </div>
                     <div className="grupo-campo report-actions">

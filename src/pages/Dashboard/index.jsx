@@ -2,7 +2,8 @@ import React, {
     useState,
     useEffect,
     useMemo,
-    useCallback
+    useCallback,
+    useRef
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
@@ -35,10 +36,46 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showConsolidated, setShowConsolidated] = useState(false);
+    const isMounted = useRef(true);
 
     const currentDate = new Date();
     const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
     const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
+
+    useEffect(() => {
+        return () => { isMounted.current = false; };
+    }, []);
+
+    const fetchBills = useCallback(async () => {
+        try {
+            setLoading(true);
+            const accountId = localStorage.getItem('accountId');
+
+            if (!accountId) {
+                throw new Error('Nenhuma conta selecionada. Volte e selecione uma conta.');
+            }
+
+            const response = await api.get(`/bill/account/${accountId}`);
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || 'Falha ao carregar dados do dashboard.');
+            }
+
+            const data = await response.json();
+            if (isMounted.current) {
+                setBills(data);
+                setError(null);
+            }
+        } catch (err) {
+            if (isMounted.current) {
+                console.error('❌ Erro ao buscar dados:', err);
+                setError(err.message);
+            }
+        } finally {
+            if (isMounted.current) setLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
         const accountId = localStorage.getItem('accountId');
@@ -56,34 +93,7 @@ const Dashboard = () => {
         }
 
         fetchBills();
-    }, []);
-
-    const fetchBills = async () => {
-        try {
-            setLoading(true);
-            const accountId = localStorage.getItem('accountId');
-
-            if (!accountId) {
-                throw new Error('Nenhuma conta selecionada. Volte e selecione uma conta.');
-            }
-
-            const response = await api.get(`/bill/account/${accountId}`);
-
-            if (!response.ok) {
-                const text = await response.text();
-                throw new Error(text || 'Falha ao carregar dados do dashboard.');
-            }
-
-            const data = await response.json();
-            setBills(data);
-            setError(null);
-        } catch (err) {
-            console.error('❌ Erro ao buscar dados:', err);
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+    }, [fetchBills]);
 
     const handleMonthChange = (month, year) => {
         setSelectedMonth(month);

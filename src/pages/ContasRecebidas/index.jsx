@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { FaClock, FaExclamationTriangle } from 'react-icons/fa';
+import { FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import { api } from '../../services/api';
@@ -179,9 +179,11 @@ const ContasRecebidas = () => {
                             onChange={(e) => setFilterCategoria(e.target.value)}
                         >
                             <option value="">Todas as Categorias</option>
-                            {categorias.map(cat => (
-                                <option key={cat.id} value={cat.name}>{cat.name}</option>
-                            ))}
+                            {categorias
+                                .filter(c => c.type?.toLowerCase() === 'receipt')
+                                .map(cat => (
+                                    <option key={cat.id} value={cat.name}>{cat.name}</option>
+                                ))}
                         </select>
                     </div>
                     <div className="grupo-campo report-actions">
@@ -252,7 +254,7 @@ const ContasRecebidas = () => {
                                                                     </td>
                                                                     <td data-label="Status">
                                                                         <span className="badge-status status-recebidos">
-                                                                            <FaClock /> Recebido
+                                                                            <FaCheckCircle /> Recebido
                                                                         </span>
                                                                     </td>
                                                                 </tr>

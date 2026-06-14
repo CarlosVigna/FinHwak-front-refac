@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { useAuth, AuthProvider } from './pages/Login/AuthContext';
 import PrivateRoute from './pages/Login/PrivateRoute';
 import AccountRoute from './pages/Login/AccountRoute';
+import ErrorBoundary from './componentes/ErrorBoundary';
 
 import LandingPage from './pages/LandingPage';
 import MenuHome from './componentes/MenuHome';
@@ -59,6 +60,7 @@ function App() {
       {isAuthenticated && <MenuHome />}
       <div className={`app-main${!isAuthenticated ? ' app-main-full' : ''}`}>
         <main>
+          <ErrorBoundary>
           <Routes>
             <Route
               path="/contas"
@@ -117,6 +119,7 @@ function App() {
               element={<PrivateRoute><Configuracoes /></PrivateRoute>}
             />
           </Routes>
+          </ErrorBoundary>
         </main>
         <Footer />
       </div>

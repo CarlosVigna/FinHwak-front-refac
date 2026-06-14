@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { formatCurrency } from '../utils/formatters';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -7,6 +7,7 @@ import {
     faWallet,
     faClock
 } from '@fortawesome/free-solid-svg-icons';
+import { useTooltipsEnabled } from '../../../hooks/useTooltipsEnabled';
 
 const DeltaBadge = ({ delta }) => {
     if (delta === 0) return null;
@@ -16,6 +17,28 @@ const DeltaBadge = ({ delta }) => {
             {positive ? '↑' : '↓'} {formatCurrency(Math.abs(delta))} vs mês anterior
         </span>
     );
+};
+
+function InfoTooltip({ text }) {
+    const [show, setShow] = useState(false);
+    return (
+        <span
+            className="metric-info-wrap"
+            onMouseEnter={() => setShow(true)}
+            onMouseLeave={() => setShow(false)}
+        >
+            <span className="metric-info">ⓘ</span>
+            {show && <div className="metric-tooltip">{text}</div>}
+        </span>
+    );
+}
+
+const TOOLTIPS = {
+    'Receitas': 'Soma de todos os lançamentos do tipo receita recebidos no mês selecionado.',
+    'Despesas': 'Soma de todos os lançamentos do tipo despesa pagos no mês selecionado.',
+    'Pendente do Mês': 'Lançamentos deste mês que ainda não foram pagos ou recebidos.',
+    'Resultado Realizado': 'Receitas menos despesas já efetivadas neste mês. A seta compara este valor com o resultado do mês anterior.',
+    'Saldo Acumulado': 'Soma de todos os resultados mensais desde o primeiro lançamento registrado na conta.',
 };
 
 const SummaryCards = ({
@@ -28,6 +51,8 @@ const SummaryCards = ({
     deltaDespesas,
     deltaResultado
 }) => {
+    const tooltipsEnabled = useTooltipsEnabled();
+
     const pendingColor = pendenteMes > 0 ? 'warning' : 'success';
     const realColor    = saldoRealizado  >= 0 ? 'success' : 'danger';
     const acumColor    = saldoAcumulado  >= 0 ? 'success' : 'danger';
@@ -91,7 +116,12 @@ const SummaryCards = ({
                     style={{ animationDelay: `${index * 0.08}s` }}
                 >
                     <div className="summary-card-header">
-                        <span className="summary-card-title">{card.title}</span>
+                        <div className="summary-card-title-row">
+                            <span className="summary-card-title">{card.title}</span>
+                            {tooltipsEnabled && TOOLTIPS[card.title] && (
+                                <InfoTooltip text={TOOLTIPS[card.title]} />
+                            )}
+                        </div>
                         <div
                             className="summary-card-icon"
                             style={{ background: card.icon_.bg, color: card.icon_.color }}

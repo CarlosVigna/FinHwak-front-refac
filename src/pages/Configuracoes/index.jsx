@@ -2,10 +2,18 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../Login/AuthContext';
 import { api } from '../../services/api';
+import { useTooltipsEnabled } from '../../hooks/useTooltipsEnabled';
 
 const Configuracoes = () => {
   const { user, logout, refreshUser } = useAuth();
   const navigate = useNavigate();
+  const tooltipsEnabled = useTooltipsEnabled();
+
+  const handleToggleTooltips = (e) => {
+    const val = e.target.checked;
+    localStorage.setItem('finhawk-tooltips', val ? 'true' : 'false');
+    window.dispatchEvent(new Event('finhawk-tooltips-changed'));
+  };
 
   // ── Seção 1: Dados pessoais ──────────────────────────────────
   const [nome, setNome] = useState('');
@@ -340,6 +348,28 @@ const Configuracoes = () => {
               </button>
             </div>
           </form>
+        </div>
+
+        {/* ── Preferências ──────────────────────────────────── */}
+        <div className="secao-superior">
+          <h2 className="historico-titulo">Preferências</h2>
+
+          <div className="toggle-row">
+            <span className="toggle-label">
+              Tooltips informativos no Dashboard
+              <span style={{ display: 'block', fontSize: '0.78rem', color: 'var(--muted2)', marginTop: 2 }}>
+                Exibe ícones ⓘ com explicações nos cards do Dashboard.
+              </span>
+            </span>
+            <label className="toggle-switch">
+              <input
+                type="checkbox"
+                checked={tooltipsEnabled}
+                onChange={handleToggleTooltips}
+              />
+              <span className="toggle-slider" />
+            </label>
+          </div>
         </div>
 
         {/* ── Privacidade e Dados ────────────────────────────── */}

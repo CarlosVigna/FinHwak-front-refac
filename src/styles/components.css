@@ -1739,3 +1739,249 @@ footer {
     border-radius: 0;
     border: none;
 }
+
+/* ── InfoTooltip (dashboard cards) ── */
+.summary-card-title-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.metric-info-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.metric-info {
+    font-size: 0.72rem;
+    color: var(--muted);
+    cursor: default;
+    line-height: 1;
+    user-select: none;
+}
+
+.metric-info-wrap:hover .metric-info {
+    color: var(--muted2);
+}
+
+.metric-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+    font-size: 11px;
+    color: var(--text);
+    white-space: normal;
+    width: 200px;
+    text-align: left;
+    z-index: 200;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    line-height: 1.5;
+}
+
+.metric-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--border2);
+}
+
+/* ── Toggle switch (preferências) ── */
+.toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.toggle-label {
+    font-size: 0.88rem;
+    color: var(--text);
+}
+
+.toggle-switch {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: var(--border2);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    left: 3px;
+    top: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background: var(--accent);
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+    transform: translateX(16px);
+}
+
+/* ── AccountMultiSelect ── */
+.account-multiselect {
+    position: relative;
+    display: inline-block;
+}
+
+.account-multiselect-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 6px 12px;
+    font-size: 12px;
+    color: var(--text);
+    cursor: pointer;
+    min-width: 180px;
+    justify-content: space-between;
+    transition: border-color 0.15s;
+}
+
+.account-multiselect-trigger:hover {
+    border-color: var(--border2);
+}
+
+.account-multiselect-arrow {
+    font-size: 10px;
+    color: var(--muted);
+}
+
+.account-multiselect-panel {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 6px;
+    min-width: 220px;
+    max-height: 280px;
+    overflow-y: auto;
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.account-multiselect-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    color: var(--muted2);
+    cursor: pointer;
+}
+
+.account-multiselect-item:hover {
+    background: var(--surface2);
+    color: var(--text);
+}
+
+.account-multiselect-item input {
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+.account-multiselect-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    flex-shrink: 0;
+}
+
+.account-multiselect-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 0;
+}
+
+/* ── Consolidated selector row ── */
+.consolidated-selector-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.consolidated-selector-label {
+    font-size: 0.82rem;
+    color: var(--muted2);
+}
+
+/* ── Impacto consolidado card ── */
+.consolidated-impact {
+    margin-bottom: 16px;
+}
+
+.consolidated-impact-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.consolidated-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.consolidated-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.consolidated-label {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.consolidated-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+@media (max-width: 768px) {
+    .consolidated-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
