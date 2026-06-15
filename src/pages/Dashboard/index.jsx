@@ -29,6 +29,7 @@ import {
     groupByMonth
 } from './utils/calculations';
 import ConsolidatedOverview from './components/ConsolidatedOverview';
+import SprayUnderline from '../../componentes/SprayUnderline';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -290,6 +291,7 @@ const Dashboard = () => {
                 <div className="dashboard-header-row">
                     <div>
                         <h1 className="page-title">Dashboard Financeiro</h1>
+                        <SprayUnderline width={140} className="page-title-spray" />
                         <p className="page-subtitle">Visão completa das suas finanças</p>
                     </div>
                     <div className="dashboard-header-actions">

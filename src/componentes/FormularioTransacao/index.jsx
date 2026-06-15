@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
+import SprayUnderline from '../SprayUnderline';
 
 const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao }) => {
     const navigate = useNavigate();
@@ -315,9 +316,12 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
             </div>
 
             <div className="botoes-formulario">
-                <button type="submit" className="botao-salvar">
-                    {tituloParaEditar ? 'Atualizar' : 'Cadastrar'}
-                </button>
+                <div className="fh-btn-primary-wrap">
+                    <button type="submit" className="botao-salvar">
+                        {tituloParaEditar ? 'Atualizar' : 'Cadastrar'}
+                    </button>
+                    <SprayUnderline width={100} color="var(--accent)" className="btn-spray" />
+                </div>
                 {tituloParaEditar && (
                     <button type="button" className="botao-cancelar" onClick={onCancel}>
                         Cancelar

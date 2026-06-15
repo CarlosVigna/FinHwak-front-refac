@@ -1,4 +1,5 @@
 import React from 'react';
+import SprayUnderline from '../SprayUnderline';
 
 const FormularioCategoria = ({ valores, handleInputChange, onSubmit, erro, sucesso, editando = false, onCancel }) => {
     return (
@@ -36,9 +37,12 @@ const FormularioCategoria = ({ valores, handleInputChange, onSubmit, erro, suces
             </div>
 
             <div className="botoes-formulario">
-                <button type="submit" className="botao-salvar">
-                    {editando ? 'Salvar Alterações' : 'Cadastrar'}
-                </button>
+                <div className="fh-btn-primary-wrap">
+                    <button type="submit" className="botao-salvar">
+                        {editando ? 'Salvar Alterações' : 'Cadastrar'}
+                    </button>
+                    <SprayUnderline width={100} color="var(--accent)" className="btn-spray" />
+                </div>
                 {editando && (
                     <button type="button" className="btn-secundario" onClick={onCancel}>
                         Cancelar

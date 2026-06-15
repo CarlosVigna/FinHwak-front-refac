@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaClock, FaExclamationTriangle } from 'react-icons/fa';
 import { generateReportPDF } from '../../utils/pdfExport';
 import { api } from '../../services/api';
+import SprayUnderline from '../../componentes/SprayUnderline';
 
 const ContasPagar = () => {
     const navigate = useNavigate();
@@ -164,7 +165,10 @@ const ContasPagar = () => {
 
                 <div className='titulo-relatorio-header'>
                     <FaExclamationTriangle size={30} style={{ color: 'var(--red)' }} />
-                    <h2 className="historico-titulo">Relatório de Contas a Pagar</h2>
+                    <div>
+                        <h2 className="historico-titulo">Relatório de Contas a Pagar</h2>
+                        <SprayUnderline width={120} className="page-title-spray" />
+                    </div>
                 </div>
 
                 <div className='container-filtro-moderno'>

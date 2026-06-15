@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import { generateReportPDF } from '../../utils/pdfExport';
 import { api } from '../../services/api';
+import SprayUnderline from '../../componentes/SprayUnderline';
 
 const ContasRecebidas = () => {
     const [dados, setDados] = useState([]);
@@ -162,7 +163,10 @@ const ContasRecebidas = () => {
 
                 <div className='titulo-relatorio-header'>
                     <FaExclamationTriangle size={30} style={{ color: 'var(--red)' }} />
-                    <h2 className="historico-titulo">Relatório de Contas Recebidas</h2>
+                    <div>
+                        <h2 className="historico-titulo">Relatório de Contas Recebidas</h2>
+                        <SprayUnderline width={120} className="page-title-spray" />
+                    </div>
                 </div>
 
                 <div className='container-filtro-moderno'>

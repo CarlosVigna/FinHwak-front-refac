@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { api } from '../../services/api';
 import FormularioCategoria from '../../componentes/FormularioCategoria';
 import ListaCategorias from '../ListaCategorias';
+import SprayUnderline from '../../componentes/SprayUnderline';
 
 const VALORES_VAZIOS = { name: '', type: 'RECEIPT' };
 
@@ -93,6 +94,7 @@ const CadastroCategoria = () => {
     <div className="cadastro-categoria-vertical">
       <div className="fh-page-header">
         <h1 className="fh-title">Cadastro de <span>Categorias</span></h1>
+        <SprayUnderline width={140} className="page-title-spray" />
         <p className="fh-subtitle">Organize seus lançamentos por categoria de receita ou despesa.</p>
       </div>
 

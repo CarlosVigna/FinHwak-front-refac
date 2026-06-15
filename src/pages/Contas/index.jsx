@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Card from '../../componentes/Card';
 import { api } from '../../services/api';
 import { useAccount } from '../../contexts/AccountContext';
+import SprayUnderline from '../../componentes/SprayUnderline';
 
 const WelcomeBanner = ({ onDismiss }) => (
   <div className="welcome-banner">
@@ -191,6 +192,7 @@ const Contas = () => {
   return (
     <div className="contas-container">
       <h1 className="titulo-contas">Minhas Contas</h1>
+      <SprayUnderline width={140} className="page-title-spray" />
 
       {isNewUser && <WelcomeBanner onDismiss={dismissWelcome} />}
 

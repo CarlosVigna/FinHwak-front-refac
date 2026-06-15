@@ -73,7 +73,7 @@ function MenuHome() {
                 <div className="sb-top">
                     <div className="sb-brand">
                         <div className="sb-logo-mark">
-                        <img src="/icone.png" alt="FH" className="sb-logo-img" />
+                        <img src="/icone.svg" alt="FH" className="sb-logo-img" />
                     </div>
                         <span className="sb-logo-name">FinHawk</span>
                     </div>

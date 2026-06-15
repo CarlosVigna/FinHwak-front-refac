@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import FormularioTransacao from '../../componentes/FormularioTransacao';
 import ListaTitulo from '../../componentes/ListaTitulo';
 import { useAccount } from '../../contexts/AccountContext';
+import SprayUnderline from '../../componentes/SprayUnderline';
 
 const CadastroTitulo = () => {
     const [tituloParaEditar, setTituloParaEditar] = useState(null);
@@ -35,7 +36,7 @@ const CadastroTitulo = () => {
             <h1 className="fh-title">
                 Cadastro de <span>Títulos</span>
             </h1>
-
+            <SprayUnderline width={140} className="page-title-spray" />
             <p className="fh-subtitle">
                 Gerencie recebimentos e pagamentos da conta selecionada.
             </p>

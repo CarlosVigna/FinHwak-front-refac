@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../Login/AuthContext';
+import SprayUnderline from '../../componentes/SprayUnderline';
 import './LandingPage.css';
 
 const FEATURES = [
@@ -90,7 +91,7 @@ function LandingPage() {
             <nav className="landing-nav">
                 <Link to="/" className="landing-nav-brand">
                     <div className="sb-logo-mark">
-                        <img src="/icone.png" alt="FH" className="sb-logo-img" />
+                        <img src="/icone.svg" alt="FH" className="sb-logo-img" />
                     </div>
                     <span className="sb-logo-name">FinHawk</span>
                 </Link>
@@ -142,7 +143,20 @@ function LandingPage() {
                 </div>
 
                 <div className="landing-hero-image">
-                    <img src="/imagem_para_page.png" alt="FinHawk — Seu dinheiro. Suas regras. Seu futuro." />
+                    <div className="hero-visual-card">
+                        <img src="/icone.svg" alt="FinHawk" className="hero-visual-icon" />
+                        <SprayUnderline width={200} className="hero-visual-spray" />
+                        <div className="hero-visual-stats">
+                            <div className="hero-visual-stat">
+                                <span className="hvs-label">Resultado do mês</span>
+                                <span className="hvs-value" style={{ color: 'var(--green)' }}>+R$ 3.290</span>
+                            </div>
+                            <div className="hero-visual-stat">
+                                <span className="hvs-label">Contas ativas</span>
+                                <span className="hvs-value">3</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -325,7 +339,7 @@ function LandingPage() {
             {/* ── 9. Footer ── */}
             <footer className="landing-footer">
                 <Link to="/" className="landing-footer-brand">
-                    <img src="/logo.png" alt="FinHawk" className="footer-logo" />
+                    <img src="/logo.svg" alt="FinHawk" className="footer-logo" />
                 </Link>
 
                 <div className="landing-footer-links">

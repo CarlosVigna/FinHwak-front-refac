@@ -897,6 +897,35 @@ footer {
   gap: 12px;
 }
 
+/* ── SprayUnderline — título de página ── */
+.page-title-spray {
+  margin-top: -4px;
+  margin-bottom: 4px;
+}
+
+/* ── SprayUnderline — botão primário hover ── */
+.fh-btn-primary-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.fh-btn-primary-wrap .btn-spray {
+  position: absolute;
+  top: 100%;
+  left: 10%;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.fh-btn-primary-wrap:hover .btn-spray {
+  opacity: 1;
+}
+
+/* ── SprayUnderline — metric card ── */
+.metric-spray {
+  margin: 2px 0 4px;
+}
+
 .account-photo {
   width: 100px;
   height: 100px;

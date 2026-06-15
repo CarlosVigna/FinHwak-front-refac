@@ -37,7 +37,7 @@ function App() {
   const { pathname } = useLocation();
 
   const isPublicPath = PUBLIC_PATHS.some(p =>
-    pathname === p || (p !== '/' && pathname.startsWith(p))
+    pathname === p || (p !== '/' && pathname.startsWith(p + '/'))
   );
 
   // ── Rotas públicas — sem sidebar, sem app-layout ──
