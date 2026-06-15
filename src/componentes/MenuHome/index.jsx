@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../pages/Login/AuthContext';
 import { useTheme } from '../../hooks/useTheme';
 import { useAccount } from '../../contexts/AccountContext';
+import FinHawkIcon from '../FinHawkIcon';
 
 function NavItem({ to, icon, label, locked, onLockedClick }) {
     if (locked) {
@@ -73,7 +74,7 @@ function MenuHome() {
                 <div className="sb-top">
                     <div className="sb-brand">
                         <div className="sb-logo-mark">
-                        <img src="/icone.svg" alt="FH" className="sb-logo-img" />
+                        <FinHawkIcon className="sb-logo-img" size={26} />
                     </div>
                         <span className="sb-logo-name">FinHawk</span>
                     </div>

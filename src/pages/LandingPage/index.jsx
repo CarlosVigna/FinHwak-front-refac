@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../Login/AuthContext';
+import { useTheme } from '../../hooks/useTheme';
+import FinHawkIcon from '../../componentes/FinHawkIcon';
+import FinHawkLogo from '../../componentes/FinHawkLogo';
 import SprayUnderline from '../../componentes/SprayUnderline';
 import './LandingPage.css';
 
@@ -82,6 +85,7 @@ const PRO_FEATURES = [
 
 function LandingPage() {
     const { isAuthenticated } = useAuth();
+    const { theme, toggleTheme } = useTheme();
     const [annual, setAnnual] = useState(false);
 
     return (
@@ -91,12 +95,20 @@ function LandingPage() {
             <nav className="landing-nav">
                 <Link to="/" className="landing-nav-brand">
                     <div className="sb-logo-mark">
-                        <img src="/icone.svg" alt="FH" className="sb-logo-img" />
+                        <FinHawkIcon className="landing-nav-icon" size={28} />
                     </div>
                     <span className="sb-logo-name">FinHawk</span>
                 </Link>
 
                 <div className="landing-nav-actions">
+                    <button
+                        className="landing-theme-toggle"
+                        onClick={toggleTheme}
+                        aria-label={theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'}
+                        title={theme === 'dark' ? 'Modo claro' : 'Modo escuro'}
+                    >
+                        {theme === 'dark' ? '☀' : '🌙'}
+                    </button>
                     {isAuthenticated ? (
                         <Link to="/dashboard" className="btn-landing-primary">
                             Ir para o app →
@@ -144,7 +156,7 @@ function LandingPage() {
 
                 <div className="landing-hero-image">
                     <div className="hero-visual-card">
-                        <img src="/icone.svg" alt="FinHawk" className="hero-visual-icon" />
+                        <FinHawkIcon className="hero-visual-icon" size={72} />
                         <SprayUnderline width={200} className="hero-visual-spray" />
                         <div className="hero-visual-stats">
                             <div className="hero-visual-stat">
@@ -339,7 +351,7 @@ function LandingPage() {
             {/* ── 9. Footer ── */}
             <footer className="landing-footer">
                 <Link to="/" className="landing-footer-brand">
-                    <img src="/logo.svg" alt="FinHawk" className="footer-logo" />
+                    <FinHawkLogo className="footer-logo" height={32} />
                 </Link>
 
                 <div className="landing-footer-links">

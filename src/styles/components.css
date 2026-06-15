@@ -176,9 +176,9 @@ textarea:focus-visible {
 .botao-entrar,
 .btn-export-pdf {
   border-color: transparent;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background: var(--accent);
   color: #ffffff;
-  box-shadow: 0 12px 30px rgba(91, 140, 255, 0.22);
+  box-shadow: 0 4px 16px rgba(224, 53, 60, 0.28);
 }
 
 .fh-button-secondary,
@@ -222,10 +222,16 @@ textarea:focus-visible {
 .btn-select-account:hover,
 .botao-enviar-cadastro:hover,
 .botao-entrar:hover,
-.btn-export-pdf:hover,
+.btn-export-pdf:hover {
+  background: var(--accent-hover);
+  color: #ffffff;
+  border-color: transparent;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(224, 53, 60, 0.35);
+}
+
 .btn-export-csv:hover {
   transform: translateY(-1px);
-  box-shadow: 0 16px 40px rgba(91, 140, 255, 0.28);
 }
 
 .month-nav-btn,
@@ -903,28 +909,6 @@ footer {
   margin-bottom: 4px;
 }
 
-/* ── SprayUnderline — botão primário hover ── */
-.fh-btn-primary-wrap {
-  position: relative;
-  display: inline-block;
-}
-
-.fh-btn-primary-wrap .btn-spray {
-  position: absolute;
-  top: 100%;
-  left: 10%;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.fh-btn-primary-wrap:hover .btn-spray {
-  opacity: 1;
-}
-
-/* ── SprayUnderline — metric card ── */
-.metric-spray {
-  margin: 2px 0 4px;
-}
 
 .account-photo {
   width: 100px;
@@ -1175,9 +1159,9 @@ footer {
 
 .btn-filtro.ativo {
   border-color: transparent;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background: var(--accent);
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(91, 140, 255, 0.22);
+  box-shadow: 0 4px 12px rgba(224, 53, 60, 0.25);
 }
 
 .input-busca-titulo {
@@ -1295,15 +1279,18 @@ footer {
   font-size: 0.8rem;
   gap: 5px;
   border-color: transparent;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background: var(--accent);
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(91, 140, 255, 0.18);
+  box-shadow: 0 2px 8px rgba(224, 53, 60, 0.20);
   white-space: nowrap;
 }
 
 .btn-baixa:hover {
+  background: var(--accent-hover);
+  color: #ffffff;
+  border-color: transparent;
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(91, 140, 255, 0.28);
+  box-shadow: 0 6px 16px rgba(224, 53, 60, 0.30);
 }
 
 @media (max-width: 920px) {
@@ -1639,8 +1626,8 @@ footer {
 .sb-logo-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
   display: block;
+  color: var(--text);
 }
 
 .sb-logo-name {

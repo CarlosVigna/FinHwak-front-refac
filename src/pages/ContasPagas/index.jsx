@@ -164,8 +164,8 @@ const ContasPagas = () => {
                 <div className='titulo-relatorio-header'>
                     <FaExclamationTriangle size={30} style={{ color: 'var(--red)' }} />
                     <div>
-                        <h2 className="historico-titulo">Relatório de Contas Pagas</h2>
-                        <SprayUnderline width={120} className="page-title-spray" />
+                        <h1 className="fh-title"><span>Relatório de Contas Pagas</span></h1>
+                        <SprayUnderline width={140} className="page-title-spray" />
                     </div>
                 </div>
 

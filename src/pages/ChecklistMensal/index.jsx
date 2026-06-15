@@ -164,9 +164,9 @@ const ChecklistMensal = () => {
     <div className='cadastro-titulo-vertical'>
 
       <div className='secao-superior'>
-        <h2 className="historico-titulo checklist-title">
-          Controle de Checklist Recorrente
-        </h2>
+        <h1 className="fh-title">
+          <span>Controle de Checklist Recorrente</span>
+        </h1>
         <SprayUnderline width={140} className="page-title-spray" />
 
         <form onSubmit={handleCadastrar} className="checklist-form">

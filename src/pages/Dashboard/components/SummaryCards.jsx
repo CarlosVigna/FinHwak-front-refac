@@ -8,7 +8,6 @@ import {
     faClock
 } from '@fortawesome/free-solid-svg-icons';
 import { useTooltipsEnabled } from '../../../hooks/useTooltipsEnabled';
-import SprayUnderline from '../../../componentes/SprayUnderline';
 
 const DeltaBadge = ({ delta }) => {
     if (delta === 0) return null;
@@ -134,9 +133,6 @@ const SummaryCards = ({
                         <span className={`summary-card-value ${card.color}`}>
                             {formatCurrency(card.value)}
                         </span>
-                        {card.title === 'Resultado Realizado' && (
-                            <SprayUnderline width={120} className="metric-spray" />
-                        )}
                         {card.delta != null && <DeltaBadge delta={card.delta} />}
                     </div>
                 </div>
