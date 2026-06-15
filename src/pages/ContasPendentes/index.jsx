@@ -7,7 +7,6 @@ import {
   faCalendarAlt,
   faInbox,
 } from '@fortawesome/free-solid-svg-icons';
-import SprayUnderline from '../../componentes/SprayUnderline';
 
 const parseLocalDate = (dateString) => {
   if (!dateString) return null;
@@ -175,7 +174,6 @@ const ContasPendentes = () => {
         <h1 className="fh-title">
           Contas <span>Pendentes</span>
         </h1>
-        <SprayUnderline width={140} className="page-title-spray" />
         <p className="fh-subtitle">
           Gerencie seus pagamentos em aberto.
         </p>

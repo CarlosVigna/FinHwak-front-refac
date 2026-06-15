@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { FaTrash, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import { api } from '../../services/api';
 import { useAccount } from '../../contexts/AccountContext';
-import SprayUnderline from '../../componentes/SprayUnderline';
 
 const ChecklistMensal = () => {
   const navigate = useNavigate();
@@ -167,7 +166,6 @@ const ChecklistMensal = () => {
         <h1 className="fh-title">
           <span>Controle de Checklist Recorrente</span>
         </h1>
-        <SprayUnderline width={140} className="page-title-spray" />
 
         <form onSubmit={handleCadastrar} className="checklist-form">
           <div className="checklist-grid">

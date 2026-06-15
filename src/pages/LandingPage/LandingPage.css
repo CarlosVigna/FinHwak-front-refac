@@ -137,9 +137,6 @@
   color: var(--text);
 }
 
-.hero-visual-spray {
-  margin: -8px 0 4px;
-}
 
 .hero-visual-stats {
   display: grid;

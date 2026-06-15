@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../Login/AuthContext';
 import { api } from '../../services/api';
 import { useTooltipsEnabled } from '../../hooks/useTooltipsEnabled';
-import SprayUnderline from '../../componentes/SprayUnderline';
 
 const Configuracoes = () => {
   const { user, logout, refreshUser } = useAuth();
@@ -271,7 +270,6 @@ const Configuracoes = () => {
       <div className="configuracoes-container">
 
         <h1 className="titulo-contas">Configurações da Conta</h1>
-        <SprayUnderline width={140} className="page-title-spray" />
 
         {/* ── Dados Pessoais ─────────────────────────────────── */}
         <div className="secao-superior">

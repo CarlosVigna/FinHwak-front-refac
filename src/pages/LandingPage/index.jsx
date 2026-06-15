@@ -4,7 +4,6 @@ import { useAuth } from '../Login/AuthContext';
 import { useTheme } from '../../hooks/useTheme';
 import FinHawkIcon from '../../componentes/FinHawkIcon';
 import FinHawkLogo from '../../componentes/FinHawkLogo';
-import SprayUnderline from '../../componentes/SprayUnderline';
 import './LandingPage.css';
 
 const FEATURES = [
@@ -157,7 +156,6 @@ function LandingPage() {
                 <div className="landing-hero-image">
                     <div className="hero-visual-card">
                         <FinHawkIcon className="hero-visual-icon" size={72} />
-                        <SprayUnderline width={200} className="hero-visual-spray" />
                         <div className="hero-visual-stats">
                             <div className="hero-visual-stat">
                                 <span className="hvs-label">Resultado do mês</span>
