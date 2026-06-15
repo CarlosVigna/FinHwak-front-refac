@@ -1,41 +1,45 @@
-function FinHawkLogo({ className = '', height = 32 }) {
+function FinHawkLogo({ className = '', height = 40 }) {
   return (
     <svg
       className={className}
       height={height}
-      viewBox="0 0 320 100"
+      viewBox="0 0 340 130"
       xmlns="http://www.w3.org/2000/svg"
-      aria-label="FinHawk — Controle. Foco. Liberdade."
+      aria-label="FinHawk"
       role="img"
     >
-      <defs>
-        <filter id="fh-logo-rough" x="-20%" y="-20%" width="140%" height="140%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="noise" seed="7" />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" />
-        </filter>
-      </defs>
-
-      <text x="11" y="62" fontFamily="Arial, sans-serif" fontSize="46" fontWeight="800" fill="currentColor">
+      <text
+        x="6"
+        y="76"
+        fontFamily="Montserrat, Arial, sans-serif"
+        fontSize="62"
+        fontWeight="800"
+        fill="currentColor"
+        letterSpacing="-2"
+      >
         FH
       </text>
-      <g filter="url(#fh-logo-rough)">
-        <path
-          d="M10,72 C18,80 32,62 46,73 C58,82 70,66 78,75"
-          stroke="#e0353c"
-          strokeWidth="4"
-          fill="none"
-          strokeLinecap="round"
-          opacity="0.95"
-        />
-      </g>
-      <circle cx="80" cy="78" r="2" fill="#e0353c" opacity="0.9" />
 
-      <text x="100" y="50" fontFamily="Arial, sans-serif" fontSize="34" fontWeight="800" fill="currentColor">
-        Fin<tspan fill="#e0353c">Hawk</tspan>
-      </text>
+      <path
+        d="M6,104 C32,98 62,114 92,100 C104,94 112,92 120,86"
+        stroke="#FF3B3B"
+        strokeWidth="6"
+        fill="none"
+        strokeLinecap="round"
+      />
 
-      <text x="100" y="74" fontFamily="Arial, sans-serif" fontSize="11" fontWeight="600" letterSpacing="3" fill="currentColor" opacity="0.6">
-        CONTROLE. FOCO. LIBERDADE.
+      <path d="M114,82 L128,87 L118,98 Z" fill="#FF3B3B" />
+
+      <text
+        x="6"
+        y="124"
+        fontFamily="Montserrat, Arial, sans-serif"
+        fontSize="22"
+        fontWeight="700"
+        letterSpacing="6"
+        fill="currentColor"
+      >
+        FINHAWK
       </text>
     </svg>
   );

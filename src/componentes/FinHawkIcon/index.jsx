@@ -9,31 +9,27 @@ function FinHawkIcon({ className = '', size = 26 }) {
       aria-label="FinHawk"
       role="img"
     >
-      <defs>
-        <filter id="fh-icon-rough" x="-20%" y="-20%" width="140%" height="140%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="noise" seed="7" />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" />
-        </filter>
-      </defs>
-
-      <text x="20" y="78" fontFamily="Arial, sans-serif" fontSize="64" fontWeight="800" fill="currentColor">
+      <text
+        x="14"
+        y="76"
+        fontFamily="Montserrat, Arial, sans-serif"
+        fontSize="62"
+        fontWeight="800"
+        fill="currentColor"
+        letterSpacing="-2"
+      >
         FH
       </text>
 
-      <g filter="url(#fh-icon-rough)">
-        <path
-          d="M18,100 C28,112 48,82 70,102 C88,118 108,90 128,108"
-          stroke="#e0353c"
-          strokeWidth="5.5"
-          fill="none"
-          strokeLinecap="round"
-          opacity="0.95"
-        />
-      </g>
+      <path
+        d="M14,104 C40,98 70,114 100,100 C112,94 120,92 128,86"
+        stroke="#FF3B3B"
+        strokeWidth="6"
+        fill="none"
+        strokeLinecap="round"
+      />
 
-      <path d="M70,102 C69,109 68,116 71,121" stroke="#e0353c" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.5" />
-      <circle cx="134" cy="111" r="2.5" fill="#e0353c" opacity="0.9" />
-      <circle cx="139" cy="117" r="1.4" fill="#e0353c" opacity="0.6" />
+      <path d="M122,82 L136,87 L126,98 Z" fill="#FF3B3B" />
     </svg>
   );
 }
