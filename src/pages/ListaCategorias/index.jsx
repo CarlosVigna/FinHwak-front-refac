@@ -5,6 +5,7 @@ import { api } from '../../services/api';
 const ListaCategorias = ({ refresh, onEdit }) => {
     const [dados, setDados] = useState([]);
     const [tipoFiltro, setTipoFiltro] = useState('todos');
+    const [busca, setBusca] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -58,8 +59,9 @@ const ListaCategorias = ({ refresh, onEdit }) => {
     };
 
     const filteredData = dados.filter((categoria) => {
-        if (tipoFiltro === 'todos') return true;
-        return categoria.type?.toLowerCase() === tipoFiltro.toLowerCase();
+        const matchTipo = tipoFiltro === 'todos' || categoria.type?.toLowerCase() === tipoFiltro.toLowerCase();
+        const matchBusca = !busca || categoria.name.toLowerCase().includes(busca.toLowerCase());
+        return matchTipo && matchBusca;
     });
 
     const traduzirTipo = (tipo) => {
@@ -72,6 +74,15 @@ const ListaCategorias = ({ refresh, onEdit }) => {
 
     return (
         <>
+            <div style={{ marginBottom: 12 }}>
+                <input
+                    type="text"
+                    className="fh-search-input"
+                    placeholder="Buscar categoria..."
+                    value={busca}
+                    onChange={(e) => setBusca(e.target.value)}
+                />
+            </div>
             <div className="botoes-tipo-container">
                 <button
                     className={`botao-tipo ${tipoFiltro === 'receipt' ? 'ativo' : ''}`}

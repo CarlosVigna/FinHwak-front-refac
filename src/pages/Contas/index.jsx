@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../../componentes/Card';
 import { api } from '../../services/api';
+import { useAccount } from '../../contexts/AccountContext';
 
 const WelcomeBanner = ({ onDismiss }) => (
   <div className="welcome-banner">
@@ -94,6 +95,7 @@ const Contas = () => {
   const [erro, setErro] = useState(null);
   const [sucesso, setSucesso] = useState('');
   const navigate = useNavigate();
+  const { accountId, setAccount, clearAccount } = useAccount();
 
   const [isNewUser, setIsNewUser] = useState(
     () => localStorage.getItem('finhawk-new-user') === 'true'
@@ -103,9 +105,6 @@ const Contas = () => {
   );
 
   useEffect(() => {
-    localStorage.removeItem('accountId');
-    localStorage.removeItem('accountName');
-
     const fetchContas = async () => {
       try {
         const response = await api.get('/account');
@@ -141,8 +140,7 @@ const Contas = () => {
 
   const handleEntrar = (idConta) => {
     const conta = contas.find(c => c.id === idConta);
-    localStorage.setItem('accountId', String(idConta));
-    localStorage.setItem('accountName', conta?.name || '');
+    setAccount(String(idConta), conta?.name || '');
     localStorage.setItem('finhawk-account-entered', 'true');
     navigate('/dashboard');
   };
@@ -170,9 +168,8 @@ const Contas = () => {
       if (response.status === 204) {
         setContas((prevContas) => prevContas.filter((conta) => conta.id !== idConta));
         setSucesso('Conta e seus títulos foram excluídos com sucesso');
-        if (String(idConta) === localStorage.getItem('accountId')) {
-          localStorage.removeItem('accountId');
-          localStorage.removeItem('accountName');
+        if (String(idConta) === accountId) {
+          clearAccount();
         }
         return;
       }

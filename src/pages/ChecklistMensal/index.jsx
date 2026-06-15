@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaTrash, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import { api } from '../../services/api';
+import { useAccount } from '../../contexts/AccountContext';
 
 const ChecklistMensal = () => {
   const navigate = useNavigate();
@@ -18,8 +19,9 @@ const ChecklistMensal = () => {
   const [loadingCompletions, setLoadingCompletions] = useState(false);
   const [savingItems, setSavingItems] = useState(new Set());
   const [deletingId, setDeletingId] = useState(null);
+  const [busca, setBusca] = useState('');
 
-  const accountId = localStorage.getItem('accountId');
+  const { accountId } = useAccount();
 
   const fetchItens = useCallback(async () => {
     try {
@@ -212,6 +214,16 @@ const ChecklistMensal = () => {
           </div>
         </div>
 
+        <div style={{ marginBottom: 12 }}>
+          <input
+            type="text"
+            className="fh-search-input"
+            placeholder="Buscar item..."
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+          />
+        </div>
+
         <div className="table-container">
           <div className="tabela-responsiva">
             <table className="tabela-titulos">
@@ -236,7 +248,9 @@ const ChecklistMensal = () => {
                     </td>
                   </tr>
                 ) : (
-                  itens.map((item) => {
+                  itens
+                    .filter(item => !busca || item.description.toLowerCase().includes(busca.toLowerCase()))
+                    .map((item) => {
                     const isConcluido = checkedItemsState.has(item.id);
                     const isSaving = savingItems.has(item.id);
 

@@ -273,15 +273,15 @@ const ContasPendentes = () => {
                             <div className="action-group">
                               <button
                                 type="button"
-                                className="btn-acao btn-criar"
+                                className="fh-btn fh-btn-success fh-btn-sm"
                                 title="Confirmar pagamento"
                                 onClick={() => handleDarBaixa(conta)}
                               >
-                                Sim
+                                <FontAwesomeIcon icon={faCheckCircle} /> Sim
                               </button>
                               <button
                                 type="button"
-                                className="btn-acao btn-excluir"
+                                className="fh-btn fh-btn-danger fh-btn-sm"
                                 title="Cancelar"
                                 onClick={() => setConfirmingId(null)}
                               >
@@ -291,12 +291,11 @@ const ContasPendentes = () => {
                           ) : (
                             <button
                               type="button"
-                              className="btn-baixa"
+                              className="fh-btn fh-btn-ghost fh-btn-sm"
                               onClick={() => setConfirmingId(conta.id)}
                               title={`Marcar "${conta.description}" como paga`}
                             >
-                              <FontAwesomeIcon icon={faCheckCircle} />
-                              <span>Pagar</span>
+                              <FontAwesomeIcon icon={faCheckCircle} /> Pagar
                             </button>
                           )}
                         </td>

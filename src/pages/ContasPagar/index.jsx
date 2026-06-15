@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaClock, FaExclamationTriangle } from 'react-icons/fa';
-import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas";
+import { generateReportPDF } from '../../utils/pdfExport';
 import { api } from '../../services/api';
 
 const ContasPagar = () => {
@@ -100,16 +99,27 @@ const ContasPagar = () => {
         new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
 
     const handleExportPDF = async () => {
-        const input = document.getElementById('relatorio-export');
-        if (!input) return;
+        const accountId   = localStorage.getItem('accountId');
+        const accountName = localStorage.getItem('accountName') || '';
+        const statusLabel = { PENDING: 'Pendente', PAID: 'Pago', RECEIVED: 'Recebido' };
+        const total = filteredData.reduce((s, item) => s + (Number(item.installmentAmount) || 0), 0);
         try {
-            const canvas = await html2canvas(input, { scale: 2 });
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save('relatorio_contas_pagar.pdf');
+            await generateReportPDF({
+                title: 'Contas a Pagar',
+                accountName,
+                fileName: `relatorio_contas_pagar_${accountId}.pdf`,
+                headers: ['ID', 'Descrição', 'Vencimento', 'Categoria', 'Valor', 'Status'],
+                rows: filteredData.map(item => [
+                    item.id,
+                    item.description,
+                    item.maturity ? new Date(item.maturity).toLocaleDateString('pt-BR') : '-',
+                    item.category?.name || '-',
+                    formatCurrency(item.installmentAmount),
+                    statusLabel[item.status] || item.status,
+                ]),
+                totalLabel: 'Total',
+                totalValue: formatCurrency(total),
+            });
         } catch (err) {
             console.error('Erro ao exportar PDF:', err);
             setError('Não foi possível gerar o PDF do relatório.');

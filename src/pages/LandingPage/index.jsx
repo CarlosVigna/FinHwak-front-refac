@@ -89,7 +89,9 @@ function LandingPage() {
             {/* ── 1. Navbar ── */}
             <nav className="landing-nav">
                 <Link to="/" className="landing-nav-brand">
-                    <div className="sb-logo-mark">FH</div>
+                    <div className="sb-logo-mark">
+                        <img src="/icone.png" alt="FH" className="sb-logo-img" />
+                    </div>
                     <span className="sb-logo-name">FinHawk</span>
                 </Link>
 
@@ -112,31 +114,40 @@ function LandingPage() {
             </nav>
 
             {/* ── 2. Hero ── */}
-            <section className="landing-section">
-                <span className="hero-tag">
-                    <span className="hero-tag-dot" />
-                    Controle financeiro pessoal
-                </span>
+            <section className="landing-hero">
+                <div className="landing-hero-content">
+                    <span className="hero-tag">
+                        <span className="hero-tag-dot" />
+                        Controle financeiro pessoal
+                    </span>
 
-                <h1 className="hero-h1">
-                    Controle total<br />do seu dinheiro
-                </h1>
+                    <h1 className="hero-h1">
+                        Seu dinheiro.<br />
+                        Suas regras.<br />
+                        <span className="accent">Seu futuro.</span>
+                    </h1>
 
-                <p className="hero-sub">
-                    Dashboard, relatórios e checklist mensal — tudo em um lugar.
-                    Saiba exatamente para onde vai cada real.
-                </p>
+                    <p className="hero-sub">
+                        Assuma o controle das suas finanças e construa liberdade todos os dias.
+                    </p>
 
-                <div className="hero-ctas">
-                    <Link to="/cadastro" className="btn-landing-primary">
-                        Criar conta grátis →
-                    </Link>
-                    <Link to="/login" className="btn-landing-ghost">
-                        Já tenho conta
-                    </Link>
+                    <div className="hero-ctas">
+                        <Link to="/cadastro" className="btn-landing-primary">
+                            Criar conta grátis →
+                        </Link>
+                        <Link to="/login" className="btn-landing-ghost">
+                            Já tenho conta
+                        </Link>
+                    </div>
                 </div>
 
-                {/* ── 3. Stats row ── */}
+                <div className="landing-hero-image">
+                    <img src="/imagem_para_page.png" alt="FinHawk — Seu dinheiro. Suas regras. Seu futuro." />
+                </div>
+            </section>
+
+            {/* ── 3. Stats row ── */}
+            <div className="landing-stats-bar">
                 <div className="stats-row">
                     {STATS.map((s) => (
                         <div className="stat-card" key={s.label}>
@@ -146,7 +157,7 @@ function LandingPage() {
                         </div>
                     ))}
                 </div>
-            </section>
+            </div>
 
             {/* ── 4. Problema ── */}
             <div className="landing-section-full">
@@ -314,10 +325,7 @@ function LandingPage() {
             {/* ── 9. Footer ── */}
             <footer className="landing-footer">
                 <Link to="/" className="landing-footer-brand">
-                    <div className="sb-logo-mark">FH</div>
-                    <span style={{ fontSize: '0.88rem', color: 'var(--muted2)' }}>
-                        FinHawk — Controle Financeiro Pessoal
-                    </span>
+                    <img src="/logo.png" alt="FinHawk" className="footer-logo" />
                 </Link>
 
                 <div className="landing-footer-links">

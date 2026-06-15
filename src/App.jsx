@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useAuth, AuthProvider } from './pages/Login/AuthContext';
+import { AccountProvider } from './contexts/AccountContext';
 import PrivateRoute from './pages/Login/PrivateRoute';
 import AccountRoute from './pages/Login/AccountRoute';
 import ErrorBoundary from './componentes/ErrorBoundary';
@@ -130,10 +131,12 @@ function App() {
 function AppWrapper() {
   return (
     <AuthProvider>
-      <Router>
-        <App />
-        <PlanModal />
-      </Router>
+      <AccountProvider>
+        <Router>
+          <App />
+          <PlanModal />
+        </Router>
+      </AccountProvider>
     </AuthProvider>
   );
 }

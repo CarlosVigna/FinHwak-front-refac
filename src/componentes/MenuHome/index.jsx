@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../pages/Login/AuthContext';
 import { useTheme } from '../../hooks/useTheme';
+import { useAccount } from '../../contexts/AccountContext';
 
 function NavItem({ to, icon, label, locked, onLockedClick }) {
     if (locked) {
@@ -33,9 +34,8 @@ function MenuHome() {
     const { theme, toggleTheme } = useTheme();
     const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-    const accountId   = localStorage.getItem('accountId');
-    const accountName = localStorage.getItem('accountName');
-    const hasAccount  = !!accountId;
+    const { accountId, accountName, clearAccount } = useAccount();
+    const hasAccount = !!accountId;
 
     const handleLogout = () => {
         logout();
@@ -43,8 +43,7 @@ function MenuHome() {
     };
 
     const handleGoToContas = () => {
-        localStorage.removeItem('accountId');
-        localStorage.removeItem('accountName');
+        clearAccount();
         setIsMobileOpen(false);
         navigate('/contas');
     };
@@ -73,7 +72,9 @@ function MenuHome() {
                 {/* Topo: logo + conta ativa */}
                 <div className="sb-top">
                     <div className="sb-brand">
-                        <div className="sb-logo-mark">FH</div>
+                        <div className="sb-logo-mark">
+                        <img src="/icone.png" alt="FH" className="sb-logo-img" />
+                    </div>
                         <span className="sb-logo-name">FinHawk</span>
                     </div>
 

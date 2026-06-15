@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
-import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas";
+import { generateReportPDF } from '../../utils/pdfExport';
 import { api } from '../../services/api';
 
 const ContasPagas = () => {

@@ -52,8 +52,8 @@ body {
   --muted2:   #888888;
 
   /* ── Semânticos ── */
-  --accent:       #7c6af7;
-  --accent-hover: #6b5ce6;
+  --accent:       #e0353c;
+  --accent-hover: #c12027;
   --green:        #3ecf8e;
   --red:          #f87171;
   --amber:        #fbbf24;
@@ -74,8 +74,8 @@ body {
   --ring: 0 0 0 2px var(--accent);
 
   /* ── Soft tints ── */
-  --accent-soft:  rgba(124, 106, 247, 0.14);
-  --accent-border: rgba(124, 106, 247, 0.30);
+  --accent-soft:  rgba(224, 53, 60, 0.14);
+  --accent-border: rgba(224, 53, 60, 0.30);
   --green-soft:   rgba(62, 207, 142, 0.14);
   --red-soft:     rgba(248, 113, 113, 0.14);
   --amber-soft:   rgba(251, 191, 36, 0.16);
@@ -112,7 +112,7 @@ body {
   --nav-height:       72px; /* compat até Etapa 2 */
   --gradient-overlay: none;
   --nav-bg:           var(--surface);
-  --heading-gradient: linear-gradient(135deg, #e8e8e8 0%, #b0a8ff 46%, var(--blue) 100%);
+  --heading-gradient: linear-gradient(135deg, #e8e8e8 0%, var(--accent) 46%, var(--blue) 100%);
 
   /* ── Semantic text — readable on soft backgrounds ── */
   --success-text:  #b9f8d6;
@@ -135,8 +135,8 @@ body {
   --muted:    #999999;
   --muted2:   #555555;
 
-  --accent:       #5f4de5;
-  --accent-hover: #4f3dd5;
+  --accent:       #c1272d;
+  --accent-hover: #a01e23;
   --green:        #16a34a;
   --red:          #dc2626;
   --amber:        #d97706;
@@ -153,8 +153,8 @@ body {
 
   --ring: 0 0 0 2px var(--accent);
 
-  --accent-soft:  rgba(95, 77, 229, 0.10);
-  --accent-border: rgba(95, 77, 229, 0.30);
+  --accent-soft:  rgba(193, 39, 45, 0.10);
+  --accent-border: rgba(193, 39, 45, 0.30);
   --green-soft:   rgba(22, 163, 74, 0.10);
   --red-soft:     rgba(220, 38, 38, 0.10);
   --amber-soft:   rgba(217, 119, 6, 0.12);
@@ -190,7 +190,7 @@ body {
   --nav-height:       72px;
   --gradient-overlay: none;
   --nav-bg:           var(--surface);
-  --heading-gradient: linear-gradient(135deg, #111111 0%, #5f4de5 46%, #2563eb 100%);
+  --heading-gradient: linear-gradient(135deg, #111111 0%, var(--accent) 46%, #2563eb 100%);
 
   /* ── Semantic text — readable on soft backgrounds ── */
   --success-text:  var(--green);
@@ -232,7 +232,7 @@ select {
 
 /* 5. Seleção e placeholder */
 ::selection {
-  background: rgba(124, 106, 247, 0.30);
+  background: rgba(224, 53, 60, 0.30);
   color: #ffffff;
 }
 
