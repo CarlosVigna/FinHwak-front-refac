@@ -112,7 +112,6 @@ body {
   --nav-height:       72px; /* compat até Etapa 2 */
   --gradient-overlay: none;
   --nav-bg:           var(--surface);
-  --heading-gradient: linear-gradient(135deg, var(--text) 0%, var(--text) 78%, var(--accent) 100%);
 
   /* ── Semantic text — readable on soft backgrounds ── */
   --success-text:  #b9f8d6;
@@ -190,7 +189,6 @@ body {
   --nav-height:       72px;
   --gradient-overlay: none;
   --nav-bg:           var(--surface);
-  --heading-gradient: linear-gradient(135deg, var(--text) 0%, var(--text) 78%, var(--accent) 100%);
 
   /* ── Semantic text — readable on soft backgrounds ── */
   --success-text:  var(--green);

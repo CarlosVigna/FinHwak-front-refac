@@ -430,7 +430,7 @@ const Configuracoes = () => {
 
           <button
             type="button"
-            className="btn-excluir"
+            className="fh-btn fh-btn-danger"
             onClick={handleAbrirModalExclusao}
           >
             Excluir Minha Conta
@@ -475,6 +475,7 @@ const Configuracoes = () => {
                 <div className="botoes-formulario" style={{ marginTop: '20px' }}>
                   <button
                     type="button"
+                    className="fh-btn fh-btn-secondary"
                     onClick={handleFecharModalExclusao}
                     disabled={deletando}
                   >
@@ -482,7 +483,7 @@ const Configuracoes = () => {
                   </button>
                   <button
                     type="button"
-                    className="btn-excluir"
+                    className="fh-btn fh-btn-danger"
                     onClick={handleExcluirConta}
                     disabled={deletando}
                   >

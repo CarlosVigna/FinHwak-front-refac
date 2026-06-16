@@ -286,11 +286,7 @@
 .login-headline {
   font-size: clamp(1.8rem, 3.5vw, 2.6rem);
   font-weight: 760;
-  background: var(--heading-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
+  color: var(--text);
   line-height: 1.15;
   letter-spacing: -0.02em;
   margin-bottom: 14px;

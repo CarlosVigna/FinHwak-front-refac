@@ -278,7 +278,7 @@ textarea:focus-visible {
   min-height: 28px;
   padding: 5px 10px;
   border: 1px solid var(--border-color);
-  border-radius: 999px;
+  border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-secondary);
   font-size: 0.78rem;
