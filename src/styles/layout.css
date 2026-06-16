@@ -118,7 +118,7 @@
   display: inline-flex;
   align-items: center;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-md);
   background: var(--surface2);
   overflow: hidden;
 }
@@ -268,7 +268,7 @@
   gap: 7px;
   background: var(--surface2);
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: var(--radius-sm);
   padding: 4px 12px;
   font-size: 0.78rem;
   color: var(--muted2);
