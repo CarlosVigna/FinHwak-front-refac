@@ -58,7 +58,8 @@
 }
 
 /* ── page-topbar — Sprint 14 Etapa 4 ─────────── */
-.page-topbar {
+.page-topbar,
+.topbar {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -67,17 +68,18 @@
   max-width: 1320px;
   margin-inline: auto;
   margin-bottom: 24px;
-  padding-bottom: 20px;
+  background: var(--surface);
   border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
   animation: fadeInUp 0.45s ease-out both;
 }
 
 .page-topbar h1 {
   margin: 0;
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 500;
   color: var(--text);
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   line-height: 1.3;
 }
 

@@ -5,7 +5,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { useAccount } from '../../contexts/AccountContext';
 import FinHawkIcon from '../FinHawkIcon';
 
-function NavItem({ to, icon, label, locked, onLockedClick }) {
+function NavItem({ to, label, locked, onLockedClick }) {
     if (locked) {
         return (
             <button
@@ -13,7 +13,6 @@ function NavItem({ to, icon, label, locked, onLockedClick }) {
                 onClick={onLockedClick}
                 title="Selecione uma conta primeiro"
             >
-                <span className={`sb-icon sb-icon-${icon}`} />
                 {label}
             </button>
         );
@@ -23,7 +22,6 @@ function NavItem({ to, icon, label, locked, onLockedClick }) {
             to={to}
             className={({ isActive }) => `sb-item${isActive ? ' active' : ''}`}
         >
-            <span className={`sb-icon sb-icon-${icon}`} />
             {label}
         </NavLink>
     );
@@ -91,17 +89,17 @@ function MenuHome() {
                 {/* Navegação */}
                 <nav className="sb-nav" onClick={closeOnNav}>
                     <div className="sb-section">Visão geral</div>
-                    <NavItem to="/dashboard"          icon="blue"   label="Dashboard"   locked={!hasAccount} onLockedClick={() => { setIsMobileOpen(false); navigate('/contas'); }} />
-                    <NavItem to="/cadastroTitulo"     icon="muted"  label="Lançamentos" locked={!hasAccount} onLockedClick={() => { setIsMobileOpen(false); navigate('/contas'); }} />
-                    <NavItem to="/cadastrarCategoria" icon="muted"  label="Categorias"  locked={!hasAccount} onLockedClick={() => { setIsMobileOpen(false); navigate('/contas'); }} />
-                    <NavItem to="/contas-pendentes"   icon="amber"  label="Pendentes"   locked={!hasAccount} onLockedClick={() => { setIsMobileOpen(false); navigate('/contas'); }} />
-                    <NavItem to="/checklist-mensal"   icon="purple" label="Checklist"   locked={!hasAccount} onLockedClick={() => { setIsMobileOpen(false); navigate('/contas'); }} />
+                    <NavItem to="/dashboard"          label="Dashboard"   locked={!hasAccount} onLockedClick={() => { setIsMobileOpen(false); navigate('/contas'); }} />
+                    <NavItem to="/cadastroTitulo"     label="Lançamentos" locked={!hasAccount} onLockedClick={() => { setIsMobileOpen(false); navigate('/contas'); }} />
+                    <NavItem to="/cadastrarCategoria" label="Categorias"  locked={!hasAccount} onLockedClick={() => { setIsMobileOpen(false); navigate('/contas'); }} />
+                    <NavItem to="/contas-pendentes"   label="Pendentes"   locked={!hasAccount} onLockedClick={() => { setIsMobileOpen(false); navigate('/contas'); }} />
+                    <NavItem to="/checklist-mensal"   label="Checklist"   locked={!hasAccount} onLockedClick={() => { setIsMobileOpen(false); navigate('/contas'); }} />
 
                     <div className="sb-section">Relatórios</div>
-                    <NavItem to="/relContasReceber"  icon="green"  label="A receber"  locked={!hasAccount} onLockedClick={() => { setIsMobileOpen(false); navigate('/contas'); }} />
-                    <NavItem to="/relContasPagar"    icon="red"    label="A pagar"    locked={!hasAccount} onLockedClick={() => { setIsMobileOpen(false); navigate('/contas'); }} />
-                    <NavItem to="/relRecebimentos"   icon="muted"  label="Recebidas"  locked={!hasAccount} onLockedClick={() => { setIsMobileOpen(false); navigate('/contas'); }} />
-                    <NavItem to="/relPagamentos"     icon="muted"  label="Pagas"      locked={!hasAccount} onLockedClick={() => { setIsMobileOpen(false); navigate('/contas'); }} />
+                    <NavItem to="/relContasReceber"  label="A receber"  locked={!hasAccount} onLockedClick={() => { setIsMobileOpen(false); navigate('/contas'); }} />
+                    <NavItem to="/relContasPagar"    label="A pagar"    locked={!hasAccount} onLockedClick={() => { setIsMobileOpen(false); navigate('/contas'); }} />
+                    <NavItem to="/relRecebimentos"   label="Recebidas"  locked={!hasAccount} onLockedClick={() => { setIsMobileOpen(false); navigate('/contas'); }} />
+                    <NavItem to="/relPagamentos"     label="Pagas"      locked={!hasAccount} onLockedClick={() => { setIsMobileOpen(false); navigate('/contas'); }} />
                 </nav>
 
                 {/* Rodapé */}
@@ -109,10 +107,9 @@ function MenuHome() {
                     <button className="sb-theme-btn" onClick={toggleTheme}>
                         {theme === 'dark' ? '☀ Modo claro' : '🌙 Modo escuro'}
                     </button>
-                    <NavItem to="/contas"        icon="muted" label="Contas" />
-                    <NavItem to="/configuracoes" icon="muted" label="Configurações" />
+                    <NavItem to="/contas"        label="Contas" />
+                    <NavItem to="/configuracoes" label="Configurações" />
                     <button className="sb-item sb-logout" onClick={handleLogout}>
-                        <span className="sb-icon sb-icon-muted" />
                         Sair
                     </button>
                 </div>
