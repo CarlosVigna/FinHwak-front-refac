@@ -4,13 +4,6 @@ import Login from '../Login/Login';
 import CadastroUsuario from '../CadastroUsuario';
 import PropTypes from 'prop-types';
 
-const STATS = [
-    { label: 'Dashboard em tempo real', value: 'R$ 3.290', delta: 'resultado do mês' },
-    { label: 'Checklist mensal',        value: '7/9',      delta: 'itens concluídos' },
-    { label: 'Vencimentos controlados', value: '2',        delta: 'títulos pendentes' },
-    { label: 'Multi-conta',             value: '3',        delta: 'contas ativas' },
-];
-
 const AuthTabs = ({ initialTab = 'login' }) => {
     const [active, setActive] = useState(initialTab);
 
@@ -36,14 +29,12 @@ const AuthTabs = ({ initialTab = 'login' }) => {
                     </p>
                 </div>
 
-                <div className="login-stats">
-                    {STATS.map((s) => (
-                        <div className="login-stat" key={s.label}>
-                            <div className="login-stat-label">{s.label}</div>
-                            <div className="login-stat-value">{s.value}</div>
-                            <div className="login-stat-delta">{s.delta}</div>
-                        </div>
-                    ))}
+                <div className="login-preview">
+                    <img
+                        src="/screenshots/dashboard_dark.png"
+                        alt="FinHawk — visão do dashboard"
+                        className="login-preview-img"
+                    />
                 </div>
             </div>
 

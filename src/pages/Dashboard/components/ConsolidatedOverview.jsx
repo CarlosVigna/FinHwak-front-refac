@@ -2,7 +2,8 @@ import { useEffect, useState, useMemo } from 'react';
 import { api } from '../../../services/api';
 import PropTypes from 'prop-types';
 import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell, ResponsiveContainer
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell, ResponsiveContainer,
+    PieChart, Pie
 } from 'recharts';
 import { formatCurrency } from '../utils/formatters';
 import {
@@ -196,6 +197,22 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
         };
     }, [summary, selectedIds]);
 
+    const PIE_COLORS = ['#3b82f6', '#22c55e', '#f59e0b', '#a855f7', '#06b6d4', '#ec4899'];
+
+    const receitasByAccount = useMemo(() => {
+        if (!summary?.accounts) return [];
+        return summary.accounts
+            .filter(acc => selectedIds.includes(acc.accountId) && (acc.receitasRealizadas || 0) > 0)
+            .map(acc => ({ name: acc.name, value: acc.receitasRealizadas || 0 }));
+    }, [summary, selectedIds]);
+
+    const despesasByAccount = useMemo(() => {
+        if (!summary?.accounts) return [];
+        return summary.accounts
+            .filter(acc => selectedIds.includes(acc.accountId) && (acc.despesasRealizadas || 0) > 0)
+            .map(acc => ({ name: acc.name, value: acc.despesasRealizadas || 0 }));
+    }, [summary, selectedIds]);
+
     const showConsolidated = selectedIds.length >= 2;
 
     if (loading) return <div className="consolidated-loading">Carregando resumo consolidado...</div>;
@@ -338,6 +355,95 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
                             </Bar>
                         </BarChart>
                     </ResponsiveContainer>
+                </div>
+            )}
+
+            {/* C2.5 — Donut charts por conta (≥ 2 contas) */}
+            {showConsolidated && !billsLoading && (receitasByAccount.length > 0 || despesasByAccount.length > 0) && (
+                <div className="consol-pie-row">
+                    <div className="fh-card">
+                        <div className="fh-card-header">
+                            <span className="fh-card-title">Receitas por conta (mês atual)</span>
+                        </div>
+                        {receitasByAccount.length > 0 ? (
+                            <>
+                                <ResponsiveContainer width="100%" height={200}>
+                                    <PieChart>
+                                        <Pie
+                                            data={receitasByAccount}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={55}
+                                            outerRadius={80}
+                                            paddingAngle={3}
+                                            dataKey="value"
+                                        >
+                                            {receitasByAccount.map((_, i) => (
+                                                <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip
+                                            contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text)' }}
+                                            formatter={(v) => [formatCurrency(v), 'Receitas']}
+                                        />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                                <div className="consol-pie-legend">
+                                    {receitasByAccount.map((entry, i) => (
+                                        <div key={i} className="consol-pie-legend-item">
+                                            <span className="consol-pie-legend-dot" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
+                                            <span className="consol-pie-legend-name">{entry.name}</span>
+                                            <span className="consol-pie-legend-value">{formatCurrency(entry.value)}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        ) : (
+                            <div className="consol-pie-empty">Sem receitas no mês</div>
+                        )}
+                    </div>
+
+                    <div className="fh-card">
+                        <div className="fh-card-header">
+                            <span className="fh-card-title">Despesas por conta (mês atual)</span>
+                        </div>
+                        {despesasByAccount.length > 0 ? (
+                            <>
+                                <ResponsiveContainer width="100%" height={200}>
+                                    <PieChart>
+                                        <Pie
+                                            data={despesasByAccount}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={55}
+                                            outerRadius={80}
+                                            paddingAngle={3}
+                                            dataKey="value"
+                                        >
+                                            {despesasByAccount.map((_, i) => (
+                                                <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip
+                                            contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text)' }}
+                                            formatter={(v) => [formatCurrency(v), 'Despesas']}
+                                        />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                                <div className="consol-pie-legend">
+                                    {despesasByAccount.map((entry, i) => (
+                                        <div key={i} className="consol-pie-legend-item">
+                                            <span className="consol-pie-legend-dot" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
+                                            <span className="consol-pie-legend-name">{entry.name}</span>
+                                            <span className="consol-pie-legend-value">{formatCurrency(entry.value)}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        ) : (
+                            <div className="consol-pie-empty">Sem despesas no mês</div>
+                        )}
+                    </div>
                 </div>
             )}
 

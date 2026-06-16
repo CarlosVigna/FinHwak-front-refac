@@ -9,6 +9,7 @@ const ChecklistMensal = () => {
   const [itens, setItens] = useState([]);
   const [descricao, setDescricao] = useState('');
   const [dueDay, setDueDay] = useState('');
+  const [approximateValue, setApproximateValue] = useState('');
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState('');
   const [loading, setLoading] = useState(false);
@@ -119,7 +120,8 @@ const ChecklistMensal = () => {
         dueDay: Number(dueDay),
         active: true,
         accountId: Number(accountId),
-        account: { id: Number(accountId) }
+        account: { id: Number(accountId) },
+        approximateValue: approximateValue ? Number(approximateValue) : null
       };
 
       const response = await api.post('/checklist', payload);
@@ -132,6 +134,7 @@ const ChecklistMensal = () => {
 
       setDescricao('');
       setDueDay('');
+      setApproximateValue('');
       setSucesso('Item recorrente cadastrado!');
       setErro('');
       fetchItens();
@@ -188,6 +191,18 @@ const ChecklistMensal = () => {
                 value={dueDay}
                 onChange={(e) => setDueDay(e.target.value)}
                 placeholder="Ex: 5"
+              />
+            </div>
+
+            <div className="campo-formulario">
+              <label>Valor aproximado</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={approximateValue}
+                onChange={(e) => setApproximateValue(e.target.value)}
+                placeholder="Ex: 350,00"
               />
             </div>
           </div>
@@ -288,7 +303,7 @@ const ChecklistMensal = () => {
                               type="button"
                               className="fh-btn fh-btn-primary fh-btn-sm"
                               title="Criar lançamento a partir do checklist"
-                              onClick={() => navigate(`/cadastroTitulo?checklistItemId=${item.id}`)}
+                              onClick={() => navigate(`/cadastroTitulo?checklistItemId=${item.id}`, { state: { fromChecklist: true, checklistItemId: item.id, selectedMonth } })}
                             >
                               Criar
                             </button>

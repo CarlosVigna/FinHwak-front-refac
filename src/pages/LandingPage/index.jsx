@@ -216,6 +216,34 @@ function LandingPage() {
                 </div>
             </section>
 
+            {/* ── 5.5. Screenshots ── */}
+            <div className="landing-section-full">
+                <section className="landing-section">
+                    <div className="screenshots-header">
+                        <h2>Veja o FinHawk em ação</h2>
+                        <p>Interface limpa, rápida e com suporte a modo escuro e claro.</p>
+                    </div>
+                    <div className="screenshots-grid">
+                        <div className="screenshot-item">
+                            <img src="/screenshots/dashboard_dark.png" alt="Dashboard modo escuro" className="screenshot-img" loading="lazy" />
+                            <span className="screenshot-label">Dashboard — modo escuro</span>
+                        </div>
+                        <div className="screenshot-item">
+                            <img src="/screenshots/dashboard_light.png" alt="Dashboard modo claro" className="screenshot-img" loading="lazy" />
+                            <span className="screenshot-label">Dashboard — modo claro</span>
+                        </div>
+                        <div className="screenshot-item">
+                            <img src="/screenshots/checklist.png" alt="Checklist mensal" className="screenshot-img" loading="lazy" />
+                            <span className="screenshot-label">Checklist mensal</span>
+                        </div>
+                        <div className="screenshot-item">
+                            <img src="/screenshots/relatorios.png" alt="Relatórios e gráficos" className="screenshot-img" loading="lazy" />
+                            <span className="screenshot-label">Relatórios e gráficos</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
             {/* ── 6. Como funciona ── */}
             <div className="landing-section-full">
                 <section className="landing-section">

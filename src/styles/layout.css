@@ -301,40 +301,24 @@
   max-width: 460px;
 }
 
-.login-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 40px;
+.login-preview {
+  margin-top: 32px;
 }
 
-.login-stat {
-  background: var(--surface2);
-  border: 1px solid var(--border);
+.login-preview-img {
+  width: 100%;
   border-radius: var(--radius-md);
-  padding: 14px 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.32);
+  background: var(--surface2);
+  display: block;
 }
 
-.login-stat-label {
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--muted);
-  margin-bottom: 6px;
-}
-
-.login-stat-value {
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--text);
-  line-height: 1;
-}
-
-.login-stat-delta {
-  font-size: 0.72rem;
-  color: var(--muted2);
-  margin-top: 4px;
+[data-theme="light"] .login-preview-img {
+  border-color: var(--border);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
 }
 
 /* Lado direito — form */
@@ -442,8 +426,8 @@
     padding: 32px 24px 28px;
   }
 
-  .login-stats {
-    margin-top: 24px;
+  .login-preview {
+    margin-top: 20px;
   }
 
   .login-right {

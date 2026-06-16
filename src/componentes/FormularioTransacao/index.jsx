@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { api } from '../../services/api';
 
 const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao }) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [categorias, setCategorias] = useState([]);
     const [loadingCategorias, setLoadingCategorias] = useState(true);
     const [checklistSuggestion, setChecklistSuggestion] = useState(null);
@@ -93,14 +94,19 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
 
                 const suggestion = await response.json();
 
-                if (suggestion && (suggestion.installmentAmount || suggestion.categoryId || suggestion.description)) {
+                const hasData = suggestion && (
+                    suggestion.lastAmount || suggestion.lastCategoryId ||
+                    suggestion.lastDescription || suggestion.approximateValue
+                );
+
+                if (hasData) {
                     const today = new Date().toISOString().split('T')[0];
                     setValores(prev => ({
                         ...prev,
-                        installmentAmount: suggestion.installmentAmount || prev.installmentAmount,
-                        categoryId: suggestion.categoryId || prev.categoryId,
-                        description: suggestion.description || prev.description,
-                        maturity: suggestion.maturity ? suggestion.maturity.split('T')[0] : today,
+                        installmentAmount: suggestion.lastAmount ?? suggestion.approximateValue ?? prev.installmentAmount,
+                        categoryId: suggestion.lastCategoryId ? String(suggestion.lastCategoryId) : prev.categoryId,
+                        description: suggestion.lastDescription || prev.description,
+                        maturity: suggestion.lastLaunchedAt ? suggestion.lastLaunchedAt.split('T')[0] : today,
                         emission: today
                     }));
                     setChecklistSuggestion(suggestion);
@@ -156,7 +162,15 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
 
             setSucesso(tituloParaEditar ? 'Atualizado com sucesso!' : 'Cadastrado com sucesso!');
             if (!tituloParaEditar) localStorage.setItem('finhawk-first-bill', 'true');
-            
+
+            if (!tituloParaEditar && location?.state?.fromChecklist && location.state.checklistItemId && location.state.selectedMonth) {
+                try {
+                    await api.post(`/checklist/${location.state.checklistItemId}/completion`, { month: location.state.selectedMonth });
+                } catch (err) {
+                    console.warn('Não foi possível marcar checklist como concluído:', err);
+                }
+            }
+
             if (!tituloParaEditar) {
                 setValores({
                     description: '',
@@ -185,6 +199,11 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
 
     return (
         <form className="formulario-horizontal" onSubmit={handleSubmit}>
+            {checklistSuggestion && (
+                <div className="checklist-confirm-banner">
+                    ✓ Sugestão do checklist aplicada automaticamente
+                </div>
+            )}
             {erro && <div className="error-message">{erro}</div>}
             {sucesso && <div className="success-message">{sucesso}</div>}
 
