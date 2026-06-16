@@ -143,7 +143,7 @@ const ResetSenha = () => {
                                 )}
 
                                 <div className="botoes-formulario" style={{ marginTop: '20px' }}>
-                                    <button type="submit" disabled={loading}>
+                                    <button type="submit" className="fh-btn fh-btn-primary" disabled={loading}>
                                         {loading ? 'Redefinindo...' : 'Redefinir Senha'}
                                     </button>
                                 </div>

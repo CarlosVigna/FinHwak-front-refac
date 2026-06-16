@@ -90,7 +90,7 @@ function CadastroUsuario() {
                 titulo="Cadastro de Usuário"
                 campos={camposCadastro}
                 botaoTexto={loading ? "Criando conta..." : "Enviar Cadastro"}
-                className="botao-enviar-cadastro"
+                className="fh-btn fh-btn-primary"
                 handleInputChange={handleInputChange}
                 valores={valores}
                 onSubmit={handleCadastro}

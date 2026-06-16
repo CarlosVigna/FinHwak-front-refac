@@ -35,9 +35,9 @@ const Card = ({ conta, onEntrar, onEditar, onExcluir, className }) => {
             </div>
 
             <div className="card-botoes">
-                <button className="botao-entrar" onClick={() => onEntrar(conta.id)}>Entrar</button>
-                <button className="botao-editar" onClick={() => onEditar(conta.id)}>Editar</button>
-                <button className="botao-excluir" onClick={() => onExcluir(conta.id)}>Excluir</button>
+                <button className="fh-btn fh-btn-primary" onClick={() => onEntrar(conta.id)}>Entrar</button>
+                <button className="fh-btn fh-btn-secondary" onClick={() => onEditar(conta.id)}>Editar</button>
+                <button className="fh-btn fh-btn-danger" onClick={() => onExcluir(conta.id)}>Excluir</button>
             </div>
         </div>
     );

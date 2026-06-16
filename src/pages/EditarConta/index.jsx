@@ -104,12 +104,12 @@ const EditarConta = () => {
 
 
                 <div className="botoes-container">
-                    <button type="submit" className="botao-salvar" disabled={isSaving}>
+                    <button type="submit" className="fh-btn fh-btn-primary" disabled={isSaving}>
                         {isSaving ? 'Salvando...' : 'Salvar Alterações'}
                     </button>
                     <button
                         type="button"
-                        className="botao-cancelar"
+                        className="fh-btn fh-btn-secondary"
                         onClick={() => navigate('/contas')}
                         disabled={isSaving}
                     >

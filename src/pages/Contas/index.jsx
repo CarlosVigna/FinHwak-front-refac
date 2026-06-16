@@ -207,7 +207,7 @@ const Contas = () => {
           <h3>Nenhuma conta ainda</h3>
           <p>Crie sua primeira conta para começar a organizar suas finanças.</p>
           <div className="empty-state-actions">
-            <button className="botao-nova-conta" onClick={handleCriarConta}>
+            <button className="fh-btn fh-btn-primary" onClick={handleCriarConta}>
               + Criar Primeira Conta
             </button>
           </div>
@@ -230,7 +230,7 @@ const Contas = () => {
           </div>
 
           <div className="botao-criar-conta-container">
-            <button className="botao-nova-conta" onClick={handleCriarConta}>
+            <button className="fh-btn fh-btn-primary" onClick={handleCriarConta}>
               Adicionar Nova Conta
             </button>
           </div>

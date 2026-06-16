@@ -125,8 +125,8 @@ const AccountDetails = () => {
             <div className="header-details">
                 <h1>Detalhes da Conta</h1>
                 <div className="account-details-actions">
-                    <button onClick={() => navigate('/contas')}>Voltar</button>
-                    <button className="btn-export-csv" onClick={handleExportCSV}>
+                    <button className="fh-btn fh-btn-secondary" onClick={() => navigate('/contas')}>Voltar</button>
+                    <button className="fh-btn fh-btn-secondary" onClick={handleExportCSV}>
                         Exportar CSV
                     </button>
                 </div>
@@ -175,7 +175,7 @@ const AccountDetails = () => {
                         <p>Registre receitas e despesas para acompanhar esta conta.</p>
                         <div className="empty-state-actions">
                             <button
-                                className="botao-nova-conta"
+                                className="fh-btn fh-btn-primary"
                                 onClick={() => {
                                     localStorage.setItem('accountId', String(id));
                                     navigate('/cadastroTitulo');

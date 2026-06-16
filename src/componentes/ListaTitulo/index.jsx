@@ -245,10 +245,10 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh, busca = '' }) 
                                             </span>
                                         </td>
                                         <td data-label="Ações" className="coluna-acoes">
-                                            <button className="btn-acao btn-editar" onClick={() => onEdit(titulo)} title="Editar">
+                                            <button className="fh-btn fh-btn-secondary fh-btn-sm" onClick={() => onEdit(titulo)} title="Editar">
                                                 <FaEdit />
                                             </button>
-                                            <button className="btn-acao btn-excluir" onClick={() => handleDelete(titulo.id)} title="Excluir">
+                                            <button className="fh-btn fh-btn-danger fh-btn-sm" onClick={() => handleDelete(titulo.id)} title="Excluir">
                                                 <FaTrash />
                                             </button>
                                         </td>

@@ -201,10 +201,10 @@ const ContasPagar = () => {
                         </select>
                     </div>
                     <div className="grupo-campo report-actions">
-                        <button onClick={handleExportPDF} className="btn-export-pdf btn-export-danger">
+                        <button onClick={handleExportPDF} className="fh-btn fh-btn-primary">
                             📄 Exportar PDF
                         </button>
-                        <button onClick={handleExportCSV} className="btn-export-csv">
+                        <button onClick={handleExportCSV} className="fh-btn fh-btn-secondary">
                             📊 Exportar CSV
                         </button>
                     </div>
@@ -221,7 +221,7 @@ const ContasPagar = () => {
                             <h3>Nenhum pagamento pendente</h3>
                             <p>Registre lançamentos do tipo pagamento para acompanhá-los aqui.</p>
                             <div className="empty-state-actions">
-                                <button className="botao-nova-conta" onClick={() => navigate('/cadastroTitulo')}>
+                                <button className="fh-btn fh-btn-primary" onClick={() => navigate('/cadastroTitulo')}>
                                     + Registrar Lançamento
                                 </button>
                             </div>

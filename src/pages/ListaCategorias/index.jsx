@@ -117,14 +117,14 @@ const ListaCategorias = ({ refresh, onEdit }) => {
                                 <td>{traduzirTipo(categoria.type)}</td>
                                 <td className="coluna-acoes">
                                     <button
-                                        className="btn-acao btn-editar"
+                                        className="fh-btn fh-btn-secondary fh-btn-sm"
                                         title="Editar categoria"
                                         onClick={() => onEdit(categoria)}
                                     >
                                         <FaEdit />
                                     </button>
                                     <button
-                                        className="btn-acao btn-excluir"
+                                        className="fh-btn fh-btn-danger fh-btn-sm"
                                         title="Excluir categoria"
                                         onClick={() => handleDelete(categoria)}
                                     >

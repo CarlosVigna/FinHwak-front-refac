@@ -315,11 +315,11 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
             </div>
 
             <div className="botoes-formulario">
-                <button type="submit" className="botao-salvar">
+                <button type="submit" className="fh-btn fh-btn-primary">
                     {tituloParaEditar ? 'Atualizar' : 'Cadastrar'}
                 </button>
                 {tituloParaEditar && (
-                    <button type="button" className="botao-cancelar" onClick={onCancel}>
+                    <button type="button" className="fh-btn fh-btn-secondary" onClick={onCancel}>
                         Cancelar
                     </button>
                 )}

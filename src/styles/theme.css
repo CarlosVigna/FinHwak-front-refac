@@ -60,9 +60,9 @@ body {
   --blue:         #60a5fa;
 
   /* ── Raios ── */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 10px;
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-lg: 4px;
   --radius:    var(--radius-md);
 
   /* ── Sombras ── */
@@ -142,9 +142,9 @@ body {
   --amber:        #d97706;
   --blue:         #2563eb;
 
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 10px;
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-lg: 4px;
   --radius:    var(--radius-md);
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);

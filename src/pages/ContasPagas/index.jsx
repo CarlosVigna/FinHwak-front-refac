@@ -199,10 +199,10 @@ const ContasPagas = () => {
                         </select>
                     </div>
                     <div className="grupo-campo report-actions">
-                        <button onClick={handleExportPDF} className="btn-export-pdf btn-export-danger">
+                        <button onClick={handleExportPDF} className="fh-btn fh-btn-primary">
                             📄 Exportar PDF
                         </button>
-                        <button onClick={handleExportCSV} className="btn-export-csv">
+                        <button onClick={handleExportCSV} className="fh-btn fh-btn-secondary">
                             📊 Exportar CSV
                         </button>
                     </div>

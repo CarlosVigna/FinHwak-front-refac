@@ -316,13 +316,13 @@ const Dashboard = () => {
                     <p>Adicione receitas e despesas para ver seu dashboard em ação.</p>
                     <div className="empty-state-actions">
                         <button
-                            className="botao-nova-conta"
+                            className="fh-btn fh-btn-primary"
                             onClick={() => navigate('/cadastroTitulo')}
                         >
                             + Novo Lançamento
                         </button>
                         <button
-                            className="botao-cancelar"
+                            className="fh-btn fh-btn-secondary"
                             onClick={() => navigate('/cadastrarCategoria')}
                         >
                             Cadastrar Categoria

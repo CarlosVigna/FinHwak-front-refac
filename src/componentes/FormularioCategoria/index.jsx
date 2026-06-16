@@ -36,11 +36,11 @@ const FormularioCategoria = ({ valores, handleInputChange, onSubmit, erro, suces
             </div>
 
             <div className="botoes-formulario">
-                <button type="submit" className="botao-salvar">
+                <button type="submit" className="fh-btn fh-btn-primary">
                     {editando ? 'Salvar Alterações' : 'Cadastrar'}
                 </button>
                 {editando && (
-                    <button type="button" className="btn-secundario" onClick={onCancel}>
+                    <button type="button" className="fh-btn fh-btn-secondary" onClick={onCancel}>
                         Cancelar
                     </button>
                 )}

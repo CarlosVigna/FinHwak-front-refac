@@ -300,7 +300,7 @@ const Configuracoes = () => {
             {dadosSucesso && <div className="success-message">{dadosSucesso}</div>}
 
             <div className="botoes-formulario">
-              <button type="submit" className="botao-salvar" disabled={salvandoDados}>
+              <button type="submit" className="fh-btn fh-btn-primary" disabled={salvandoDados}>
                 {salvandoDados ? 'Salvando...' : 'Salvar Dados Pessoais'}
               </button>
             </div>
@@ -343,7 +343,7 @@ const Configuracoes = () => {
             {senhaSucesso && <div className="success-message">{senhaSucesso}</div>}
 
             <div className="botoes-formulario">
-              <button type="submit" className="botao-salvar" disabled={salvandoSenha}>
+              <button type="submit" className="fh-btn fh-btn-primary" disabled={salvandoSenha}>
                 {salvandoSenha ? 'Verificando...' : 'Alterar Senha'}
               </button>
             </div>
@@ -382,7 +382,7 @@ const Configuracoes = () => {
 
           <button
             type="button"
-            className="botao-salvar"
+            className="fh-btn fh-btn-primary"
             onClick={handleExportarDados}
             disabled={exportando}
             style={{ marginBottom: '24px' }}
@@ -406,7 +406,7 @@ const Configuracoes = () => {
 
           <button
             type="button"
-            className="botao-salvar"
+            className="fh-btn fh-btn-primary"
             onClick={() => importInputRef.current?.click()}
             disabled={importando}
             style={{ marginBottom: '24px' }}

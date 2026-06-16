@@ -93,7 +93,7 @@ const EsqueciSenha = () => {
                                 {erro && <div className="error-message">{erro}</div>}
 
                                 <div className="botoes-formulario" style={{ marginTop: '20px' }}>
-                                    <button type="submit" disabled={loading}>
+                                    <button type="submit" className="fh-btn fh-btn-primary" disabled={loading}>
                                         {loading ? 'Enviando...' : 'Enviar link de recuperação'}
                                     </button>
                                 </div>

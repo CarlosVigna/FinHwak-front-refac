@@ -193,7 +193,7 @@ const ChecklistMensal = () => {
           </div>
 
           <div className="botoes-formulario checklist-actions">
-            <button type="submit" className="botao-salvar">Adicionar Recorrência</button>
+            <button type="submit" className="fh-btn fh-btn-primary">Adicionar Recorrência</button>
           </div>
 
           {erro && <div className="error-message">{erro}</div>}
@@ -286,7 +286,7 @@ const ChecklistMensal = () => {
                           <div className="action-group">
                             <button
                               type="button"
-                              className="btn-acao btn-criar"
+                              className="fh-btn fh-btn-primary fh-btn-sm"
                               title="Criar lançamento a partir do checklist"
                               onClick={() => navigate(`/cadastroTitulo?checklistItemId=${item.id}`)}
                             >
@@ -296,7 +296,7 @@ const ChecklistMensal = () => {
                               <>
                                 <button
                                   type="button"
-                                  className="btn-acao btn-excluir"
+                                  className="fh-btn fh-btn-success fh-btn-sm"
                                   title="Confirmar exclusão"
                                   onClick={() => handleDelete(item.id)}
                                 >
@@ -304,7 +304,7 @@ const ChecklistMensal = () => {
                                 </button>
                                 <button
                                   type="button"
-                                  className="btn-acao"
+                                  className="fh-btn fh-btn-secondary fh-btn-sm"
                                   title="Cancelar"
                                   onClick={() => setDeletingId(null)}
                                 >
@@ -314,7 +314,7 @@ const ChecklistMensal = () => {
                             ) : (
                               <button
                                 type="button"
-                                className="btn-acao btn-excluir"
+                                className="fh-btn fh-btn-danger fh-btn-sm"
                                 title="Apagar Recorrência"
                                 onClick={() => setDeletingId(item.id)}
                               >

@@ -79,12 +79,12 @@ const CriarConta = () => {
                 {error && <div className="erro-mensagem">{error}</div>}
                 
                 <div className="botoes-container">
-                    <button type="submit" className="botao-salvar" disabled={isSubmitting}>
+                    <button type="submit" className="fh-btn fh-btn-primary" disabled={isSubmitting}>
                         {isSubmitting ? 'Criando...' : 'Criar Conta'}
                     </button>
                     <button
                         type="button"
-                        className="botao-cancelar"
+                        className="fh-btn fh-btn-secondary"
                         onClick={() => navigate('/contas')}
                         disabled={isSubmitting}
                     >

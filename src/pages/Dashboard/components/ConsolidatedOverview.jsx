@@ -197,7 +197,7 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
                     <h2>Visão Consolidada</h2>
                     {onBackToDashboard && (
                         <button
-                            className="btn-back-dashboard"
+                            className="fh-btn fh-btn-secondary"
                             onClick={onBackToDashboard}
                             title="Voltar ao dashboard"
                         >
@@ -351,7 +351,7 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
                                         </div>
                                     </div>
                                     <button
-                                        className="btn-select-account"
+                                        className="fh-btn fh-btn-secondary fh-btn-sm"
                                         onClick={() => onSelectAccount(acc.accountId)}
                                         title="Abrir dashboard desta conta"
                                     >

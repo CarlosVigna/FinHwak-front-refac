@@ -203,7 +203,7 @@ const ContasPendentes = () => {
 
           <button
             type="button"
-            className="btn-filtrar-periodo"
+            className="fh-btn fh-btn-primary"
             onClick={handleFiltrar}
           >
             Filtrar
@@ -211,7 +211,7 @@ const ContasPendentes = () => {
 
           <button
             type="button"
-            className="btn-exportar-csv btn-export-csv"
+            className="fh-btn fh-btn-secondary"
             onClick={handleExportCSV}
           >
             📊 Exportar CSV
