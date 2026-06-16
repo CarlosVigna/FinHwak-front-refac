@@ -43,6 +43,11 @@ const Dashboard = () => {
     const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
 
     useEffect(() => {
+        // Reseta o ref a cada (re)montagem — sem isso, o StrictMode do React
+        // (mount → cleanup → mount, só em dev) deixa isMounted.current presa
+        // em `false` para sempre, e o finally do fetchBills nunca chega a
+        // chamar setLoading(false): spinner infinito.
+        isMounted.current = true;
         return () => { isMounted.current = false; };
     }, []);
 

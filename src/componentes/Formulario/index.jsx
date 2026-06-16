@@ -1,9 +1,10 @@
 import CampoTexto from '../CampoTexto';
 import Botao from '../Botao';
 
-const Formulario = ({ titulo, campos, botaoTexto, handleInputChange, valores, onSubmit, className, layout, customClass, erro, sucesso }) => {
+const Formulario = ({ titulo, campos, botaoTexto, handleInputChange, valores, onSubmit, className, layout, customClass, erro, sucesso, disabled }) => {
     const handleSubmit = (e) => {
-        e.preventDefault(); 
+        e.preventDefault();
+        if (disabled) return;
         onSubmit();
     };
     
@@ -47,10 +48,11 @@ const Formulario = ({ titulo, campos, botaoTexto, handleInputChange, valores, on
                     ))}
                 </div>
                 <div className='botao-container'>
-                    <Botao 
-                        texto={botaoTexto} 
+                    <Botao
+                        texto={botaoTexto}
                         onClick={onSubmit}
                         className={className}
+                        disabled={disabled}
                     />
                 </div>
             </form>

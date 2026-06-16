@@ -290,7 +290,7 @@ const ContasPendentes = () => {
                           ) : (
                             <button
                               type="button"
-                              className="fh-btn fh-btn-ghost fh-btn-sm"
+                              className="fh-btn fh-btn-success fh-btn-sm"
                               onClick={() => setConfirmingId(conta.id)}
                               title={`Marcar "${conta.description}" como paga`}
                             >

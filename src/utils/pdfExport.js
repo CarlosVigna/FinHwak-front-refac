@@ -2,6 +2,29 @@ import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 
 /**
+ * Formata o período do relatório a partir de datas ISO (yyyy-mm-dd),
+ * vindas direto de <input type="date">, como "DD/MM/YYYY até DD/MM/YYYY".
+ * Quando só uma das pontas está preenchida, ou nenhuma, ajusta o texto.
+ *
+ * @param {string} [startDate] - Data inicial, formato yyyy-mm-dd
+ * @param {string} [endDate]   - Data final, formato yyyy-mm-dd
+ * @returns {string}
+ */
+export function formatPeriodLabel(startDate, endDate) {
+    const toBR = (iso) => {
+        if (!iso) return null;
+        const [y, m, d] = iso.split('-');
+        return `${d}/${m}/${y}`;
+    };
+    const start = toBR(startDate);
+    const end = toBR(endDate);
+    if (start && end) return `${start} até ${end}`;
+    if (start) return `A partir de ${start}`;
+    if (end) return `Até ${end}`;
+    return 'Todos os períodos';
+}
+
+/**
  * Generates a PDF report from a data table.
  * Builds an off-screen DOM element with forced white/black colors
  * (bypasses CSS variables — safe regardless of active theme).
@@ -14,6 +37,7 @@ import html2canvas from 'html2canvas';
  * @param {Array[]}  opts.rows         - Table rows (arrays of cell values)
  * @param {string}   [opts.totalLabel] - Optional footer label
  * @param {string}   [opts.totalValue] - Optional footer value
+ * @param {string}   [opts.period]     - Período do relatório (ex.: "01/06/2026 até 30/06/2026")
  */
 export async function generateReportPDF({
     title,
@@ -23,6 +47,7 @@ export async function generateReportPDF({
     rows,
     totalLabel,
     totalValue,
+    period,
 }) {
     const now = new Date().toLocaleString('pt-BR', {
         day: '2-digit', month: '2-digit', year: 'numeric',
@@ -64,11 +89,12 @@ export async function generateReportPDF({
 
     container.innerHTML = `
         <div style="display:flex;align-items:center;gap:14px;padding-bottom:16px;margin-bottom:20px;border-bottom:2px solid #000;">
-            <div style="width:42px;height:42px;background:#e0353c;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:15px;flex-shrink:0;">FH</div>
+            <div style="width:42px;height:42px;background:#3b82f6;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:15px;flex-shrink:0;">FH</div>
             <div>
                 <div style="font-size:17px;font-weight:800;color:#000;margin:0 0 2px;">FinHawk</div>
                 <div style="font-size:12px;color:#222;margin:0 0 1px;">Relatório: ${title}</div>
                 ${accountName ? `<div style="font-size:11px;color:#555;">Conta: ${accountName}</div>` : ''}
+                <p style="font-size:11px;color:#555;margin:2px 0">Período: ${period || 'Todos os períodos'}</p>
                 <div style="font-size:11px;color:#777;">Gerado em: ${now}</div>
             </div>
         </div>

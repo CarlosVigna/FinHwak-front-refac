@@ -22,6 +22,27 @@
   color: var(--text-color);
 }
 
+/* Light mode — sombra mais suave (cards brancos sobre fundo cinza) */
+[data-theme="light"] .fh-card,
+[data-theme="light"] .card,
+[data-theme="light"] .secao-superior,
+[data-theme="light"] .historico-container,
+[data-theme="light"] .tabela-card,
+[data-theme="light"] .conta-card,
+[data-theme="light"] .summary-card,
+[data-theme="light"] .month-selector-controls,
+[data-theme="light"] .consolidated-main-card,
+[data-theme="light"] .consolidated-selector,
+[data-theme="light"] .consolidated-account-card,
+[data-theme="light"] .criar-conta-container,
+[data-theme="light"] .editar-conta-container,
+[data-theme="light"] .auth-tabs-card,
+[data-theme="light"] .auth-card,
+[data-theme="light"] .cadastro-usuario,
+[data-theme="light"] .status-modal {
+  box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+}
+
 .fh-card,
 .secao-superior,
 .historico-container,

@@ -190,7 +190,17 @@ const Contas = () => {
 
   return (
     <div className="contas-container">
-      <h1 className="titulo-contas">Minhas Contas</h1>
+      <div className="page-topbar">
+        <div>
+          <h1 className="fh-title">Minhas Contas</h1>
+          <p className="page-subtitle">Selecione uma conta para continuar</p>
+        </div>
+        <div className="page-topbar-actions">
+          <button className="fh-btn fh-btn-primary" onClick={handleCriarConta}>
+            Nova conta
+          </button>
+        </div>
+      </div>
 
       {isNewUser && <WelcomeBanner onDismiss={dismissWelcome} />}
 
@@ -227,12 +237,6 @@ const Contas = () => {
                 onExcluir={handleExcluir}
               />
             ))}
-          </div>
-
-          <div className="botao-criar-conta-container">
-            <button className="fh-btn fh-btn-primary" onClick={handleCriarConta}>
-              Adicionar Nova Conta
-            </button>
           </div>
         </>
       )}

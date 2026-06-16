@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
-import { generateReportPDF } from '../../utils/pdfExport';
+import { FaCheckCircle } from 'react-icons/fa';
+import { generateReportPDF, formatPeriodLabel } from '../../utils/pdfExport';
 import { api } from '../../services/api';
 
 const ContasPagas = () => {
@@ -117,6 +117,7 @@ const ContasPagas = () => {
                 ]),
                 totalLabel: 'Total Pago',
                 totalValue: formatCurrency(total),
+                period: formatPeriodLabel(filterStartDate, filterEndDate),
             });
         } catch (err) {
             console.error('Erro ao exportar PDF:', err);
@@ -161,7 +162,6 @@ const ContasPagas = () => {
             <div className='historico-container'>
 
                 <div className='titulo-relatorio-header'>
-                    <FaExclamationTriangle size={30} style={{ color: 'var(--red)' }} />
                     <div>
                         <h1 className="fh-title"><span>Relatório de Contas Pagas</span></h1>
                     </div>

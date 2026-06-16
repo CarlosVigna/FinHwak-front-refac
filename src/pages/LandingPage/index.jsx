@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../Login/AuthContext';
 import { useTheme } from '../../hooks/useTheme';
@@ -226,16 +226,16 @@ function LandingPage() {
 
                     <div className="steps">
                         {STEPS.map((s, i) => (
-                            <>
-                                <div className="step" key={s.num}>
+                            <Fragment key={s.num}>
+                                <div className="step">
                                     <div className="step-num">{s.num}</div>
                                     <div className="step-title">{s.title}</div>
                                     <div className="step-desc">{s.desc}</div>
                                 </div>
                                 {i < STEPS.length - 1 && (
-                                    <div className="step-arrow" key={`arrow-${i}`}>→</div>
+                                    <div className="step-arrow">→</div>
                                 )}
-                            </>
+                            </Fragment>
                         ))}
                     </div>
                 </section>

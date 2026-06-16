@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaClock, FaExclamationTriangle } from 'react-icons/fa';
-import { generateReportPDF } from '../../utils/pdfExport';
+import { FaClock } from 'react-icons/fa';
+import { generateReportPDF, formatPeriodLabel } from '../../utils/pdfExport';
 import { api } from '../../services/api';
 
 const ContasReceber = () => {
@@ -119,6 +119,7 @@ const ContasReceber = () => {
                 ]),
                 totalLabel: 'Total',
                 totalValue: formatCurrency(total),
+                period: formatPeriodLabel(filterStartDate, filterEndDate),
             });
         } catch (err) {
             console.error('Erro ao exportar PDF:', err);
@@ -163,7 +164,6 @@ const ContasReceber = () => {
             <div className='historico-container'>
 
                 <div className='titulo-relatorio-header'>
-                    <FaExclamationTriangle size={30} style={{ color: 'var(--red)' }} />
                     <div>
                         <h1 className="fh-title"><span>Relatório de Contas a Receber</span></h1>
                     </div>

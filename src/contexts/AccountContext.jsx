@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import { useAuth } from '../pages/Login/AuthContext';
 
 const AccountContext = createContext(null);
@@ -37,8 +37,12 @@ export function AccountProvider({ children }) {
     setAccount(null, null);
   }, [setAccount]);
 
+  const value = useMemo(() => ({
+    accountId, accountName, setAccount, clearAccount,
+  }), [accountId, accountName, setAccount, clearAccount]);
+
   return (
-    <AccountContext.Provider value={{ accountId, accountName, setAccount, clearAccount }}>
+    <AccountContext.Provider value={value}>
       {children}
     </AccountContext.Provider>
   );

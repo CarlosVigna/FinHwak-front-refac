@@ -4,7 +4,7 @@ const STORAGE_KEY = 'finhawk-theme';
 
 export function useTheme() {
     const [theme, setTheme] = useState(
-        () => localStorage.getItem(STORAGE_KEY) || 'dark'
+        () => localStorage.getItem(STORAGE_KEY) || 'light'
     );
 
     useEffect(() => {

@@ -101,9 +101,9 @@ body {
 :root[data-theme="light"] {
   color-scheme: light;
 
-  --bg:           #f8fafc;
+  --bg:           #f1f5f9;
   --surface:      #ffffff;
-  --surface2:     #f1f5f9;
+  --surface2:     #f8fafc;
   --border:       #e2e8f0;
   --border2:      #cbd5e1;
   --text:         #0f172a;

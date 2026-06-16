@@ -78,6 +78,7 @@ const Login = () => {
                 titulo="Entrar"
                 campos={camposLogin}
                 botaoTexto={isLoading ? 'Entrando...' : 'Entrar'}
+                className="fh-btn fh-btn-primary"
                 handleInputChange={handleInputChange}
                 valores={valores}
                 onSubmit={handleLogin}

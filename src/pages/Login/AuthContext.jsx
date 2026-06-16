@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useContext, useCallback, useEffect, useMemo, useState } from 'react';
 import { setUnauthorizedHandler, api } from '../../services/api';
 
 const AuthContext = createContext();
@@ -43,15 +43,15 @@ export function AuthProvider({ children }) {
     return () => setUnauthorizedHandler(null);
   }, []);
 
-  const login = (newToken, newRefreshToken) => {
+  const login = useCallback((newToken, newRefreshToken) => {
     localStorage.setItem('token', newToken);
     if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
     localStorage.removeItem('accountId');
     setToken(newToken);
     setIsAuthenticated(true);
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('accountId');
@@ -61,16 +61,16 @@ export function AuthProvider({ children }) {
     setToken(null);
     setUser(null);
     setIsAuthenticated(false);
-  };
+  }, []);
 
-  const refreshUser = () => {
+  const refreshUser = useCallback(() => {
     const currentToken = localStorage.getItem('token');
     if (!isTokenValid(currentToken)) return;
     api.get('/user/me')
       .then(res => (res.ok ? res.json() : null))
       .then(data => { if (data) setUser(data); })
       .catch(() => {});
-  };
+  }, []);
 
   const value = useMemo(() => ({
     token,
@@ -79,7 +79,7 @@ export function AuthProvider({ children }) {
     login,
     logout,
     refreshUser,
-  }), [token, user, isAuthenticated]);
+  }), [token, user, isAuthenticated, login, logout, refreshUser]);
 
   return (
     <AuthContext.Provider value={value}>

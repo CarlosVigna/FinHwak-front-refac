@@ -97,6 +97,8 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
 
     // Fetch consolidated summary
     useEffect(() => {
+        let cancelled = false;
+
         const fetchSummary = async () => {
             try {
                 setLoading(true);
@@ -106,19 +108,23 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
                     throw new Error(text || 'Falha ao carregar resumo consolidado.');
                 }
                 const data = await response.json();
+                if (cancelled) return;
                 setSummary(data);
                 if (data.accounts) {
                     setSelectedIds(data.accounts.map(acc => acc.accountId));
                 }
                 setError(null);
             } catch (err) {
+                if (cancelled) return;
                 console.error(err);
                 setError(err.message);
             } finally {
-                setLoading(false);
+                if (!cancelled) setLoading(false);
             }
         };
         fetchSummary();
+
+        return () => { cancelled = true; };
     }, []);
 
     // Fetch all bills for selected accounts when >= 2 selected (C1 + C3)
@@ -127,6 +133,9 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
             setAllBills([]);
             return;
         }
+
+        let cancelled = false;
+
         const fetchAllBills = async () => {
             setBillsLoading(true);
             try {
@@ -135,15 +144,19 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
                         api.get(`/bill/account/${id}`).then(r => r.ok ? r.json() : [])
                     )
                 );
+                if (cancelled) return;
                 setAllBills(results.flat());
             } catch (err) {
+                if (cancelled) return;
                 console.error('Erro ao buscar lançamentos consolidados:', err);
                 setAllBills([]);
             } finally {
-                setBillsLoading(false);
+                if (!cancelled) setBillsLoading(false);
             }
         };
         fetchAllBills();
+
+        return () => { cancelled = true; };
     }, [selectedIds]);
 
     // C1 — Aggregated metrics from combined bills

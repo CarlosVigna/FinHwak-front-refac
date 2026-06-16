@@ -1,9 +1,10 @@
 
-const Botao = ({ texto, onClick, className }) => {
+const Botao = ({ texto, onClick, className, disabled }) => {
     return (
         <button
-        onClick={onClick} 
-        className={className}>
+        onClick={onClick}
+        className={className}
+        disabled={disabled}>
             {texto}
         </button>
     );
