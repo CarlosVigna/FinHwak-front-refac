@@ -1,87 +1,65 @@
-/* ════════════════════════════════════════════════
-   FINHAWK — Design System
-   Estilo: Notion / Linear / preto real
-   Sprint 14
-════════════════════════════════════════════════ */
+/* ============================================================
+   FINHAWK — DESIGN TOKENS
+   ============================================================ */
 
-/* 1. Reset base */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+*, *::before, *::after { box-sizing: border-box; }
 
-html {
-  font-size: 14px;
-  width: 100%;
-  min-height: 100%;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
+html { font-size: 14px; }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI',
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter',
                system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
   line-height: 1.5;
-  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
-#root {
-  min-height: 100vh;
-  isolation: isolate;
-}
-
-/* 2. Dark theme (padrão) */
+/* ── DARK (padrão) ─────────────────────────────────────────── */
 :root,
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  /* ── Tokens primários ── */
-  --bg:       #0a0a0a;
-  --surface:  #111111;
-  --surface2: #1a1a1a;
-  --border:   #222222;
-  --border2:  #2a2a2a;
-  --text:     #e8e8e8;
-  --muted:    #555555;
-  --muted2:   #888888;
+  --bg:           #0a0a0a;
+  --surface:      #111111;
+  --surface2:     #1a1a1a;
+  --border:       #252525;
+  --border2:      #333333;
+  --text:         #e8e8e8;
+  --muted:        #555555;
+  --muted2:       #888888;
 
-  /* ── Semânticos ── */
   --accent:       #e0353c;
   --accent-hover: #c12027;
+
   --green:        #3ecf8e;
   --red:          #f87171;
   --amber:        #fbbf24;
   --blue:         #60a5fa;
 
-  /* ── Raios ── */
-  --radius-sm: 3px;
-  --radius-md: 4px;
-  --radius-lg: 4px;
-  --radius:    var(--radius-md);
+  --radius-sm:    3px;
+  --radius-md:    4px;
+  --radius-lg:    4px;
+  --radius:       var(--radius-md);
 
-  /* ── Sombras ── */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --shadow:    0 4px 16px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-sm:    0 1px 2px rgba(0,0,0,.5);
+  --shadow:       0 4px 16px rgba(0,0,0,.5);
 
-  /* ── Focus ring ── */
-  --ring: 0 0 0 2px var(--accent);
+  /* ── COMPAT — aliases legado ───────────────────────────────
+     Mantidos temporariamente porque ~180 regras em components.css,
+     forms.css, layout.css e tables.css ainda dependem deles.
+     Remover apenas após migrar esses consumidores para os tokens
+     canônicos acima. ──────────────────────────────────────── */
+  --shadow-lg:        0 8px 32px rgba(0, 0, 0, 0.6);
+  --ring:             0 0 0 2px var(--accent);
 
-  /* ── Soft tints ── */
-  --accent-soft:  rgba(224, 53, 60, 0.14);
-  --accent-border: rgba(224, 53, 60, 0.30);
-  --green-soft:   rgba(62, 207, 142, 0.14);
-  --red-soft:     rgba(248, 113, 113, 0.14);
-  --amber-soft:   rgba(251, 191, 36, 0.16);
-  --blue-soft:    rgba(96, 165, 250, 0.14);
+  --accent-soft:      rgba(224, 53, 60, 0.14);
+  --accent-border:    rgba(224, 53, 60, 0.30);
+  --green-soft:       rgba(62, 207, 142, 0.14);
+  --red-soft:         rgba(248, 113, 113, 0.14);
+  --amber-soft:       rgba(251, 191, 36, 0.16);
+  --blue-soft:        rgba(96, 165, 250, 0.14);
 
-  /* ── Legado — aliases para não quebrar CSS existente ── */
   --background-color: var(--bg);
   --background:       var(--bg);
   --surface-color:    var(--surface);
@@ -109,55 +87,55 @@ body {
   --info:             var(--blue);
   --info-soft:        var(--blue-soft);
   --glass:            rgba(255, 255, 255, 0.03);
-  --nav-height:       72px; /* compat até Etapa 2 */
+  --nav-height:       72px;
   --gradient-overlay: none;
   --nav-bg:           var(--surface);
 
-  /* ── Semantic text — readable on soft backgrounds ── */
   --success-text:  #b9f8d6;
   --danger-text:   #ffd5d5;
   --warning-text:  #ffe5a6;
   --info-text:     #b9d0ff;
-  --red-soft:      rgba(248, 113, 113, 0.14);
 }
 
-/* 3. Light theme */
+/* ── LIGHT ──────────────────────────────────────────────────── */
 :root[data-theme="light"] {
   color-scheme: light;
 
-  --bg:       #fafafa;
-  --surface:  #ffffff;
-  --surface2: #f5f5f5;
-  --border:   #e8e8e8;
-  --border2:  #d4d4d4;
-  --text:     #111111;
-  --muted:    #999999;
-  --muted2:   #555555;
+  --bg:           #fafafa;
+  --surface:      #ffffff;
+  --surface2:     #f5f5f5;
+  --border:       #e8e8e8;
+  --border2:      #d4d4d4;
+  --text:         #111111;
+  --muted:        #999999;
+  --muted2:       #555555;
 
   --accent:       #c1272d;
   --accent-hover: #a01e23;
+
   --green:        #16a34a;
   --red:          #dc2626;
   --amber:        #d97706;
   --blue:         #2563eb;
 
-  --radius-sm: 3px;
-  --radius-md: 4px;
-  --radius-lg: 4px;
-  --radius:    var(--radius-md);
+  --radius-sm:    3px;
+  --radius-md:    4px;
+  --radius-lg:    4px;
+  --radius:       var(--radius-md);
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow:    0 4px 16px rgba(0, 0, 0, 0.10);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.14);
+  --shadow-sm:    0 1px 2px rgba(0,0,0,.08);
+  --shadow:       0 4px 16px rgba(0,0,0,.08);
 
-  --ring: 0 0 0 2px var(--accent);
+  /* ── COMPAT — aliases legado (ver nota acima) ──────────────── */
+  --shadow-lg:        0 8px 32px rgba(0, 0, 0, 0.14);
+  --ring:             0 0 0 2px var(--accent);
 
-  --accent-soft:  rgba(193, 39, 45, 0.10);
-  --accent-border: rgba(193, 39, 45, 0.30);
-  --green-soft:   rgba(22, 163, 74, 0.10);
-  --red-soft:     rgba(220, 38, 38, 0.10);
-  --amber-soft:   rgba(217, 119, 6, 0.12);
-  --blue-soft:    rgba(37, 99, 235, 0.10);
+  --accent-soft:      rgba(193, 39, 45, 0.10);
+  --accent-border:    rgba(193, 39, 45, 0.30);
+  --green-soft:       rgba(22, 163, 74, 0.10);
+  --red-soft:         rgba(220, 38, 38, 0.10);
+  --amber-soft:       rgba(217, 119, 6, 0.12);
+  --blue-soft:        rgba(37, 99, 235, 0.10);
 
   --background-color: var(--bg);
   --background:       var(--bg);
@@ -190,55 +168,36 @@ body {
   --gradient-overlay: none;
   --nav-bg:           var(--surface);
 
-  /* ── Semantic text — readable on soft backgrounds ── */
   --success-text:  var(--green);
   --danger-text:   var(--red);
   --warning-text:  var(--amber);
   --info-text:     var(--blue);
-
-  /* ── Muted darker for light mode contrast ── */
-  --muted: #666666;
 }
 
-/* 4. Tipografia */
-h1 { font-size: 1.25rem; font-weight: 600; color: var(--text); line-height: 1.3; }
-h2 { font-size: 1.1rem;  font-weight: 600; color: var(--text); line-height: 1.3; }
-h3 { font-size: 0.95rem; font-weight: 600; color: var(--text); line-height: 1.3; }
-p  { color: var(--muted2); }
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-a:hover {
-  color: var(--text);
-}
+/* ── TIPOGRAFIA ─────────────────────────────────────────────── */
+h1, h2, h3 { color: var(--text); font-weight: 600; }
+p { color: var(--muted2); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
 
 img,
 svg {
   display: block;
 }
 
-button,
-input,
-textarea,
-select {
-  font: inherit;
-  -webkit-tap-highlight-color: transparent;
-}
+/* ── SCROLLBAR ──────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
-/* 5. Seleção e placeholder */
-::selection {
-  background: rgba(224, 53, 60, 0.30);
-  color: #ffffff;
-}
+/* ── SELECTION ──────────────────────────────────────────────── */
+::selection { background: rgba(224,53,60,.25); color: var(--text); }
 
 ::placeholder {
   color: var(--muted);
 }
 
-/* 6. Inputs base */
+/* ── INPUTS BASE ────────────────────────────────────────────── */
 input[type="checkbox"],
 input[type="radio"] {
   accent-color: var(--accent);
@@ -247,23 +206,4 @@ input[type="radio"] {
 option {
   background: var(--surface2);
   color: var(--text);
-}
-
-/* 7. Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border2);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--muted);
 }

@@ -6,7 +6,7 @@
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border-color);
-    border-radius: 24px;
+    border-radius: var(--radius-md);
     padding: 2rem;
     box-shadow: var(--shadow);
     transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
@@ -48,52 +48,12 @@
     }
 }
 
-/* Gradient border on hover */
-.card-home::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 24px;
-    padding: 2px;
-    background: linear-gradient(135deg, var(--accent) 0%, #06b6d4 50%, #8b5cf6 100%);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-}
-
-/* Glow effect */
-.card-home::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle at center,
-            rgba(59,130,246,0.08) 0%,
-            transparent 50%);
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    pointer-events: none;
-}
-
+/* Borda em destaque no hover */
 .card-home:hover {
-    transform: translateY(-16px) scale(1.02);
-    box-shadow:
-        0 32px 64px rgba(59,130,246,0.15),
-        0 16px 32px rgba(59,130,246,0.08);
+    border-color: var(--accent);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
     background: var(--card-color);
-}
-
-.card-home:hover::before {
-    opacity: 1;
-}
-
-.card-home:hover::after {
-    opacity: 1;
 }
 
 /* ===== Card Image ===== */
@@ -116,14 +76,12 @@
     position: relative;
     z-index: 1;
     padding: 0.5rem 0 0;
-    border-radius: 16px;
+    border-radius: var(--radius-md);
     transition: background 0.4s ease;
 }
 
 .card-home:hover .card-body {
-    background: linear-gradient(135deg,
-            rgba(59,130,246,0.04),
-            rgba(59,130,246,0.02));
+    background: var(--blue-soft);
 }
 
 /* ===== Card Title ===== */
@@ -131,18 +89,9 @@
     font-size: 1.35rem;
     font-weight: 700;
     margin-bottom: 0.75rem;
-    background: linear-gradient(135deg, var(--accent) 0%, #0891b2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--accent);
     letter-spacing: -0.02em;
     transition: all 0.4s ease;
-}
-
-.card-home:hover .card-title {
-    background: linear-gradient(135deg, #059669 0%, #06b6d4 50%, #8b5cf6 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
 }
 
 /* ===== Card Text ===== */

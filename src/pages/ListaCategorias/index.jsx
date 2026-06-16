@@ -85,7 +85,7 @@ const ListaCategorias = ({ refresh, onEdit }) => {
             </div>
             <div className="botoes-tipo-container">
                 <button
-                    className={`fh-btn ${tipoFiltro === 'receipt' ? 'fh-btn-primary' : 'fh-btn-secondary'}`}
+                    className={`fh-btn fh-btn-sm ${tipoFiltro === 'receipt' ? 'fh-btn-primary' : 'fh-btn-ghost'}`}
                     onClick={() => setTipoFiltro(prev => prev === 'receipt' ? 'todos' : 'receipt')}
                     type="button"
                 >
@@ -93,7 +93,7 @@ const ListaCategorias = ({ refresh, onEdit }) => {
                 </button>
 
                 <button
-                    className={`fh-btn ${tipoFiltro === 'payment' ? 'fh-btn-primary' : 'fh-btn-secondary'}`}
+                    className={`fh-btn fh-btn-sm ${tipoFiltro === 'payment' ? 'fh-btn-primary' : 'fh-btn-ghost'}`}
                     onClick={() => setTipoFiltro(prev => prev === 'payment' ? 'todos' : 'payment')}
                     type="button"
                 >

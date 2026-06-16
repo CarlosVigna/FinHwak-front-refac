@@ -280,10 +280,10 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh, busca = '' }) 
                         {statusErro && <p className="error-message">{statusErro}</p>}
 
                         <div className="status-modal-actions">
-                            <button className="btn-secundario" onClick={fecharEdicaoStatus} disabled={savingStatus}>
+                            <button className="fh-btn fh-btn-secondary" onClick={fecharEdicaoStatus} disabled={savingStatus}>
                                 Cancelar
                             </button>
-                            <button className="btn-primario" onClick={salvarStatus} disabled={savingStatus}>
+                            <button className="fh-btn fh-btn-primary" onClick={salvarStatus} disabled={savingStatus}>
                                 {savingStatus ? 'Salvando...' : 'Salvar'}
                             </button>
                         </div>

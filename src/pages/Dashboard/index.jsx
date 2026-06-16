@@ -261,7 +261,7 @@ const Dashboard = () => {
                     <h2>❌ Erro ao carregar dashboard</h2>
                     <p>{error}</p>
                     <button
-                        className="retry-btn"
+                        className="fh-btn fh-btn-primary"
                         onClick={fetchBills}
                     >
                         Tentar Novamente
@@ -299,7 +299,7 @@ const Dashboard = () => {
                             onMonthChange={handleMonthChange}
                         />
                         <button
-                            className="btn-consolidated"
+                            className="fh-btn fh-btn-secondary"
                             onClick={handleShowConsolidated}
                             title="Exibir visão consolidada de todas as contas"
                         >

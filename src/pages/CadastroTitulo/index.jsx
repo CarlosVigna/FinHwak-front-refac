@@ -57,21 +57,21 @@ const CadastroTitulo = () => {
             <div className="botoes-filtro-container">
                 <div className="filtro-tipo">
                     <button
-                        className={`fh-btn ${tipoTransacao === 'todos' ? 'fh-btn-primary' : 'fh-btn-secondary'}`}
+                        className={`fh-btn fh-btn-sm ${tipoTransacao === 'todos' ? 'fh-btn-primary' : 'fh-btn-ghost'}`}
                         onClick={() => handleTipoTransacao('todos')}
                         type="button"
                     >
                         Todos
                     </button>
                     <button
-                        className={`fh-btn ${tipoTransacao === 'recebimentos' ? 'fh-btn-primary' : 'fh-btn-secondary'}`}
+                        className={`fh-btn fh-btn-sm ${tipoTransacao === 'recebimentos' ? 'fh-btn-primary' : 'fh-btn-ghost'}`}
                         onClick={() => handleTipoTransacao('recebimentos')}
                         type="button"
                     >
                         Recebimentos
                     </button>
                     <button
-                        className={`fh-btn ${tipoTransacao === 'pagamentos' ? 'fh-btn-primary' : 'fh-btn-secondary'}`}
+                        className={`fh-btn fh-btn-sm ${tipoTransacao === 'pagamentos' ? 'fh-btn-primary' : 'fh-btn-ghost'}`}
                         onClick={() => handleTipoTransacao('pagamentos')}
                         type="button"
                     >

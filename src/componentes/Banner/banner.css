@@ -10,45 +10,11 @@
     align-items: center;
     overflow: hidden;
 
-    /* Fundo Gradiente (usa tokens globais) */
-    background: linear-gradient(-45deg, var(--background-color), var(--surface-color));
-    background-size: 300% 300%;
-    animation: gradientMove 10s ease infinite;
+    /* Fundo sólido (usa token global) */
+    background: var(--surface);
 
     box-shadow: var(--shadow);
     z-index: 10;
-}
-
-/* Padrão de Grid Tecnológico (Overlay) */
-.banner-dinamico::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image:
-        linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
-    background-size: 30px 30px;
-    /* Tamanho do grid */
-    z-index: 1;
-    mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
-    /* Fade out em baixo */
-}
-
-@keyframes gradientMove {
-    0% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
-
-    100% {
-        background-position: 0% 50%;
-    }
 }
 
 /* --- Elementos Decorativos (Blobs mais sutis para Tech) --- */

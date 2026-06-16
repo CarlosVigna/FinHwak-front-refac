@@ -92,7 +92,12 @@
   border-bottom: 1px solid var(--border-light);
 }
 
-button,
+/* Regra global mínima para <button> — tamanho/posicionamento ficam
+   por conta de cada sistema de botão (fh-btn, legado, etc.) */
+button {
+  cursor: pointer;
+}
+
 .fh-button,
 .btn,
 .botao-salvar,
@@ -1174,90 +1179,121 @@ footer {
   color: var(--muted);
 }
 
-/* ══════════════════════════════════════════
-   fh-btn — sistema unificado de botões
-══════════════════════════════════════════ */
+/* ============================================================
+   SISTEMA DE BOTÕES — fh-btn
+   Tamanho natural (fit-content). Nunca width: 100%.
+   ============================================================ */
+
 .fh-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 7px 14px;
-  border-radius: 3px;
+  padding: 7px 16px;
+  border-radius: var(--radius-sm);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   border: 1px solid transparent;
   white-space: nowrap;
   line-height: 1;
-  transition: opacity .15s, background .15s;
+  text-decoration: none;
+  transition: background .15s, opacity .15s;
+  /* NUNCA min-height, NUNCA width: 100% aqui */
 }
 
-.fh-btn:hover  { opacity: .88; }
-.fh-btn:active { opacity: .75; }
-
+/* Tamanho pequeno — para linhas de tabela */
+.fh-btn.fh-btn-sm,
 .fh-btn-sm {
   padding: 4px 10px;
   font-size: 12px;
 }
 
+/* Vermelho — ação principal (Salvar, Criar, Cadastrar, Entrar) */
+.fh-btn.fh-btn-primary,
 .fh-btn-primary {
   background: var(--accent);
-  color: #ffffff;
+  color: #ffffff !important;
   border-color: var(--accent-hover);
 }
+.fh-btn.fh-btn-primary:hover,
 .fh-btn-primary:hover {
   background: var(--accent-hover);
-  opacity: 1;
 }
 
+/* Verde — confirmar, pagar, dar baixa, receber */
+.fh-btn.fh-btn-success,
 .fh-btn-success {
   background: #16a34a;
-  color: #ffffff;
+  color: #ffffff !important;
   border-color: #15803d;
 }
-.fh-btn-success:hover { background: #15803d; opacity: 1; }
+.fh-btn.fh-btn-success:hover,
+.fh-btn-success:hover {
+  background: #15803d;
+}
 
+/* Vermelho escuro — excluir, ação destrutiva */
+.fh-btn.fh-btn-danger,
 .fh-btn-danger {
   background: #b91c1c;
-  color: #ffffff;
+  color: #ffffff !important;
   border-color: #991b1b;
 }
-.fh-btn-danger:hover { background: #991b1b; opacity: 1; }
+.fh-btn.fh-btn-danger:hover,
+.fh-btn-danger:hover {
+  background: #991b1b;
+}
 
+/* Neutro — cancelar, voltar, editar (muda por tema) */
+.fh-btn.fh-btn-secondary,
 .fh-btn-secondary {
   background: #f0f0f0;
-  color: #111111;
+  color: #111111 !important;
   border: 1px solid #cccccc;
 }
-.fh-btn-secondary:hover { background: #e4e4e4; opacity: 1; }
-
+.fh-btn.fh-btn-secondary:hover,
+.fh-btn-secondary:hover {
+  background: #e4e4e4;
+}
+[data-theme="dark"] .fh-btn.fh-btn-secondary,
 [data-theme="dark"] .fh-btn-secondary {
-  background: #222222;
-  color: #e8e8e8;
-  border: 1px solid #3a3a3a;
+  background: #222222 !important;
+  color: #e8e8e8 !important;
+  border: 1px solid #3a3a3a !important;
 }
+[data-theme="dark"] .fh-btn.fh-btn-secondary:hover,
 [data-theme="dark"] .fh-btn-secondary:hover {
-  background: #2e2e2e;
-  opacity: 1;
+  background: #2e2e2e !important;
 }
 
+/* Ghost — outline, ações terciárias */
+.fh-btn.fh-btn-ghost,
 .fh-btn-ghost {
   background: transparent;
   color: var(--muted2);
   border: 1px solid var(--border2);
 }
+.fh-btn.fh-btn-ghost:hover,
 .fh-btn-ghost:hover {
+  background: var(--surface2);
   color: var(--text);
   border-color: var(--border);
-  background: var(--surface2);
-  opacity: 1;
 }
 
+/* Container de linha de botões */
 .fh-btn-row {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
   align-items: center;
+}
+
+/* NEUTRALIZAR regras genéricas de button que atrapalham */
+button.fh-btn {
+  min-height: unset !important;
+  width: auto !important;
+  min-width: unset !important;
 }
 
 /* ══════════════════════════════════════════
