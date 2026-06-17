@@ -303,7 +303,23 @@ const ChecklistMensal = () => {
                               type="button"
                               className="fh-btn fh-btn-primary fh-btn-sm"
                               title="Criar lançamento a partir do checklist"
-                              onClick={() => navigate(`/cadastroTitulo?checklistItemId=${item.id}`, { state: { fromChecklist: true, checklistItemId: item.id, selectedMonth } })}
+                              onClick={() => {
+                                const today = new Date();
+                                let dueDate = new Date(today.getFullYear(), today.getMonth(), item.dueDay);
+                                if (dueDate < today) {
+                                  dueDate = new Date(today.getFullYear(), today.getMonth() + 1, item.dueDay);
+                                }
+                                navigate('/cadastroTitulo', {
+                                  state: {
+                                    fromChecklist: true,
+                                    checklistItemId: item.id,
+                                    description: item.description,
+                                    dueDate: dueDate.toISOString().split('T')[0],
+                                    approximateValue: item.approximateValue || '',
+                                    selectedMonth,
+                                  }
+                                });
+                              }}
                             >
                               Criar
                             </button>

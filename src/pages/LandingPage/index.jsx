@@ -225,20 +225,20 @@ function LandingPage() {
                     </div>
                     <div className="screenshots-grid">
                         <div className="screenshot-item">
-                            <img src="/screenshots/dashboard_dark.png" alt="Dashboard modo escuro" className="screenshot-img" loading="lazy" />
+                            <img src="/screenshots/dashboard_dark.png" alt="Dashboard modo escuro" className="screenshot-img" loading="lazy" onError={(e) => { e.target.style.display = 'none'; }} />
                             <span className="screenshot-label">Dashboard — modo escuro</span>
                         </div>
                         <div className="screenshot-item">
-                            <img src="/screenshots/dashboard_light.png" alt="Dashboard modo claro" className="screenshot-img" loading="lazy" />
-                            <span className="screenshot-label">Dashboard — modo claro</span>
+                            <img src="/screenshots/graficos_dashboard.png" alt="Gráficos do dashboard" className="screenshot-img" loading="lazy" onError={(e) => { e.target.style.display = 'none'; }} />
+                            <span className="screenshot-label">Gráficos e evolução</span>
                         </div>
                         <div className="screenshot-item">
-                            <img src="/screenshots/checklist.png" alt="Checklist mensal" className="screenshot-img" loading="lazy" />
-                            <span className="screenshot-label">Checklist mensal</span>
+                            <img src="/screenshots/historico_de_lancamentos.png" alt="Histórico de lançamentos" className="screenshot-img" loading="lazy" onError={(e) => { e.target.style.display = 'none'; }} />
+                            <span className="screenshot-label">Histórico de lançamentos</span>
                         </div>
                         <div className="screenshot-item">
-                            <img src="/screenshots/relatorios.png" alt="Relatórios e gráficos" className="screenshot-img" loading="lazy" />
-                            <span className="screenshot-label">Relatórios e gráficos</span>
+                            <img src="/screenshots/relatorio_contas_pagas.png" alt="Relatório de contas pagas" className="screenshot-img" loading="lazy" onError={(e) => { e.target.style.display = 'none'; }} />
+                            <span className="screenshot-label">Relatório de contas pagas</span>
                         </div>
                     </div>
                 </section>

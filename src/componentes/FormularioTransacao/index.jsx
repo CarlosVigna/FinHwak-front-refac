@@ -21,6 +21,7 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
         type: 'RECEIPT'
     });
 
+    const [markChecklist, setMarkChecklist] = useState(null);
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
 
@@ -76,10 +77,24 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
         }
     }, [tituloParaEditar]);
 
-    // Prefill from checklist suggestion if query param present (e.g. ?checklistItemId=123)
+    // Pre-fill from location.state when navigating from Checklist
+    useEffect(() => {
+        const state = location?.state;
+        if (!state?.fromChecklist || tituloParaEditar) return;
+        const today = new Date().toISOString().split('T')[0];
+        setValores(prev => ({
+            ...prev,
+            description: state.description || prev.description,
+            maturity: state.dueDate || prev.maturity,
+            installmentAmount: state.approximateValue ? String(state.approximateValue) : prev.installmentAmount,
+            emission: today,
+        }));
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Prefill from checklist suggestion API (overwrites state pre-fill with bill history when available)
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
-        const checklistItemId = params.get('checklistItemId');
+        const checklistItemId = params.get('checklistItemId') || location?.state?.checklistItemId;
 
         const fetchSuggestion = async () => {
             try {
@@ -106,7 +121,9 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
                         installmentAmount: suggestion.lastAmount ?? suggestion.approximateValue ?? prev.installmentAmount,
                         categoryId: suggestion.lastCategoryId ? String(suggestion.lastCategoryId) : prev.categoryId,
                         description: suggestion.lastDescription || prev.description,
-                        maturity: suggestion.lastLaunchedAt ? suggestion.lastLaunchedAt.split('T')[0] : today,
+                        maturity: suggestion.lastLaunchedAt
+                            ? suggestion.lastLaunchedAt.split('T')[0]
+                            : (location?.state?.dueDate || today),
                         emission: today
                     }));
                     setChecklistSuggestion(suggestion);
@@ -163,9 +180,10 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
             setSucesso(tituloParaEditar ? 'Atualizado com sucesso!' : 'Cadastrado com sucesso!');
             if (!tituloParaEditar) localStorage.setItem('finhawk-first-bill', 'true');
 
-            if (!tituloParaEditar && location?.state?.fromChecklist && location.state.checklistItemId && location.state.selectedMonth) {
+            if (!tituloParaEditar && markChecklist === true && location?.state?.checklistItemId) {
+                const month = location.state.selectedMonth || new Date().toISOString().slice(0, 7);
                 try {
-                    await api.post(`/checklist/${location.state.checklistItemId}/completion`, { month: location.state.selectedMonth });
+                    await api.post(`/checklist/${location.state.checklistItemId}/completion`, { month });
                 } catch (err) {
                     console.warn('Não foi possível marcar checklist como concluído:', err);
                 }
@@ -199,9 +217,27 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
 
     return (
         <form className="formulario-horizontal" onSubmit={handleSubmit}>
-            {checklistSuggestion && (
+            {location?.state?.fromChecklist && !tituloParaEditar && markChecklist === null && (
                 <div className="checklist-confirm-banner">
-                    ✓ Sugestão do checklist aplicada automaticamente
+                    <p>
+                        Deseja marcar <strong>"{location.state.description}"</strong> do checklist como concluído após salvar?
+                    </p>
+                    <div className="fh-btn-row">
+                        <button
+                            type="button"
+                            className="fh-btn fh-btn-success fh-btn-sm"
+                            onClick={() => setMarkChecklist(true)}
+                        >
+                            Sim, marcar como concluído
+                        </button>
+                        <button
+                            type="button"
+                            className="fh-btn fh-btn-secondary fh-btn-sm"
+                            onClick={() => setMarkChecklist(false)}
+                        >
+                            Não
+                        </button>
+                    </div>
                 </div>
             )}
             {erro && <div className="error-message">{erro}</div>}

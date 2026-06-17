@@ -34,6 +34,7 @@ const AuthTabs = ({ initialTab = 'login' }) => {
                         src="/screenshots/dashboard_dark.png"
                         alt="FinHawk — visão do dashboard"
                         className="login-preview-img"
+                        onError={(e) => { e.target.style.display = 'none'; }}
                     />
                 </div>
             </div>
