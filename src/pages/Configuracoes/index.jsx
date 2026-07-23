@@ -3,6 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../Login/AuthContext';
 import { api } from '../../services/api';
 import { useTooltipsEnabled } from '../../hooks/useTooltipsEnabled';
+import Input from '../../componentes/ui/Input';
+import Button from '../../componentes/ui/Button';
+import Card from '../../componentes/ui/Card';
+import Modal from '../../componentes/ui/Modal';
 
 const Configuracoes = () => {
   const { user, logout, refreshUser } = useAuth();
@@ -256,245 +260,201 @@ const Configuracoes = () => {
   };
 
   if (!user) {
-    return (
-      <div className="fh-page">
-        <div className="configuracoes-container">
-          <div className="loading">Carregando configurações...</div>
-        </div>
-      </div>
-    );
+    return <div className="p-6 text-sm text-muted2">Carregando configurações...</div>;
   }
 
   return (
-    <div className="fh-page">
-      <div className="configuracoes-container">
+    <div className="mx-auto flex max-w-2xl flex-col gap-6">
 
-        <h1 className="titulo-contas">Configurações da Conta</h1>
+      <h1 className="text-2xl font-semibold text-text">Configurações da Conta</h1>
 
-        {/* ── Dados Pessoais ─────────────────────────────────── */}
-        <div className="secao-superior">
-          <h2 className="historico-titulo">Dados Pessoais</h2>
-          <form className="fh-form" onSubmit={handleSalvarDados}>
-            <div className="linha-formulario">
-              <div className="campo-formulario">
-                <label>Nome</label>
-                <input
-                  type="text"
-                  value={nome}
-                  onChange={(e) => setNome(e.target.value)}
-                  placeholder="Seu nome completo"
-                />
-              </div>
-              <div className="campo-formulario">
-                <label>E-mail</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Seu e-mail"
-                />
-              </div>
-            </div>
-
-            {dadosErro && <div className="error-message">{dadosErro}</div>}
-            {dadosSucesso && <div className="success-message">{dadosSucesso}</div>}
-
-            <div className="botoes-formulario">
-              <button type="submit" className="fh-btn fh-btn-primary" disabled={salvandoDados}>
-                {salvandoDados ? 'Salvando...' : 'Salvar Dados Pessoais'}
-              </button>
-            </div>
-          </form>
-        </div>
-
-        {/* ── Alterar Senha ──────────────────────────────────── */}
-        <div className="secao-superior">
-          <h2 className="historico-titulo">Alterar Senha</h2>
-          <form className="fh-form" onSubmit={handleAlterarSenha}>
-            <div className="campo-formulario">
-              <label>Senha Atual</label>
-              <input
-                type="password"
-                value={senhaAtual}
-                onChange={(e) => setSenhaAtual(e.target.value)}
-                placeholder="Digite sua senha atual"
-              />
-            </div>
-            <div className="campo-formulario">
-              <label>Nova Senha</label>
-              <input
-                type="password"
-                value={novaSenha}
-                onChange={(e) => setNovaSenha(e.target.value)}
-                placeholder="Mínimo 6 caracteres"
-              />
-            </div>
-            <div className="campo-formulario">
-              <label>Confirmar Nova Senha</label>
-              <input
-                type="password"
-                value={confirmarSenha}
-                onChange={(e) => setConfirmarSenha(e.target.value)}
-                placeholder="Repita a nova senha"
-              />
-            </div>
-
-            {senhaErro && <div className="error-message">{senhaErro}</div>}
-            {senhaSucesso && <div className="success-message">{senhaSucesso}</div>}
-
-            <div className="botoes-formulario">
-              <button type="submit" className="fh-btn fh-btn-primary" disabled={salvandoSenha}>
-                {salvandoSenha ? 'Verificando...' : 'Alterar Senha'}
-              </button>
-            </div>
-          </form>
-        </div>
-
-        {/* ── Preferências ──────────────────────────────────── */}
-        <div className="secao-superior">
-          <h2 className="historico-titulo">Preferências</h2>
-
-          <div className="toggle-row">
-            <span className="toggle-label">
-              Tooltips informativos no Dashboard
-              <span style={{ display: 'block', fontSize: '0.78rem', color: 'var(--muted2)', marginTop: 2 }}>
-                Exibe ícones ⓘ com explicações nos cards do Dashboard.
-              </span>
-            </span>
-            <label className="toggle-switch">
-              <input
-                type="checkbox"
-                checked={tooltipsEnabled}
-                onChange={handleToggleTooltips}
-              />
-              <span className="toggle-slider" />
-            </label>
+      {/* ── Dados Pessoais ─────────────────────────────────── */}
+      <Card>
+        <h2 className="mb-4 text-lg font-semibold text-text">Dados Pessoais</h2>
+        <form onSubmit={handleSalvarDados} className="flex flex-col gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Input
+              label="Nome"
+              type="text"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              placeholder="Seu nome completo"
+            />
+            <Input
+              label="E-mail"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Seu e-mail"
+            />
           </div>
-        </div>
 
-        {/* ── Privacidade e Dados ────────────────────────────── */}
-        <div className="secao-superior">
-          <h2 className="historico-titulo">Privacidade e Dados</h2>
+          {dadosErro && <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{dadosErro}</p>}
+          {dadosSucesso && <p className="rounded-md bg-success/10 px-3 py-2 text-sm text-success">{dadosSucesso}</p>}
 
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '0 0 16px' }}>
-            Exporte todos os seus dados em um arquivo JSON (contas, categorias, lançamentos e checklist).
-          </p>
+          <div>
+            <Button type="submit" disabled={salvandoDados}>
+              {salvandoDados ? 'Salvando...' : 'Salvar Dados Pessoais'}
+            </Button>
+          </div>
+        </form>
+      </Card>
 
-          <button
-            type="button"
-            className="fh-btn fh-btn-primary"
-            onClick={handleExportarDados}
-            disabled={exportando}
-            style={{ marginBottom: '24px' }}
-          >
-            {exportando ? 'Exportando...' : 'Exportar Meus Dados'}
-          </button>
-
-          {exportErro && <div className="error-message" style={{ marginBottom: '16px' }}>{exportErro}</div>}
-
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '0 0 16px' }}>
-            Restaure um backup JSON exportado anteriormente. Os dados importados serão adicionados aos dados existentes.
-          </p>
-
-          <input
-            ref={importInputRef}
-            type="file"
-            accept=".json,application/json"
-            style={{ display: 'none' }}
-            onChange={handleImportarBackup}
+      {/* ── Alterar Senha ──────────────────────────────────── */}
+      <Card>
+        <h2 className="mb-4 text-lg font-semibold text-text">Alterar Senha</h2>
+        <form onSubmit={handleAlterarSenha} className="flex flex-col gap-4">
+          <Input
+            label="Senha Atual"
+            type="password"
+            value={senhaAtual}
+            onChange={(e) => setSenhaAtual(e.target.value)}
+            placeholder="Digite sua senha atual"
+          />
+          <Input
+            label="Nova Senha"
+            type="password"
+            value={novaSenha}
+            onChange={(e) => setNovaSenha(e.target.value)}
+            placeholder="Mínimo 6 caracteres"
+          />
+          <Input
+            label="Confirmar Nova Senha"
+            type="password"
+            value={confirmarSenha}
+            onChange={(e) => setConfirmarSenha(e.target.value)}
+            placeholder="Repita a nova senha"
           />
 
-          <button
-            type="button"
-            className="fh-btn fh-btn-primary"
-            onClick={() => importInputRef.current?.click()}
-            disabled={importando}
-            style={{ marginBottom: '24px' }}
-          >
-            {importando ? 'Importando...' : 'Importar Backup'}
-          </button>
+          {senhaErro && <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{senhaErro}</p>}
+          {senhaSucesso && <p className="rounded-md bg-success/10 px-3 py-2 text-sm text-success">{senhaSucesso}</p>}
 
-          {importErro && <div className="error-message" style={{ marginBottom: '16px' }}>{importErro}</div>}
-          {importSucesso && <div className="success-message" style={{ marginBottom: '16px' }}>{importSucesso}</div>}
+          <div>
+            <Button type="submit" disabled={salvandoSenha}>
+              {salvandoSenha ? 'Verificando...' : 'Alterar Senha'}
+            </Button>
+          </div>
+        </form>
+      </Card>
 
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '0 0 10px' }}>
-            Esta ação removerá permanentemente todos os seus dados do FinHawk:
-          </p>
-          <ul style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', margin: '0 0 20px', paddingLeft: '20px', lineHeight: '1.8' }}>
-            <li>Contas</li>
-            <li>Categorias</li>
-            <li>Lançamentos</li>
-            <li>Checklist</li>
-            <li>Histórico</li>
-          </ul>
+      {/* ── Preferências ──────────────────────────────────── */}
+      <Card>
+        <h2 className="mb-4 text-lg font-semibold text-text">Preferências</h2>
 
-          <button
-            type="button"
-            className="fh-btn fh-btn-danger"
-            onClick={handleAbrirModalExclusao}
-          >
-            Excluir Minha Conta
-          </button>
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-sm text-text">
+            Tooltips informativos no Dashboard
+            <span className="mt-0.5 block text-xs text-muted2">
+              Exibe ícones ⓘ com explicações nos cards do Dashboard.
+            </span>
+          </span>
+          <label className="relative inline-flex shrink-0 cursor-pointer items-center">
+            <input
+              type="checkbox"
+              checked={tooltipsEnabled}
+              onChange={handleToggleTooltips}
+              className="peer sr-only"
+            />
+            <span className="h-6 w-11 rounded-full bg-surface2 transition-colors peer-checked:bg-primary" />
+            <span className="absolute left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5" />
+          </label>
         </div>
+      </Card>
 
-      </div>
+      {/* ── Privacidade e Dados ────────────────────────────── */}
+      <Card>
+        <h2 className="mb-4 text-lg font-semibold text-text">Privacidade e Dados</h2>
+
+        <p className="mb-4 text-sm text-muted2">
+          Exporte todos os seus dados em um arquivo JSON (contas, categorias, lançamentos e checklist).
+        </p>
+
+        <Button type="button" onClick={handleExportarDados} disabled={exportando} className="mb-6">
+          {exportando ? 'Exportando...' : 'Exportar Meus Dados'}
+        </Button>
+
+        {exportErro && <p className="mb-4 rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{exportErro}</p>}
+
+        <p className="mb-4 text-sm text-muted2">
+          Restaure um backup JSON exportado anteriormente. Os dados importados serão adicionados aos dados existentes.
+        </p>
+
+        <input
+          ref={importInputRef}
+          type="file"
+          accept=".json,application/json"
+          className="hidden"
+          onChange={handleImportarBackup}
+        />
+
+        <Button
+          type="button"
+          onClick={() => importInputRef.current?.click()}
+          disabled={importando}
+          className="mb-6"
+        >
+          {importando ? 'Importando...' : 'Importar Backup'}
+        </Button>
+
+        {importErro && <p className="mb-4 rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{importErro}</p>}
+        {importSucesso && <p className="mb-4 rounded-md bg-success/10 px-3 py-2 text-sm text-success">{importSucesso}</p>}
+
+        <p className="mb-2 text-sm text-muted2">
+          Esta ação removerá permanentemente todos os seus dados do FinHawk:
+        </p>
+        <ul className="mb-5 list-disc pl-5 text-sm leading-relaxed text-muted2">
+          <li>Contas</li>
+          <li>Categorias</li>
+          <li>Lançamentos</li>
+          <li>Checklist</li>
+          <li>Histórico</li>
+        </ul>
+
+        <Button type="button" variant="danger" onClick={handleAbrirModalExclusao}>
+          Excluir Minha Conta
+        </Button>
+      </Card>
 
       {/* ── Modal de confirmação de exclusão ─────────────────── */}
-      {showDeleteModal && (
-        <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) handleFecharModalExclusao(); }}>
-          <div className="status-modal">
-            <h3 className="modal-titulo">Excluir Conta</h3>
+      <Modal isOpen={showDeleteModal} onClose={handleFecharModalExclusao} title="Excluir Conta">
+        {deleteSuccess ? (
+          <p className="rounded-md bg-success/10 px-3 py-2 text-sm text-success">
+            Sua conta foi removida com sucesso. Redirecionando...
+          </p>
+        ) : (
+          <>
+            <p className="text-sm text-muted2">
+              Esta ação é permanente. Todos os seus dados serão removidos e não poderão ser recuperados.
+            </p>
+            <p className="mb-4 mt-2 text-sm text-muted2">
+              Digite seu e-mail para confirmar.
+            </p>
 
-            {deleteSuccess ? (
-              <div className="success-message">
-                Sua conta foi removida com sucesso. Redirecionando...
-              </div>
-            ) : (
-              <>
-                <p className="modal-descricao">
-                  Esta ação é permanente. Todos os seus dados serão removidos e não poderão ser recuperados.
-                </p>
-                <p className="modal-descricao" style={{ marginBottom: '16px' }}>
-                  Digite seu e-mail para confirmar.
-                </p>
+            <Input
+              label="E-mail de confirmação"
+              type="email"
+              value={emailConfirmacao}
+              onChange={(e) => setEmailConfirmacao(e.target.value)}
+              placeholder={user.email}
+              disabled={deletando}
+              autoComplete="off"
+            />
 
-                <div className="campo-formulario">
-                  <label>E-mail de confirmação</label>
-                  <input
-                    type="email"
-                    value={emailConfirmacao}
-                    onChange={(e) => setEmailConfirmacao(e.target.value)}
-                    placeholder={user.email}
-                    disabled={deletando}
-                    autoComplete="off"
-                  />
-                </div>
-
-                {deleteErro && <div className="error-message" style={{ marginTop: '10px' }}>{deleteErro}</div>}
-
-                <div className="botoes-formulario" style={{ marginTop: '20px' }}>
-                  <button
-                    type="button"
-                    className="fh-btn fh-btn-secondary"
-                    onClick={handleFecharModalExclusao}
-                    disabled={deletando}
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    type="button"
-                    className="fh-btn fh-btn-danger"
-                    onClick={handleExcluirConta}
-                    disabled={deletando}
-                  >
-                    {deletando ? 'Excluindo...' : 'Excluir Conta'}
-                  </button>
-                </div>
-              </>
+            {deleteErro && (
+              <p className="mt-3 rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{deleteErro}</p>
             )}
-          </div>
-        </div>
-      )}
+
+            <div className="mt-5 flex justify-end gap-3">
+              <Button type="button" variant="outline" onClick={handleFecharModalExclusao} disabled={deletando}>
+                Cancelar
+              </Button>
+              <Button type="button" variant="danger" onClick={handleExcluirConta} disabled={deletando}>
+                {deletando ? 'Excluindo...' : 'Excluir Conta'}
+              </Button>
+            </div>
+          </>
+        )}
+      </Modal>
     </div>
   );
 };

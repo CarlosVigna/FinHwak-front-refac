@@ -3,6 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { FaTrash, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import { api } from '../../services/api';
 import { useAccount } from '../../contexts/AccountContext';
+import Input from '../../componentes/ui/Input';
+import Button from '../../componentes/ui/Button';
+import Card from '../../componentes/ui/Card';
+import Badge from '../../componentes/ui/Badge';
+import Table from '../../componentes/ui/Table';
 
 const ChecklistMensal = () => {
   const navigate = useNavigate();
@@ -162,206 +167,159 @@ const ChecklistMensal = () => {
     }
   };
 
+  const handleCriarLancamento = (item) => {
+    const today = new Date();
+    let dueDate = new Date(today.getFullYear(), today.getMonth(), item.dueDay);
+    if (dueDate < today) {
+      dueDate = new Date(today.getFullYear(), today.getMonth() + 1, item.dueDay);
+    }
+    navigate('/cadastroTitulo', {
+      state: {
+        fromChecklist: true,
+        checklistItemId: item.id,
+        description: item.description,
+        dueDate: dueDate.toISOString().split('T')[0],
+        approximateValue: item.approximateValue || '',
+        selectedMonth,
+      }
+    });
+  };
+
+  const filteredItens = itens.filter(item => !busca || item.description.toLowerCase().includes(busca.toLowerCase()));
+
+  const columns = [
+    {
+      header: 'Feito',
+      render: (item) => (
+        <input
+          type="checkbox"
+          checked={checkedItemsState.has(item.id)}
+          onChange={() => handleToggle(item.id)}
+          disabled={loadingCompletions || savingItems.has(item.id)}
+        />
+      ),
+    },
+    { header: 'Dia de Vencimento', render: (item) => item.dueDay },
+    {
+      header: 'Descrição',
+      render: (item) => (
+        <span className={checkedItemsState.has(item.id) ? 'text-muted line-through' : 'text-text'}>
+          {item.description}
+        </span>
+      ),
+    },
+    {
+      header: 'Status no Mês',
+      render: (item) => {
+        if (savingItems.has(item.id)) return <Badge variant="neutral">Salvando...</Badge>;
+        return checkedItemsState.has(item.id)
+          ? <Badge variant="success"><FaCheckCircle className="mr-1 inline" /> Concluído</Badge>
+          : <Badge variant="warning"><FaExclamationCircle className="mr-1 inline" /> Pendente</Badge>;
+      },
+    },
+    {
+      header: 'Ações',
+      render: (item) => (
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            title="Criar lançamento a partir do checklist"
+            onClick={() => handleCriarLancamento(item)}
+          >
+            Criar
+          </Button>
+          {deletingId === item.id ? (
+            <>
+              <Button size="sm" variant="primary" title="Confirmar exclusão" onClick={() => handleDelete(item.id)}>
+                <FaCheckCircle />
+              </Button>
+              <Button size="sm" variant="outline" title="Cancelar" onClick={() => setDeletingId(null)}>
+                ✕
+              </Button>
+            </>
+          ) : (
+            <Button size="sm" variant="danger" title="Apagar Recorrência" onClick={() => setDeletingId(item.id)}>
+              <FaTrash />
+            </Button>
+          )}
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <div className='cadastro-titulo-vertical'>
+    <div className="flex flex-col gap-6">
 
-      <div className='secao-superior'>
-        <h1 className="fh-title">
-          <span>Controle de Checklist Recorrente</span>
-        </h1>
+      <Card>
+        <h1 className="mb-4 text-2xl font-semibold text-text">Controle de Checklist Recorrente</h1>
 
-        <form onSubmit={handleCadastrar} className="checklist-form">
-          <div className="checklist-grid">
-            <div className="campo-formulario">
-              <label>Descrição do Item</label>
-              <input
-                type="text"
-                value={descricao}
-                onChange={(e) => setDescricao(e.target.value)}
-                placeholder="Ex: Aluguel, Internet..."
-              />
-            </div>
-
-            <div className="campo-formulario">
-              <label>Dia do Vencimento</label>
-              <input
-                type="number"
-                min="1"
-                max="31"
-                value={dueDay}
-                onChange={(e) => setDueDay(e.target.value)}
-                placeholder="Ex: 5"
-              />
-            </div>
-
-            <div className="campo-formulario">
-              <label>Valor aproximado</label>
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                value={approximateValue}
-                onChange={(e) => setApproximateValue(e.target.value)}
-                placeholder="Ex: 350,00"
-              />
-            </div>
-          </div>
-
-          <div className="botoes-formulario checklist-actions">
-            <button type="submit" className="fh-btn fh-btn-primary">Adicionar Recorrência</button>
-          </div>
-
-          {erro && <div className="error-message">{erro}</div>}
-          {sucesso && <div className="success-message">{sucesso}</div>}
-        </form>
-      </div>
-
-      <div className='historico-container'>
-        <div className="checklist-toolbar">
-          <h3>Acompanhamento do Mês</h3>
-
-          <div className="campo-formulario checklist-month-field">
-            <input
-              type="month"
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
+        <form onSubmit={handleCadastrar} className="flex flex-col gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <Input
+              label="Descrição do Item"
+              type="text"
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+              placeholder="Ex: Aluguel, Internet..."
+            />
+            <Input
+              label="Dia do Vencimento"
+              type="number"
+              min="1"
+              max="31"
+              value={dueDay}
+              onChange={(e) => setDueDay(e.target.value)}
+              placeholder="Ex: 5"
+            />
+            <Input
+              label="Valor aproximado"
+              type="number"
+              step="0.01"
+              min="0"
+              value={approximateValue}
+              onChange={(e) => setApproximateValue(e.target.value)}
+              placeholder="Ex: 350,00"
             />
           </div>
-        </div>
 
-        <div style={{ marginBottom: 12 }}>
+          <div>
+            <Button type="submit">Adicionar Recorrência</Button>
+          </div>
+
+          {erro && <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{erro}</p>}
+          {sucesso && <p className="rounded-md bg-success/10 px-3 py-2 text-sm text-success">{sucesso}</p>}
+        </form>
+      </Card>
+
+      <div>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h3 className="text-lg font-semibold text-text">Acompanhamento do Mês</h3>
           <input
-            type="text"
-            className="fh-search-input"
-            placeholder="Buscar item..."
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
+            type="month"
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className="rounded-md border border-border bg-surface px-3 py-2 text-sm text-text"
           />
         </div>
 
-        <div className="table-container">
-          <div className="tabela-responsiva">
-            <table className="tabela-titulos">
-              <thead>
-                <tr>
-                  <th className="cell-narrow cell-center">Feito</th>
-                  <th>Dia de Vencimento</th>
-                  <th>Descrição</th>
-                  <th>Status no Mês</th>
-                  <th className="cell-center">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr>
-                    <td colSpan="5" className="empty-table-cell">Carregando...</td>
-                  </tr>
-                ) : itens.length === 0 ? (
-                  <tr>
-                    <td colSpan="5" className="empty-table-cell">
-                      Nenhum item recorrente cadastrado. Adicione acima.
-                    </td>
-                  </tr>
-                ) : (
-                  itens
-                    .filter(item => !busca || item.description.toLowerCase().includes(busca.toLowerCase()))
-                    .map((item) => {
-                    const isConcluido = checkedItemsState.has(item.id);
-                    const isSaving = savingItems.has(item.id);
+        <Input
+          type="text"
+          placeholder="Buscar item..."
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          className="mb-4"
+        />
 
-                    return (
-                      <tr key={item.id} className={isConcluido ? 'checklist-row-done' : ''}>
-                        <td className="cell-center">
-                          <input
-                            type="checkbox"
-                            className="checklist-checkbox"
-                            checked={isConcluido}
-                            onChange={() => handleToggle(item.id)}
-                            disabled={loadingCompletions || isSaving}
-                          />
-                        </td>
-                        <td data-label="Dia">{item.dueDay}</td>
-                        <td data-label="Descrição" className={isConcluido ? 'checklist-item-done' : ''}>
-                          {item.description}
-                        </td>
-                        <td data-label="Status">
-                          {isSaving ? (
-                            <span className="badge-status">Salvando...</span>
-                          ) : isConcluido ? (
-                            <span className="badge-status checklist-status-done">
-                              <FaCheckCircle /> Concluído
-                            </span>
-                          ) : (
-                            <span className="badge-status status-pendente">
-                              <FaExclamationCircle /> Pendente
-                            </span>
-                          )}
-                        </td>
-                        <td className="cell-center">
-                          <div className="action-group">
-                            <button
-                              type="button"
-                              className="fh-btn fh-btn-primary fh-btn-sm"
-                              title="Criar lançamento a partir do checklist"
-                              onClick={() => {
-                                const today = new Date();
-                                let dueDate = new Date(today.getFullYear(), today.getMonth(), item.dueDay);
-                                if (dueDate < today) {
-                                  dueDate = new Date(today.getFullYear(), today.getMonth() + 1, item.dueDay);
-                                }
-                                navigate('/cadastroTitulo', {
-                                  state: {
-                                    fromChecklist: true,
-                                    checklistItemId: item.id,
-                                    description: item.description,
-                                    dueDate: dueDate.toISOString().split('T')[0],
-                                    approximateValue: item.approximateValue || '',
-                                    selectedMonth,
-                                  }
-                                });
-                              }}
-                            >
-                              Criar
-                            </button>
-                            {deletingId === item.id ? (
-                              <>
-                                <button
-                                  type="button"
-                                  className="fh-btn fh-btn-success fh-btn-sm"
-                                  title="Confirmar exclusão"
-                                  onClick={() => handleDelete(item.id)}
-                                >
-                                  <FaCheckCircle />
-                                </button>
-                                <button
-                                  type="button"
-                                  className="fh-btn fh-btn-secondary fh-btn-sm"
-                                  title="Cancelar"
-                                  onClick={() => setDeletingId(null)}
-                                >
-                                  ✕
-                                </button>
-                              </>
-                            ) : (
-                              <button
-                                type="button"
-                                className="fh-btn fh-btn-danger fh-btn-sm"
-                                title="Apagar Recorrência"
-                                onClick={() => setDeletingId(item.id)}
-                              >
-                                <FaTrash />
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        {loading ? (
+          <p className="text-sm text-muted2">Carregando...</p>
+        ) : (
+          <Table
+            columns={columns}
+            data={filteredItens}
+            rowKey={(i) => i.id}
+            emptyMessage="Nenhum item recorrente cadastrado. Adicione acima."
+          />
+        )}
       </div>
 
     </div>

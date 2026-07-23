@@ -90,21 +90,23 @@ const CadastroCategoria = () => {
   };
 
   return (
-    <div className="cadastro-categoria-vertical">
-      <div className="fh-page-header">
-        <h1 className="fh-title">Cadastro de <span>Categorias</span></h1>
-        <p className="fh-subtitle">Organize seus lançamentos por categoria de receita ou despesa.</p>
+    <div className="flex flex-col gap-6">
+      <div>
+        <h1 className="text-2xl font-semibold text-text">Cadastro de Categorias</h1>
+        <p className="mt-1 text-sm text-muted2">Organize seus lançamentos por categoria de receita ou despesa.</p>
       </div>
 
       {fromNewAccount && (
-        <div className="banner-guiado">
-          <strong>Conta criada com sucesso!</strong>
-          <p>Agora cadastre uma categoria para começar a registrar seus lançamentos.</p>
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+          <strong className="text-text">Conta criada com sucesso!</strong>
+          <p className="mt-1 text-sm text-muted2">Agora cadastre uma categoria para começar a registrar seus lançamentos.</p>
         </div>
       )}
 
-      <div className="secao-superior">
-        <h2>{categoriaParaEditar ? 'Editar Categoria' : 'Cadastrar Nova Categoria'}</h2>
+      <div>
+        <h2 className="mb-3 text-lg font-semibold text-text">
+          {categoriaParaEditar ? 'Editar Categoria' : 'Cadastrar Nova Categoria'}
+        </h2>
         <FormularioCategoria
           valores={valores}
           handleInputChange={handleInputChange}
@@ -116,8 +118,8 @@ const CadastroCategoria = () => {
         />
       </div>
 
-      <div className="historico-container">
-        <h2 className="historico-titulo">Categorias Cadastradas</h2>
+      <div>
+        <h2 className="mb-3 text-lg font-semibold text-text">Categorias Cadastradas</h2>
         <ListaCategorias refresh={refresh} onEdit={handleEdit} />
       </div>
     </div>

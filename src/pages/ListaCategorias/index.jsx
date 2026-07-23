@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { api } from '../../services/api';
+import Input from '../../componentes/ui/Input';
+import Button from '../../componentes/ui/Button';
+import Table from '../../componentes/ui/Table';
 
 const ListaCategorias = ({ refresh, onEdit }) => {
     const [dados, setDados] = useState([]);
@@ -72,85 +75,81 @@ const ListaCategorias = ({ refresh, onEdit }) => {
         return tipo;
     };
 
+    const columns = [
+        { header: 'ID', render: (c) => c.id },
+        { header: 'Nome da Categoria', render: (c) => c.name },
+        { header: 'Tipo', render: (c) => traduzirTipo(c.type) },
+        {
+            header: 'Ações',
+            render: (categoria) => (
+                <div className="flex gap-2">
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        title="Editar categoria"
+                        onClick={() => onEdit(categoria)}
+                    >
+                        <FaEdit />
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="danger"
+                        title="Excluir categoria"
+                        onClick={() => handleDelete(categoria)}
+                    >
+                        <FaTrash />
+                    </Button>
+                </div>
+            ),
+        },
+    ];
+
     return (
-        <>
-            <div style={{ marginBottom: 12 }}>
-                <input
-                    type="text"
-                    className="fh-search-input"
-                    placeholder="Buscar categoria..."
-                    value={busca}
-                    onChange={(e) => setBusca(e.target.value)}
-                />
-            </div>
-            <div className="botoes-tipo-container">
-                <button
-                    className={`fh-btn fh-btn-sm ${tipoFiltro === 'receipt' ? 'fh-btn-primary' : 'fh-btn-ghost'}`}
+        <div className="flex flex-col gap-4">
+            <Input
+                type="text"
+                placeholder="Buscar categoria..."
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+            />
+
+            <div className="flex gap-2">
+                <Button
+                    size="sm"
+                    variant={tipoFiltro === 'receipt' ? 'primary' : 'ghost'}
                     onClick={() => setTipoFiltro(prev => prev === 'receipt' ? 'todos' : 'receipt')}
                     type="button"
                 >
                     Recebimentos
-                </button>
+                </Button>
 
-                <button
-                    className={`fh-btn fh-btn-sm ${tipoFiltro === 'payment' ? 'fh-btn-primary' : 'fh-btn-ghost'}`}
+                <Button
+                    size="sm"
+                    variant={tipoFiltro === 'payment' ? 'primary' : 'ghost'}
                     onClick={() => setTipoFiltro(prev => prev === 'payment' ? 'todos' : 'payment')}
                     type="button"
                 >
                     Pagamentos
-                </button>
+                </Button>
             </div>
 
-            <div className="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nome da Categoria</th>
-                            <th>Tipo</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredData.map((categoria) => (
-                            <tr key={categoria.id}>
-                                <td>{categoria.id}</td>
-                                <td>{categoria.name}</td>
-                                <td>{traduzirTipo(categoria.type)}</td>
-                                <td className="coluna-acoes">
-                                    <button
-                                        className="fh-btn fh-btn-secondary fh-btn-sm"
-                                        title="Editar categoria"
-                                        onClick={() => onEdit(categoria)}
-                                    >
-                                        <FaEdit />
-                                    </button>
-                                    <button
-                                        className="fh-btn fh-btn-danger fh-btn-sm"
-                                        title="Excluir categoria"
-                                        onClick={() => handleDelete(categoria)}
-                                    >
-                                        <FaTrash />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-
-                {loading && <div className="loading">Carregando...</div>}
-
-                {!loading && filteredData.length === 0 && !error && (
-                    <div className="lista-vazia">
-                        {dados.length === 0
+            {loading ? (
+                <p className="text-sm text-muted2">Carregando...</p>
+            ) : (
+                <Table
+                    columns={columns}
+                    data={filteredData}
+                    rowKey={(c) => c.id}
+                    emptyMessage={
+                        dados.length === 0
                             ? "Nenhuma categoria cadastrada ainda. Use o formulário acima para criar sua primeira."
-                            : "Nenhuma categoria do tipo selecionado."}
-                    </div>
-                )}
+                            : "Nenhuma categoria do tipo selecionado."
+                    }
+                />
+            )}
 
-                {error && <p className="erro-mensagem">{error}</p>}
-            </div>
-        </>
+            {error && <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{error}</p>}
+        </div>
     );
 };
 
