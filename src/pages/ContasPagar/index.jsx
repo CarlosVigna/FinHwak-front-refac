@@ -1,8 +1,13 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaClock } from 'react-icons/fa';
+import { FaClock, FaChevronDown, FaChevronRight } from 'react-icons/fa';
 import { generateReportPDF, formatPeriodLabel } from '../../utils/pdfExport';
 import { api } from '../../services/api';
+import Button from '../../componentes/ui/Button';
+import Input from '../../componentes/ui/Input';
+import Select from '../../componentes/ui/Select';
+import Badge from '../../componentes/ui/Badge';
+import Card from '../../componentes/ui/Card';
 
 const ContasPagar = () => {
     const navigate = useNavigate();
@@ -159,141 +164,119 @@ const ContasPagar = () => {
         window.URL.revokeObjectURL(url);
     };
 
+    const categoriaOptions = categorias
+        .filter(c => c.type?.toLowerCase() === 'payment')
+        .map(cat => ({ value: cat.name, label: cat.name }));
+
     return (
-        <div className='cadastro-titulo-vertical'>
-            <div className='historico-container'>
+        <div className="flex flex-col gap-6">
+            <h1 className="text-2xl font-semibold text-text">Relatório de Contas a Pagar</h1>
 
-                <div className='titulo-relatorio-header'>
-                    <div>
-                        <h1 className="fh-title"><span>Relatório de Contas a Pagar</span></h1>
-                    </div>
+            <Card className="flex flex-wrap items-end gap-4">
+                <Input
+                    label="Data Inicial"
+                    type="date"
+                    value={filterStartDate}
+                    onChange={(e) => setFilterStartDate(e.target.value)}
+                />
+                <Input
+                    label="Data Final"
+                    type="date"
+                    value={filterEndDate}
+                    onChange={(e) => setFilterEndDate(e.target.value)}
+                />
+                <Select
+                    label="Categoria"
+                    value={filterCategoria}
+                    onChange={(e) => setFilterCategoria(e.target.value)}
+                    placeholder="Todas as Categorias"
+                    options={categoriaOptions}
+                />
+                <div className="ml-auto flex gap-2">
+                    <Button onClick={handleExportPDF}>📄 Exportar PDF</Button>
+                    <Button variant="outline" onClick={handleExportCSV}>📊 Exportar CSV</Button>
                 </div>
+            </Card>
 
-                <div className='container-filtro-moderno'>
-                    <div className="grupo-campo">
-                        <label>Data Inicial</label>
-                        <input
-                            type="date"
-                            value={filterStartDate}
-                            onChange={(e) => setFilterStartDate(e.target.value)}
-                        />
-                    </div>
-                    <div className="grupo-campo">
-                        <label>Data Final</label>
-                        <input
-                            type="date"
-                            value={filterEndDate}
-                            onChange={(e) => setFilterEndDate(e.target.value)}
-                        />
-                    </div>
-                    <div className="grupo-campo">
-                        <label>Categoria</label>
-                        <select
-                            value={filterCategoria}
-                            onChange={(e) => setFilterCategoria(e.target.value)}
-                        >
-                            <option value="">Todas as Categorias</option>
-                            {categorias
-                                .filter(c => c.type?.toLowerCase() === 'payment')
-                                .map(cat => (
-                                    <option key={cat.id} value={cat.name}>{cat.name}</option>
-                                ))}
-                        </select>
-                    </div>
-                    <div className="grupo-campo report-actions">
-                        <button onClick={handleExportPDF} className="fh-btn fh-btn-primary">
-                            📄 Exportar PDF
-                        </button>
-                        <button onClick={handleExportCSV} className="fh-btn fh-btn-secondary">
-                            📊 Exportar CSV
-                        </button>
-                    </div>
-                </div>
+            <div>
+                {error && (
+                    <p className="mb-4 rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{error}</p>
+                )}
 
-                <div id="relatorio-export">
-                    {error && <div className="mensagem-erro-relatorio">{error}</div>}
+                {loading ? (
+                    <p className="text-sm text-muted2">⏳ Carregando dados do servidor...</p>
+                ) : dados.length === 0 ? (
+                    <div className="flex flex-col items-center gap-3 rounded-lg border border-border bg-surface p-10 text-center">
+                        <div className="text-4xl">📋</div>
+                        <h3 className="text-lg font-semibold text-text">Nenhum pagamento pendente</h3>
+                        <p className="text-sm text-muted2">Registre lançamentos do tipo pagamento para acompanhá-los aqui.</p>
+                        <Button onClick={() => navigate('/cadastroTitulo')}>+ Registrar Lançamento</Button>
+                    </div>
+                ) : filteredData.length === 0 ? (
+                    <p className="text-sm text-muted2">
+                        Nenhum resultado para os filtros selecionados.{' '}
+                        <button className="text-primary hover:underline" onClick={handleClearFilters}>Limpar filtros</button>
+                    </p>
+                ) : (
+                    <div className="flex flex-col gap-3">
+                        {Object.entries(groupedData).map(([catName, items]) => {
+                            const isOpen = !closedSections.has(catName);
+                            const catTotal = items.reduce((acc, i) => acc + Number(i.installmentAmount), 0);
+                            return (
+                                <div key={catName} className="overflow-hidden rounded-lg border border-border">
+                                    <button
+                                        type="button"
+                                        onClick={() => toggleSection(catName)}
+                                        className="flex w-full items-center gap-2 bg-surface2 px-4 py-3 text-left"
+                                    >
+                                        {isOpen ? <FaChevronDown className="text-muted2" /> : <FaChevronRight className="text-muted2" />}
+                                        <span className="flex-1 font-medium text-text">{catName}</span>
+                                        <span className="text-sm text-muted2">
+                                            {items.length} {items.length === 1 ? 'item' : 'itens'} · {formatCurrency(catTotal)}
+                                        </span>
+                                    </button>
+                                    {isOpen && (
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-left text-sm">
+                                                <thead className="bg-surface2/50 text-muted2">
+                                                    <tr>
+                                                        <th className="px-4 py-2 font-medium">ID</th>
+                                                        <th className="px-4 py-2 font-medium">Descrição</th>
+                                                        <th className="px-4 py-2 font-medium">Vencimento</th>
+                                                        <th className="px-4 py-2 font-medium">Valor</th>
+                                                        <th className="px-4 py-2 font-medium">Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {items.map((item) => (
+                                                        <tr key={item.id} className="border-t border-border">
+                                                            <td className="px-4 py-2 text-muted2">#{item.id}</td>
+                                                            <td className="px-4 py-2 text-text">{item.description}</td>
+                                                            <td className="px-4 py-2 text-text">{parseLocalDate(item.maturity).toLocaleDateString('pt-BR')}</td>
+                                                            <td className="px-4 py-2 font-medium text-danger">
+                                                                {formatCurrency(item.installmentAmount)}
+                                                            </td>
+                                                            <td className="px-4 py-2">
+                                                                <Badge variant="warning">
+                                                                    <FaClock className="mr-1 inline" /> Pendente
+                                                                </Badge>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
 
-                    {loading ? (
-                        <div className="loading-placeholder">⏳ Carregando dados do servidor...</div>
-                    ) : dados.length === 0 ? (
-                        <div className="empty-state">
-                            <div className="empty-state-icon">📋</div>
-                            <h3>Nenhum pagamento pendente</h3>
-                            <p>Registre lançamentos do tipo pagamento para acompanhá-los aqui.</p>
-                            <div className="empty-state-actions">
-                                <button className="fh-btn fh-btn-primary" onClick={() => navigate('/cadastroTitulo')}>
-                                    + Registrar Lançamento
-                                </button>
-                            </div>
+                        <div className="flex items-center justify-between rounded-lg border border-danger/30 bg-danger/5 px-4 py-3">
+                            <span className="font-medium text-text">Total em Aberto</span>
+                            <strong className="text-lg text-danger">{formatCurrency(totalValor)}</strong>
                         </div>
-                    ) : filteredData.length === 0 ? (
-                        <p className="empty-table-cell">
-                            Nenhum resultado para os filtros selecionados.{' '}
-                            <button className="btn-link" onClick={handleClearFilters}>Limpar filtros</button>
-                        </p>
-                    ) : (
-                        <div className="tabela-responsiva">
-                            {Object.entries(groupedData).map(([catName, items]) => {
-                                const isOpen = !closedSections.has(catName);
-                                const catTotal = items.reduce((acc, i) => acc + Number(i.installmentAmount), 0);
-                                return (
-                                    <div key={catName} className="accordion-section">
-                                        <button
-                                            type="button"
-                                            className={`accordion-header${isOpen ? ' open' : ''}`}
-                                            onClick={() => toggleSection(catName)}
-                                        >
-                                            <span className="accordion-chevron">{isOpen ? '▼' : '▶'}</span>
-                                            <span className="accordion-cat-name">{catName}</span>
-                                            <span className="accordion-cat-meta">
-                                                {items.length} {items.length === 1 ? 'item' : 'itens'} · {formatCurrency(catTotal)}
-                                            </span>
-                                        </button>
-                                        {isOpen && (
-                                            <div className="accordion-body">
-                                                <div className="tabela-responsiva">
-                                                    <table className="tabela-titulos">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>ID</th>
-                                                                <th>Descrição</th>
-                                                                <th>Vencimento</th>
-                                                                <th>Valor</th>
-                                                                <th>Status</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {items.map((item) => (
-                                                                <tr key={item.id}>
-                                                                    <td data-label="ID">#{item.id}</td>
-                                                                    <td data-label="Descrição">{item.description}</td>
-                                                                    <td data-label="Vencimento">{parseLocalDate(item.maturity).toLocaleDateString('pt-BR')}</td>
-                                                                    <td data-label="Valor" className="valor-saida">
-                                                                        {formatCurrency(item.installmentAmount)}
-                                                                    </td>
-                                                                    <td data-label="Status">
-                                                                        <span className="badge-status status-pendente">
-                                                                            <FaClock /> Pendente
-                                                                        </span>
-                                                                    </td>
-                                                                </tr>
-                                                            ))}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            })}
-
-                            <div className="totalizador-relatorio color-saida">
-                                <span>Total em Aberto</span>
-                                <strong>{formatCurrency(totalValor)}</strong>
-                            </div>
-                        </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
         </div>
     );

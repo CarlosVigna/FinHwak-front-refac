@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import FormularioTransacao from '../../componentes/FormularioTransacao';
 import ListaTitulo from '../../componentes/ListaTitulo';
+import Button from '../../componentes/ui/Button';
+import Input from '../../componentes/ui/Input';
 import { useAccount } from '../../contexts/AccountContext';
 
 const CadastroTitulo = () => {
@@ -29,18 +31,16 @@ const CadastroTitulo = () => {
     };
 
     return (
-    <div className="cadastro-titulo-vertical">
+    <div className="flex flex-col gap-6">
 
-        <div className="fh-page-header">
-            <h1 className="fh-title">
-                Cadastro de <span>Títulos</span>
-            </h1>
-            <p className="fh-subtitle">
+        <div>
+            <h1 className="text-2xl font-semibold text-text">Cadastro de Títulos</h1>
+            <p className="mt-1 text-sm text-muted2">
                 Gerencie recebimentos e pagamentos da conta selecionada.
             </p>
         </div>
 
-        <div className="secao-superior">
+        <div>
             <FormularioTransacao
                 tituloParaEditar={tituloParaEditar}
                 onSave={handleSave}
@@ -49,42 +49,45 @@ const CadastroTitulo = () => {
             />
         </div>
 
-        <div className="historico-container">
-            <h2 className="historico-titulo">
+        <div>
+            <h2 className="mb-3 text-lg font-semibold text-text">
                 Histórico de Lançamentos
             </h2>
 
-            <div className="botoes-filtro-container">
-                <div className="filtro-tipo">
-                    <button
-                        className={`fh-btn fh-btn-sm ${tipoTransacao === 'todos' ? 'fh-btn-primary' : 'fh-btn-ghost'}`}
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex gap-2">
+                    <Button
+                        size="sm"
+                        variant={tipoTransacao === 'todos' ? 'primary' : 'ghost'}
                         onClick={() => handleTipoTransacao('todos')}
                         type="button"
                     >
                         Todos
-                    </button>
-                    <button
-                        className={`fh-btn fh-btn-sm ${tipoTransacao === 'recebimentos' ? 'fh-btn-primary' : 'fh-btn-ghost'}`}
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant={tipoTransacao === 'recebimentos' ? 'primary' : 'ghost'}
                         onClick={() => handleTipoTransacao('recebimentos')}
                         type="button"
                     >
                         Recebimentos
-                    </button>
-                    <button
-                        className={`fh-btn fh-btn-sm ${tipoTransacao === 'pagamentos' ? 'fh-btn-primary' : 'fh-btn-ghost'}`}
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant={tipoTransacao === 'pagamentos' ? 'primary' : 'ghost'}
                         onClick={() => handleTipoTransacao('pagamentos')}
                         type="button"
                     >
                         Pagamentos
-                    </button>
+                    </Button>
                 </div>
 
-                <input
-                    className="input-busca-titulo"
+                <Input
                     type="text"
                     placeholder="Buscar por descrição..."
                     value={busca}
                     onChange={(e) => setBusca(e.target.value)}
+                    className="max-w-xs"
                 />
             </div>
 

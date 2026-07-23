@@ -7,11 +7,22 @@ import {
   faCalendarAlt,
   faInbox,
 } from '@fortawesome/free-solid-svg-icons';
+import Button from '../../componentes/ui/Button';
+import Input from '../../componentes/ui/Input';
+import Badge from '../../componentes/ui/Badge';
+import Card from '../../componentes/ui/Card';
+import Table from '../../componentes/ui/Table';
 
 const parseLocalDate = (dateString) => {
   if (!dateString) return null;
   const [year, month, day] = dateString.split('-').map(Number);
   return new Date(year, month - 1, day);
+};
+
+const STATUS_VARIANT = {
+  vencida: 'danger',
+  hoje: 'warning',
+  'em-dia': 'neutral',
 };
 
 const ContasPendentes = () => {
@@ -168,145 +179,115 @@ const ContasPendentes = () => {
     window.URL.revokeObjectURL(url);
   };
 
-  return (
-    <div className="contas-pendentes-page">
-      <div className="fh-page-header">
-        <h1 className="fh-title">
-          Contas <span>Pendentes</span>
-        </h1>
-        <p className="fh-subtitle">
-          Gerencie seus pagamentos em aberto.
-        </p>
-      </div>
-
-      <div className="tabela-card">
-        <div className="filtros-periodo">
-          <div className="filtro-grupo">
-            <label htmlFor="dataInicio">Data inicial</label>
-            <input
-              id="dataInicio"
-              type="date"
-              value={dataInicio}
-              onChange={(e) => setDataInicio(e.target.value)}
-            />
-          </div>
-
-          <div className="filtro-grupo">
-            <label htmlFor="dataFim">Data final</label>
-            <input
-              id="dataFim"
-              type="date"
-              value={dataFim}
-              onChange={(e) => setDataFim(e.target.value)}
-            />
-          </div>
-
-          <button
-            type="button"
-            className="fh-btn fh-btn-primary"
-            onClick={handleFiltrar}
-          >
-            Filtrar
-          </button>
-
-          <button
-            type="button"
-            className="fh-btn fh-btn-secondary"
-            onClick={handleExportCSV}
-          >
-            📊 Exportar CSV
-          </button>
-        </div>
-
-        {error && <div className="mensagem-erro">{error}</div>}
-        {sucesso && <div className="sucesso-mensagem">{sucesso}</div>}
-
-        {loading ? (
-          <div className="loading-placeholder">
-            ⏳ Carregando contas...
+  const columns = [
+    { header: 'Descrição', render: (c) => c.description },
+    { header: 'Categoria', render: (c) => c.category?.name || '-' },
+    { header: 'Vencimento', render: (c) => formatDate(c.maturity) },
+    {
+      header: 'Valor',
+      render: (c) => {
+        const statusInfo = getStatusVencimento(c.maturity);
+        return (
+          <span className={statusInfo.class === 'vencida' ? 'font-medium text-danger' : 'text-text'}>
+            {formatCurrency(c.installmentAmount || c.value)}
+          </span>
+        );
+      },
+    },
+    {
+      header: 'Situação',
+      render: (c) => {
+        const statusInfo = getStatusVencimento(c.maturity);
+        return (
+          <Badge variant={STATUS_VARIANT[statusInfo.class]}>
+            {statusInfo.icon && <FontAwesomeIcon icon={statusInfo.icon} className="mr-1" />}
+            {statusInfo.label}
+          </Badge>
+        );
+      },
+    },
+    {
+      header: 'Ações',
+      render: (conta) => (
+        confirmingId === conta.id ? (
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant="primary"
+              title="Confirmar pagamento"
+              onClick={() => handleDarBaixa(conta)}
+            >
+              <FontAwesomeIcon icon={faCheckCircle} className="mr-1" /> Sim
+            </Button>
+            <Button
+              size="sm"
+              variant="danger"
+              title="Cancelar"
+              onClick={() => setConfirmingId(null)}
+            >
+              Não
+            </Button>
           </div>
         ) : (
-          <div className="table-container">
-            {contas.length === 0 ? (
-              <div className="empty-state">
-                <FontAwesomeIcon
-                  icon={faInbox}
-                  size="3x"
-                  className="empty-state-icon"
-                />
-                <h3>Tudo em dia!</h3>
-                <p>Nenhuma conta pendente no período informado.</p>
-              </div>
-            ) : (
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Descrição</th>
-                    <th>Categoria</th>
-                    <th>Vencimento</th>
-                    <th>Valor</th>
-                    <th>Situação</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {contas.map((conta) => {
-                    const statusInfo = getStatusVencimento(conta.maturity);
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={() => setConfirmingId(conta.id)}
+            title={`Marcar "${conta.description}" como paga`}
+          >
+            <FontAwesomeIcon icon={faCheckCircle} className="mr-1" /> Pagar
+          </Button>
+        )
+      ),
+    },
+  ];
 
-                    return (
-                      <tr key={conta.id}>
-                        <td>{conta.description}</td>
-                        <td>{conta.category?.name || '-'}</td>
-                        <td>{formatDate(conta.maturity)}</td>
-                        <td className={`valor ${statusInfo.class === 'vencida' ? 'vencida' : ''}`}>
-                          {formatCurrency(conta.installmentAmount || conta.value)}
-                        </td>
-                        <td>
-                          <span className={`status-badge ${statusInfo.class}`}>
-                            {statusInfo.icon && <FontAwesomeIcon icon={statusInfo.icon} />}{' '}
-                            {statusInfo.label}
-                          </span>
-                        </td>
-                        <td>
-                          {confirmingId === conta.id ? (
-                            <div className="action-group">
-                              <button
-                                type="button"
-                                className="fh-btn fh-btn-success fh-btn-sm"
-                                title="Confirmar pagamento"
-                                onClick={() => handleDarBaixa(conta)}
-                              >
-                                <FontAwesomeIcon icon={faCheckCircle} /> Sim
-                              </button>
-                              <button
-                                type="button"
-                                className="fh-btn fh-btn-danger fh-btn-sm"
-                                title="Cancelar"
-                                onClick={() => setConfirmingId(null)}
-                              >
-                                Não
-                              </button>
-                            </div>
-                          ) : (
-                            <button
-                              type="button"
-                              className="fh-btn fh-btn-success fh-btn-sm"
-                              onClick={() => setConfirmingId(conta.id)}
-                              title={`Marcar "${conta.description}" como paga`}
-                            >
-                              <FontAwesomeIcon icon={faCheckCircle} /> Pagar
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            )}
-          </div>
-        )}
+  return (
+    <div className="flex flex-col gap-6">
+      <div>
+        <h1 className="text-2xl font-semibold text-text">Contas Pendentes</h1>
+        <p className="mt-1 text-sm text-muted2">Gerencie seus pagamentos em aberto.</p>
       </div>
+
+      <Card className="flex flex-col gap-4">
+        <div className="flex flex-wrap items-end gap-4">
+          <Input
+            label="Data inicial"
+            id="dataInicio"
+            type="date"
+            value={dataInicio}
+            onChange={(e) => setDataInicio(e.target.value)}
+          />
+          <Input
+            label="Data final"
+            id="dataFim"
+            type="date"
+            value={dataFim}
+            onChange={(e) => setDataFim(e.target.value)}
+          />
+          <Button type="button" onClick={handleFiltrar}>Filtrar</Button>
+          <Button type="button" variant="outline" onClick={handleExportCSV}>📊 Exportar CSV</Button>
+        </div>
+
+        {error && (
+          <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{error}</p>
+        )}
+        {sucesso && (
+          <p className="rounded-md bg-success/10 px-3 py-2 text-sm text-success">{sucesso}</p>
+        )}
+
+        {loading ? (
+          <p className="text-sm text-muted2">⏳ Carregando contas...</p>
+        ) : contas.length === 0 ? (
+          <div className="flex flex-col items-center gap-3 py-10 text-center">
+            <FontAwesomeIcon icon={faInbox} size="3x" className="text-muted" />
+            <h3 className="text-lg font-semibold text-text">Tudo em dia!</h3>
+            <p className="text-sm text-muted2">Nenhuma conta pendente no período informado.</p>
+          </div>
+        ) : (
+          <Table columns={columns} data={contas} rowKey={(c) => c.id} />
+        )}
+      </Card>
     </div>
   );
 };
