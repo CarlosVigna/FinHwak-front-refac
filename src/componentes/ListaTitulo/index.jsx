@@ -1,18 +1,27 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { FaEdit, FaTrash, FaCheckCircle, FaClock, FaExclamationCircle } from 'react-icons/fa';
 import { api } from '../../services/api';
+import Button from '../ui/Button';
+import Badge from '../ui/Badge';
+import Table from '../ui/Table';
+import Modal from '../ui/Modal';
+import Select from '../ui/Select';
+
+const STATUS_BADGE_VARIANT = {
+    PAID: 'success',
+    RECEIVED: 'success',
+    PENDING: 'warning',
+};
 
 const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh, busca = '' }) => {
     const [titulos, setTitulos] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    // ✅ ADICIONADO: estados que estavam faltando (era isso que causava statusEdit is not defined)
     const [statusEdit, setStatusEdit] = useState({ open: false, id: null, value: 'PENDING', type: null });
     const [savingStatus, setSavingStatus] = useState(false);
     const [statusErro, setStatusErro] = useState('');
 
-    // Deleta um título
     const handleDelete = useCallback(async (id) => {
         if (!window.confirm("Tem certeza que deseja excluir este lançamento?")) return;
 
@@ -29,7 +38,6 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh, busca = '' }) 
         }
     }, []);
 
-    // Busca os títulos da conta
     const fetchTitulos = useCallback(async () => {
         if (!accountId) {
             setTitulos([]);
@@ -62,7 +70,6 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh, busca = '' }) 
         fetchTitulos();
     }, [fetchTitulos, refresh]);
 
-    // Filtra por tipo de transação e por busca de descrição
     const termoBusca = busca.trim().toLowerCase();
     const titulosFiltrados = titulos.filter(titulo => {
         const tipoCategoria = titulo.category?.type?.toLowerCase();
@@ -74,7 +81,6 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh, busca = '' }) 
         return true;
     });
 
-    // Funções auxiliares
     const formatarData = (dataISO) => {
         if (!dataISO) return '-';
         const [ano, mes, dia] = String(dataISO).split('-');
@@ -103,15 +109,6 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh, busca = '' }) 
         if (tipoNormalizado === 'PAYMENT') return 'Pagamento';
         if (tipoNormalizado === 'RECEIPT') return 'Recebimento';
         return type;
-    };
-
-    const getStatusClass = (status) => {
-        switch (status) {
-            case 'PAID':
-            case 'RECEIVED': return 'status-pago';
-            case 'PENDING': return 'status-pendente';
-            default: return '';
-        }
     };
 
     // ===== Status inline (modal)
@@ -173,123 +170,118 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh, busca = '' }) 
 
     const filtersActive = tipoTransacao !== 'todos' || busca.trim() !== '';
 
-    if (loading) return <div className="lista-titulo-container">⏳ Carregando...</div>;
+    const columns = [
+        { header: 'ID', render: (t) => `#${t.id}` },
+        {
+            header: 'Descrição',
+            render: (titulo) => (
+                <div>
+                    <div className="text-text">{titulo.description}</div>
+                    <div className="mt-0.5 flex flex-col text-xs text-muted">
+                        {titulo.createdAt && <span>Criado: {formatarData(titulo.createdAt.split('T')[0])}</span>}
+                        {titulo.updatedAt && <span>Atualizado: {formatarData(titulo.updatedAt.split('T')[0])}</span>}
+                        {titulo.paidAt && <span>Pago em: {formatarData(titulo.paidAt.split('T')[0])}</span>}
+                        {titulo.receivedAt && <span>Recebido em: {formatarData(titulo.receivedAt.split('T')[0])}</span>}
+                    </div>
+                </div>
+            ),
+        },
+        {
+            header: 'Tipo',
+            render: (titulo) => {
+                const isDespesa = titulo.category?.type?.toLowerCase() === 'payment';
+                return <span className={isDespesa ? 'text-danger' : 'text-success'}>{traduzirTipo(titulo.category?.type)}</span>;
+            },
+        },
+        { header: 'Categoria', render: (t) => t.category?.name || '-' },
+        { header: 'Vencimento', render: (t) => formatarData(t.maturity) },
+        {
+            header: 'Valor',
+            render: (titulo) => {
+                const isDespesa = titulo.category?.type?.toLowerCase() === 'payment';
+                return (
+                    <span className={isDespesa ? 'text-danger' : 'text-success'}>
+                        {formatarValor(titulo.installmentAmount)}
+                    </span>
+                );
+            },
+        },
+        { header: 'Parcela', render: (t) => `${t.currentInstallment || 1}/${t.installmentCount || 1}` },
+        {
+            header: 'Status',
+            render: (titulo) => (
+                <button
+                    type="button"
+                    title="Clique para editar o status"
+                    onClick={() => abrirEdicaoStatus(titulo)}
+                >
+                    <Badge variant={STATUS_BADGE_VARIANT[titulo.status] || 'neutral'}>
+                        {(titulo.status === 'PAID' || titulo.status === 'RECEIVED') && <FaCheckCircle className="mr-1 inline" />}
+                        {titulo.status === 'PENDING' && <FaClock className="mr-1 inline" />}
+                        {traduzirStatus(titulo.status)}
+                    </Badge>
+                </button>
+            ),
+        },
+        {
+            header: 'Ações',
+            render: (titulo) => (
+                <div className="flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => onEdit(titulo)} title="Editar">
+                        <FaEdit />
+                    </Button>
+                    <Button size="sm" variant="danger" onClick={() => handleDelete(titulo.id)} title="Excluir">
+                        <FaTrash />
+                    </Button>
+                </div>
+            ),
+        },
+    ];
+
+    if (loading) return <p className="text-sm text-muted2">⏳ Carregando...</p>;
 
     return (
-        <div className="lista-titulo-container">
-            {error && <div className="mensagem-erro"><FaExclamationCircle /> {error}</div>}
+        <div>
+            {error && (
+                <p className="mb-4 flex items-center gap-2 rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">
+                    <FaExclamationCircle /> {error}
+                </p>
+            )}
 
-            {titulosFiltrados.length === 0 && !error ? (
-                <div className="lista-vazia">
-                    {titulos.length === 0
+            <Table
+                columns={columns}
+                data={titulosFiltrados}
+                rowKey={(t) => t.id}
+                emptyMessage={
+                    titulos.length === 0
                         ? "Nenhum lançamento cadastrado. Use o formulário acima para criar o primeiro."
                         : filtersActive
                             ? "Nenhum resultado para os filtros selecionados."
-                            : "Nenhum lançamento encontrado."}
+                            : "Nenhum lançamento encontrado."
+                }
+            />
+
+            <Modal isOpen={statusEdit.open} onClose={fecharEdicaoStatus} title="Alterar status">
+                <Select
+                    value={statusEdit.value}
+                    onChange={(e) => setStatusEdit(prev => ({ ...prev, value: e.target.value }))}
+                    disabled={savingStatus}
+                    options={getStatusOptions(statusEdit.type)}
+                />
+
+                {statusErro && (
+                    <p className="mt-3 rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{statusErro}</p>
+                )}
+
+                <div className="mt-5 flex justify-end gap-3">
+                    <Button variant="outline" onClick={fecharEdicaoStatus} disabled={savingStatus}>
+                        Cancelar
+                    </Button>
+                    <Button onClick={salvarStatus} disabled={savingStatus}>
+                        {savingStatus ? 'Salvando...' : 'Salvar'}
+                    </Button>
                 </div>
-            ) : (
-                <div className="tabela-responsiva">
-                    <table className="tabela-titulos">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Descrição</th>
-                                <th>Tipo</th>
-                                <th>Categoria</th>
-                                <th>Vencimento</th>
-                                <th>Valor</th>
-                                <th>Parcela</th>
-                                <th>Status</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {titulosFiltrados.map(titulo => {
-                                const tipoCategoria = titulo.category?.type?.toLowerCase();
-                                const isDespesa = tipoCategoria === 'payment';
-
-                                return (
-                                    <tr key={titulo.id}>
-                                        <td data-label="ID">#{titulo.id}</td>
-                                        <td data-label="Descrição">
-                                            <div>{titulo.description}</div>
-                                            <div className="titulo-meta">
-                                                {titulo.createdAt && <div>Criado: {formatarData(titulo.createdAt.split('T')[0])}</div>}
-                                                {titulo.updatedAt && <div>Atualizado: {formatarData(titulo.updatedAt.split('T')[0])}</div>}
-                                                {titulo.paidAt && <div>Pago em: {formatarData(titulo.paidAt.split('T')[0])}</div>}
-                                                {titulo.receivedAt && <div>Recebido em: {formatarData(titulo.receivedAt.split('T')[0])}</div>}
-                                            </div>
-                                        </td>
-                                        <td data-label="Tipo" className={isDespesa ? 'valor-saida' : 'valor-entrada'}>
-                                            {traduzirTipo(titulo.category?.type)}
-                                        </td>
-                                        <td data-label="Categoria">{titulo.category?.name || '-'}</td>
-                                        <td data-label="Vencimento">{formatarData(titulo.maturity)}</td>
-                                        <td data-label="Valor" className={isDespesa ? 'valor-saida' : 'valor-entrada'}>
-                                            {formatarValor(titulo.installmentAmount)}
-                                        </td>
-                                        <td data-label="Parcela">{titulo.currentInstallment || 1}/{titulo.installmentCount || 1}</td>
-                                        <td data-label="Status">
-                                            <span
-                                                className={`badge-status ${getStatusClass(titulo.status)}`}
-                                                role="button"
-                                                tabIndex={0}
-                                                title="Clique para editar o status"
-                                                onClick={() => abrirEdicaoStatus(titulo)}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter' || e.key === ' ') abrirEdicaoStatus(titulo);
-                                                }}
-                                            >
-                                                {(titulo.status === 'PAID' || titulo.status === 'RECEIVED') && <FaCheckCircle />}
-                                                {titulo.status === 'PENDING' && <FaClock />} {traduzirStatus(titulo.status)}
-                                            </span>
-                                        </td>
-                                        <td data-label="Ações" className="coluna-acoes">
-                                            <button className="fh-btn fh-btn-secondary fh-btn-sm" onClick={() => onEdit(titulo)} title="Editar">
-                                                <FaEdit />
-                                            </button>
-                                            <button className="fh-btn fh-btn-danger fh-btn-sm" onClick={() => handleDelete(titulo.id)} title="Excluir">
-                                                <FaTrash />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-
-            {statusEdit.open && (
-                <div className="status-modal-overlay" onClick={fecharEdicaoStatus}>
-                    <div className="status-modal" onClick={(e) => e.stopPropagation()}>
-                        <h4>Alterar status</h4>
-
-                        <div className="status-modal-row">
-                            <select
-                                value={statusEdit.value}
-                                onChange={(e) => setStatusEdit(prev => ({ ...prev, value: e.target.value }))}
-                                disabled={savingStatus}
-                            >
-                                {getStatusOptions(statusEdit.type).map(opt => (
-                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        {statusErro && <p className="error-message">{statusErro}</p>}
-
-                        <div className="status-modal-actions">
-                            <button className="fh-btn fh-btn-secondary" onClick={fecharEdicaoStatus} disabled={savingStatus}>
-                                Cancelar
-                            </button>
-                            <button className="fh-btn fh-btn-primary" onClick={salvarStatus} disabled={savingStatus}>
-                                {savingStatus ? 'Salvando...' : 'Salvar'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };

@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { api } from '../../services/api';
+import Input from '../ui/Input';
+import Select from '../ui/Select';
+import Button from '../ui/Button';
+import Card from '../ui/Card';
+
+const PERIODICIDADE_OPTIONS = [
+    { value: 'MONTHLY', label: 'Mensal' },
+    { value: 'BIMONTHLY', label: 'Bimestral' },
+    { value: 'QUARTERLY', label: 'Trimestral' },
+    { value: 'SEMIANNUAL', label: 'Semestral' },
+    { value: 'ANNUAL', label: 'Anual' },
+];
 
 const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao }) => {
     const navigate = useNavigate();
@@ -215,57 +227,56 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
         return cat.type === valores.type;
     });
 
+    const statusOptions = [
+        { value: 'PENDING', label: 'Pendente' },
+        ...(valores.type === 'PAYMENT' ? [{ value: 'PAID', label: 'Pago' }] : []),
+        ...(valores.type === 'RECEIPT' ? [{ value: 'RECEIVED', label: 'Recebido' }] : []),
+    ];
+
     return (
-        <form className="formulario-horizontal" onSubmit={handleSubmit}>
-            {location?.state?.fromChecklist && !tituloParaEditar && markChecklist === null && (
-                <div className="checklist-confirm-banner">
-                    <p>
-                        Deseja marcar <strong>"{location.state.description}"</strong> do checklist como concluído após salvar?
-                    </p>
-                    <div className="fh-btn-row">
-                        <button
-                            type="button"
-                            className="fh-btn fh-btn-success fh-btn-sm"
-                            onClick={() => setMarkChecklist(true)}
-                        >
-                            Sim, marcar como concluído
-                        </button>
-                        <button
-                            type="button"
-                            className="fh-btn fh-btn-secondary fh-btn-sm"
-                            onClick={() => setMarkChecklist(false)}
-                        >
-                            Não
-                        </button>
+        <Card>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                {location?.state?.fromChecklist && !tituloParaEditar && markChecklist === null && (
+                    <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+                        <p className="text-sm text-text">
+                            Deseja marcar <strong>"{location.state.description}"</strong> do checklist como concluído após salvar?
+                        </p>
+                        <div className="mt-3 flex gap-2">
+                            <Button type="button" size="sm" onClick={() => setMarkChecklist(true)}>
+                                Sim, marcar como concluído
+                            </Button>
+                            <Button type="button" size="sm" variant="outline" onClick={() => setMarkChecklist(false)}>
+                                Não
+                            </Button>
+                        </div>
                     </div>
-                </div>
-            )}
-            {erro && <div className="error-message">{erro}</div>}
-            {sucesso && <div className="success-message">{sucesso}</div>}
+                )}
+                {erro && <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{erro}</p>}
+                {sucesso && <p className="rounded-md bg-success/10 px-3 py-2 text-sm text-success">{sucesso}</p>}
 
-            <div className="linha-formulario">
-                <div className="campo-formulario">
-                    <label>Tipo</label>
-                    <select name="type" value={valores.type} onChange={handleInputChange}>
-                        <option value="RECEIPT">Recebimento</option>
-                        <option value="PAYMENT">Pagamento</option>
-                    </select>
-                </div>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <Select
+                        label="Tipo"
+                        name="type"
+                        value={valores.type}
+                        onChange={handleInputChange}
+                        options={[
+                            { value: 'RECEIPT', label: 'Recebimento' },
+                            { value: 'PAYMENT', label: 'Pagamento' },
+                        ]}
+                    />
 
-                <div className="campo-formulario">
-                    <label>Descrição</label>
-                    <input
+                    <Input
+                        label="Descrição"
                         type="text"
                         name="description"
                         value={valores.description}
                         onChange={handleInputChange}
                         required
                     />
-                </div>
 
-                <div className="campo-formulario">
-                    <label>Valor</label>
-                    <input
+                    <Input
+                        label="Valor"
                         type="number"
                         step="0.01"
                         name="installmentAmount"
@@ -274,112 +285,96 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
                         required
                     />
                 </div>
-            </div>
 
-            <div className="linha-formulario">
-                <div className="campo-formulario">
-                    <label>Qtd. Parcelas</label>
-                    <input
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <Input
+                        label="Qtd. Parcelas"
                         type="number"
                         name="installmentCount"
                         min="1"
                         value={valores.installmentCount}
                         onChange={handleInputChange}
                     />
-                </div>
 
-                <div className="campo-formulario">
-                    <label>Periodicidade</label>
-                    <select
+                    <Select
+                        label="Periodicidade"
                         name="periodicity"
                         value={valores.periodicity}
                         onChange={handleInputChange}
-                    >
-                        <option value="MONTHLY">Mensal</option>
-                        <option value="BIMONTHLY">Bimestral</option>
-                        <option value="QUARTERLY">Trimestral</option>
-                        <option value="SEMIANNUAL">Semestral</option>
-                        <option value="ANNUAL">Anual</option>
-                    </select>
+                        options={PERIODICIDADE_OPTIONS}
+                    />
+
+                    <div className="flex flex-col gap-1">
+                        {loadingCategorias ? (
+                            <Select label="Categoria" disabled options={[{ value: '', label: 'Carregando...' }]} />
+                        ) : categoriasFiltradas.length === 0 ? (
+                            <div className="flex flex-col gap-1">
+                                <label className="text-sm font-medium text-text">Categoria</label>
+                                <div className="rounded-md border border-warning/30 bg-warning/5 p-3 text-sm">
+                                    <p className="text-text">Nenhuma categoria cadastrada para este tipo.</p>
+                                    <button
+                                        type="button"
+                                        className="mt-1 text-primary hover:underline"
+                                        onClick={() => navigate('/cadastrarCategoria')}
+                                    >
+                                        Criar categoria agora
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <Select
+                                label="Categoria"
+                                name="categoryId"
+                                value={valores.categoryId}
+                                onChange={handleInputChange}
+                                required
+                                placeholder="Selecione uma categoria"
+                                options={categoriasFiltradas.map(cat => ({ value: cat.id, label: cat.name }))}
+                            />
+                        )}
+                    </div>
                 </div>
 
-                <div className="campo-formulario">
-                    <label>Categoria</label>
-                    {loadingCategorias ? (
-                        <select disabled><option>Carregando...</option></select>
-                    ) : categoriasFiltradas.length === 0 ? (
-                        <div className="aviso-sem-categoria">
-                            <p>Nenhuma categoria cadastrada para este tipo.</p>
-                            <button
-                                type="button"
-                                className="btn-link"
-                                onClick={() => navigate('/cadastrarCategoria')}
-                            >
-                                Criar categoria agora
-                            </button>
-                        </div>
-                    ) : (
-                        <select
-                            name="categoryId"
-                            value={valores.categoryId}
-                            onChange={handleInputChange}
-                            required
-                        >
-                            <option value="">Selecione uma categoria</option>
-                            {categoriasFiltradas.map(cat => (
-                                <option key={cat.id} value={cat.id}>
-                                    {cat.name}
-                                </option>
-                            ))}
-                        </select>
-                    )}
-                </div>
-            </div>
-
-            <div className="linha-formulario">
-                <div className="campo-formulario">
-                    <label>Emissão</label>
-                    <input
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <Input
+                        label="Emissão"
                         type="date"
                         name="emission"
                         value={valores.emission}
                         onChange={handleInputChange}
                         required
                     />
-                </div>
 
-                <div className="campo-formulario">
-                    <label>Vencimento</label>
-                    <input
+                    <Input
+                        label="Vencimento"
                         type="date"
                         name="maturity"
                         value={valores.maturity}
                         onChange={handleInputChange}
                         required
                     />
+
+                    <Select
+                        label="Status"
+                        name="status"
+                        value={valores.status}
+                        onChange={handleInputChange}
+                        options={statusOptions}
+                    />
                 </div>
 
-                <div className="campo-formulario">
-                    <label>Status</label>
-                    <select name="status" value={valores.status} onChange={handleInputChange}>
-                        <option value="PENDING">Pendente</option>
-                        {valores.type === 'PAYMENT' && <option value="PAID">Pago</option>}
-                        {valores.type === 'RECEIPT' && <option value="RECEIVED">Recebido</option>}
-                    </select>
+                <div className="flex gap-3">
+                    <Button type="submit">
+                        {tituloParaEditar ? 'Atualizar' : 'Cadastrar'}
+                    </Button>
+                    {tituloParaEditar && (
+                        <Button type="button" variant="outline" onClick={onCancel}>
+                            Cancelar
+                        </Button>
+                    )}
                 </div>
-            </div>
-
-            <div className="botoes-formulario">
-                <button type="submit" className="fh-btn fh-btn-primary">
-                    {tituloParaEditar ? 'Atualizar' : 'Cadastrar'}
-                </button>
-                {tituloParaEditar && (
-                    <button type="button" className="fh-btn fh-btn-secondary" onClick={onCancel}>
-                        Cancelar
-                    </button>
-                )}
-            </div>
-        </form>
+            </form>
+        </Card>
     );
 };
 
