@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { FaEdit, FaTrash, FaCheckCircle, FaClock, FaExclamationCircle } from 'react-icons/fa';
 import { api } from '../../services/api';
+import { translateError } from '../../utils/errorMessages';
 import Button from '../ui/Button';
 import Badge from '../ui/Badge';
 import Table from '../ui/Table';
@@ -59,7 +60,7 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh, busca = '' }) 
             const data = await response.json();
             setTitulos(Array.isArray(data) ? data : []);
         } catch (err) {
-            setError(err.message);
+            setError(translateError(err.message));
             console.error('❌ ERRO:', err);
         } finally {
             setLoading(false);
@@ -162,7 +163,7 @@ const ListaTitulo = ({ accountId, tipoTransacao, onEdit, refresh, busca = '' }) 
             fecharEdicaoStatus();
         } catch (err) {
             console.error('Erro ao atualizar status:', err);
-            setStatusErro(err.message);
+            setStatusErro(translateError(err.message));
         } finally {
             setSavingStatus(false);
         }

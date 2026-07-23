@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { api } from '../../../services/api';
+import { translateError } from '../../../utils/errorMessages';
 import PropTypes from 'prop-types';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell, ResponsiveContainer,
@@ -123,7 +124,7 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
             } catch (err) {
                 if (cancelled) return;
                 console.error(err);
-                setError(err.message);
+                setError(translateError(err.message));
             } finally {
                 if (!cancelled) setLoading(false);
             }

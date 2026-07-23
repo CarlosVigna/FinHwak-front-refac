@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../services/api';
+import { translateError } from '../../utils/errorMessages';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheckCircle,
@@ -80,7 +81,7 @@ const ContasPendentes = () => {
       setError(null);
     } catch (err) {
       console.error(err);
-      setError(err.message);
+      setError(translateError(err.message));
     } finally {
       setLoading(false);
     }
@@ -109,7 +110,7 @@ const ContasPendentes = () => {
       setTimeout(() => setSucesso(''), 3000);
     } catch (err) {
       console.error(err);
-      setError(err.message);
+      setError(translateError(err.message));
     }
   };
 

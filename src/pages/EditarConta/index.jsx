@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../services/api';
+import { translateError } from '../../utils/errorMessages';
 import Input from '../../componentes/ui/Input';
 import Button from '../../componentes/ui/Button';
 
@@ -28,7 +29,7 @@ const EditarConta = () => {
                 setPhotoUrl(data.photoUrl || '');
 
             } catch (error) {
-                setErro(error.message);
+                setErro(translateError(error.message));
             } finally {
                 setLoading(false);
             }
@@ -57,9 +58,9 @@ const EditarConta = () => {
                 throw new Error(errorData.message || "Erro ao atualizar conta");
             }
 
-            navigate('/contas');
+            navigate('/contas', { state: { sucesso: 'Conta atualizada com sucesso!' } });
         } catch (error) {
-            setErro(error.message);
+            setErro(translateError(error.message));
         } finally {
             setIsSaving(false);
         }

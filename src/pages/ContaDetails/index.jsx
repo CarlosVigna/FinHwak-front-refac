@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
+import { translateError } from '../../utils/errorMessages';
 import {
     filterByMonth,
     calculateReceitas,
@@ -54,7 +55,7 @@ const AccountDetails = () => {
                 }
             } catch (err) {
                 console.error(err);
-                setError(err.message);
+                setError(translateError(err.message));
             } finally {
                 setLoading(false);
             }

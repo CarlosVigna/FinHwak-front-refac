@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
+import { translateError } from '../../utils/errorMessages';
 import Input from '../../componentes/ui/Input';
 import Button from '../../componentes/ui/Button';
 
@@ -38,7 +39,7 @@ const CriarConta = () => {
 
         } catch (error) {
             console.error("Erro ao criar conta:", error);
-            setError(error.message);
+            setError(translateError(error.message));
         } finally {
             setIsSubmitting(false);
         }

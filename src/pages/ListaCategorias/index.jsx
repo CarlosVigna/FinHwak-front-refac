@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { api } from '../../services/api';
+import { translateError } from '../../utils/errorMessages';
 import Input from '../../componentes/ui/Input';
 import Button from '../../componentes/ui/Button';
 import Table from '../../componentes/ui/Table';
@@ -33,7 +34,7 @@ const ListaCategorias = ({ refresh, onEdit }) => {
             setError(null);
         } catch (err) {
             console.error('Erro ao buscar dados:', err);
-            setError(err.message);
+            setError(translateError(err.message));
             setDados([]);
         } finally {
             setLoading(false);
@@ -57,7 +58,7 @@ const ListaCategorias = ({ refresh, onEdit }) => {
             setDados((prev) => prev.filter((c) => c.id !== categoria.id));
             setError(null);
         } catch (err) {
-            setError(err.message);
+            setError(translateError(err.message));
         }
     };
 

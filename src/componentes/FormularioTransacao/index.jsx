@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { api } from '../../services/api';
+import { translateError } from '../../utils/errorMessages';
 import Input from '../ui/Input';
 import Select from '../ui/Select';
 import Button from '../ui/Button';
@@ -217,7 +218,7 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
             if (onSave) onSave();
 
         } catch (error) {
-            setErro(error.message);
+            setErro(translateError(error.message));
         }
     };
 

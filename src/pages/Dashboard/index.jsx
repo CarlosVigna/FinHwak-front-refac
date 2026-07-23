@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
+import { translateError } from '../../utils/errorMessages';
 import MonthSelector from './components/MonthSelector';
 import SummaryCards from './components/SummaryCards';
 import TrafficLight from './components/TrafficLight';
@@ -76,7 +77,7 @@ const Dashboard = () => {
         } catch (err) {
             if (isMounted.current) {
                 console.error('❌ Erro ao buscar dados:', err);
-                setError(err.message);
+                setError(translateError(err.message));
             }
         } finally {
             if (isMounted.current) setLoading(false);

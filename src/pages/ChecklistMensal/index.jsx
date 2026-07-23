@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaTrash, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import { api } from '../../services/api';
 import { useAccount } from '../../contexts/AccountContext';
+import { translateError } from '../../utils/errorMessages';
 import Input from '../../componentes/ui/Input';
 import Button from '../../componentes/ui/Button';
 import Card from '../../componentes/ui/Card';
@@ -102,7 +103,7 @@ const ChecklistMensal = () => {
       setErro('');
     } catch (error) {
       console.error(error);
-      setErro(error.message);
+      setErro(translateError(error.message));
     } finally {
       setSavingItems(prev => {
         const next = new Set(prev);
@@ -146,7 +147,7 @@ const ChecklistMensal = () => {
       setTimeout(() => setSucesso(''), 3000);
     } catch (error) {
       console.error(error);
-      setErro(error.message);
+      setErro(translateError(error.message));
     }
   };
 
@@ -163,7 +164,7 @@ const ChecklistMensal = () => {
       fetchItens();
     } catch (error) {
       console.error(error);
-      setErro(error.message);
+      setErro(translateError(error.message));
     }
   };
 

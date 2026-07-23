@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../Login/AuthContext';
 import { api } from '../../services/api';
 import { useTooltipsEnabled } from '../../hooks/useTooltipsEnabled';
+import { translateError } from '../../utils/errorMessages';
 import Input from '../../componentes/ui/Input';
 import Button from '../../componentes/ui/Button';
 import Card from '../../componentes/ui/Card';
@@ -95,7 +96,7 @@ const Configuracoes = () => {
         setTimeout(() => setDadosSucesso(''), 4000);
       }
     } catch (err) {
-      setDadosErro(err.message);
+      setDadosErro(translateError(err.message));
     } finally {
       setSalvandoDados(false);
     }
@@ -147,7 +148,7 @@ const Configuracoes = () => {
       setConfirmarSenha('');
       setTimeout(() => setSenhaSucesso(''), 4000);
     } catch (err) {
-      setSenhaErro(err.message);
+      setSenhaErro(translateError(err.message));
     } finally {
       setSalvandoSenha(false);
     }
@@ -173,7 +174,7 @@ const Configuracoes = () => {
       a.remove();
       URL.revokeObjectURL(url);
     } catch (err) {
-      setExportErro(err.message || 'Erro ao exportar dados.');
+      setExportErro(translateError(err.message || 'Erro ao exportar dados.'));
     } finally {
       setExportando(false);
     }
@@ -206,7 +207,7 @@ const Configuracoes = () => {
       setImportSucesso('Backup importado com sucesso!');
       setTimeout(() => setImportSucesso(''), 5000);
     } catch (err) {
-      setImportErro(err.message || 'Erro ao importar backup.');
+      setImportErro(translateError(err.message || 'Erro ao importar backup.'));
     } finally {
       setImportando(false);
     }
@@ -252,7 +253,7 @@ const Configuracoes = () => {
       throw new Error('Não foi possível excluir sua conta. Tente novamente.');
     } catch (err) {
       if (!deleteSuccess) {
-        setDeleteErro(err.message || 'Não foi possível excluir sua conta. Tente novamente.');
+        setDeleteErro(translateError(err.message || 'Não foi possível excluir sua conta. Tente novamente.'));
       }
     } finally {
       setDeletando(false);

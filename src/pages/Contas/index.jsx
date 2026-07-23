@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Card from '../../componentes/Card';
 import Button from '../../componentes/ui/Button';
 import { api } from '../../services/api';
+import { translateError } from '../../utils/errorMessages';
 import { useAccount } from '../../contexts/AccountContext';
 
 const WelcomeBanner = ({ onDismiss }) => (
@@ -29,9 +30,11 @@ const WelcomeBanner = ({ onDismiss }) => (
 
 const Contas = () => {
   const [contas, setContas] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
   const [sucesso, setSucesso] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
   const { accountId, setAccount, clearAccount } = useAccount();
 
   const [isNewUser, setIsNewUser] = useState(
@@ -41,6 +44,7 @@ const Contas = () => {
   useEffect(() => {
     const fetchContas = async () => {
       try {
+        setLoading(true);
         const response = await api.get('/account');
         if (!response.ok) throw new Error('Erro ao carregar contas.');
         const data = await response.json();
@@ -48,11 +52,22 @@ const Contas = () => {
       } catch (error) {
         setErro('Erro ao carregar contas: ' + error.message);
         console.error('Erro ao buscar contas:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchContas();
   }, []);
+
+  useEffect(() => {
+    if (location.state?.sucesso) {
+      setSucesso(location.state.sucesso);
+      navigate(location.pathname, { replace: true, state: {} });
+      const timer = setTimeout(() => setSucesso(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.state, location.pathname, navigate]);
 
   const dismissWelcome = () => {
     localStorage.removeItem('finhawk-new-user');
@@ -99,7 +114,7 @@ const Contas = () => {
         throw new Error(errorData.message || 'Erro ao excluir conta.');
       }
     } catch (error) {
-      setErro(error.message);
+      setErro(translateError(error.message));
     } finally {
       setTimeout(() => {
         setErro('');
@@ -127,7 +142,12 @@ const Contas = () => {
         <p className="mb-4 rounded-md bg-success/10 px-3 py-2 text-sm text-success">{sucesso}</p>
       )}
 
-      {contas.length === 0 ? (
+      {loading ? (
+        <div className="flex flex-col items-center justify-center gap-3 py-24">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-border border-t-primary" />
+          <p className="text-sm text-muted2">Carregando suas contas...</p>
+        </div>
+      ) : contas.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-lg border border-border bg-surface p-10 text-center">
           <div className="text-4xl">🏦</div>
           <h3 className="text-lg font-semibold text-text">Nenhuma conta ainda</h3>
