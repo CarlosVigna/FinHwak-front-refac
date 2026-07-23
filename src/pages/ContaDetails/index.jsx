@@ -7,11 +7,21 @@ import {
     calculateDespesas,
     calculateSaldoRealizado,
 } from '../Dashboard/utils/calculations';
+import Card from '../../componentes/ui/Card';
+import Button from '../../componentes/ui/Button';
+import Badge from '../../componentes/ui/Badge';
+import Table from '../../componentes/ui/Table';
 
 const parseLocalDate = (dateString) => {
     if (!dateString) return null;
     const [year, month, day] = dateString.split('-').map(Number);
     return new Date(year, month - 1, day);
+};
+
+const STATUS_BADGE = {
+    PENDING: { variant: 'warning', label: 'Pendente' },
+    PAID: { variant: 'success', label: 'Pago' },
+    RECEIVED: { variant: 'success', label: 'Recebido' },
 };
 
 const AccountDetails = () => {
@@ -63,15 +73,6 @@ const AccountDetails = () => {
         return `${dia}/${mes}/${ano}`;
     };
 
-    const traduzirStatus = (status) => {
-        switch (status) {
-            case 'PENDING': return 'Pendente';
-            case 'PAID': return 'Pago';
-            case 'RECEIVED': return 'Recebido';
-            default: return status || '-';
-        }
-    };
-
     const handleExportCSV = () => {
         const statusLabel = { PENDING: 'Pendente', PAID: 'Pago', RECEIVED: 'Recebido' };
         const headers = ['ID', 'Descrição', 'Vencimento', 'Categoria', 'Valor', 'Status'];
@@ -116,105 +117,100 @@ const AccountDetails = () => {
 
     const nomeMes = hoje.toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
 
-    if (loading) return <div>Carregando detalhes...</div>;
-    if (error) return <div className="error-message">{error}</div>;
-    if (!account) return <div>Conta não encontrada.</div>;
+    if (loading) return <div className="p-6 text-sm text-muted2">Carregando detalhes...</div>;
+    if (error) return <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{error}</p>;
+    if (!account) return <div className="p-6 text-sm text-muted2">Conta não encontrada.</div>;
+
+    const columns = [
+        { header: 'Descrição', render: (b) => b.description },
+        { header: 'Categoria', render: (b) => b.category?.name || '-' },
+        { header: 'Vencimento', render: (b) => formatarData(b.maturity) },
+        {
+            header: 'Valor',
+            render: (b) => {
+                const isDespesa = b.category?.type?.toUpperCase() === 'PAYMENT';
+                return (
+                    <span className={isDespesa ? 'text-danger' : 'text-success'}>
+                        {formatarMoeda(b.installmentAmount || 0)}
+                    </span>
+                );
+            },
+        },
+        {
+            header: 'Status',
+            render: (b) => {
+                const cfg = STATUS_BADGE[b.status] || { variant: 'neutral', label: b.status || '-' };
+                return <Badge variant={cfg.variant}>{cfg.label}</Badge>;
+            },
+        },
+    ];
 
     return (
-        <div className="account-details-container">
-            <div className="header-details">
-                <h1>Detalhes da Conta</h1>
-                <div className="account-details-actions">
-                    <button className="fh-btn fh-btn-secondary" onClick={() => navigate('/contas')}>Voltar</button>
-                    <button className="fh-btn fh-btn-secondary" onClick={handleExportCSV}>
-                        Exportar CSV
-                    </button>
+        <div className="flex flex-col gap-6">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+                <h1 className="text-2xl font-semibold text-text">Detalhes da Conta</h1>
+                <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => navigate('/contas')}>Voltar</Button>
+                    <Button variant="outline" onClick={handleExportCSV}>Exportar CSV</Button>
                 </div>
             </div>
 
-            <div className="card-detalhe">
+            <Card className="flex items-center gap-4">
                 {account.photoUrl && (
                     <img
                         src={account.photoUrl}
                         alt="Foto da conta"
-                        className="account-photo"
+                        className="h-14 w-14 rounded-md object-cover"
                     />
                 )}
-                <h2>{account.name}</h2>
-                <p><strong>ID da Conta:</strong> {account.id}</p>
-            </div>
+                <div>
+                    <h2 className="text-lg font-semibold text-text">{account.name}</h2>
+                    <p className="text-sm text-muted2"><strong className="text-text">ID da Conta:</strong> {account.id}</p>
+                </div>
+            </Card>
 
-            <div className="metricas-mes">
-                <h3>Resumo de {nomeMes}</h3>
-                <div className="metricas-cards">
-                    <div className="metrica-card metrica-receita">
-                        <span className="metrica-label">Receitas</span>
-                        <span className="metrica-valor">{formatarMoeda(receitasMes)}</span>
-                    </div>
-                    <div className="metrica-card metrica-despesa">
-                        <span className="metrica-label">Despesas</span>
-                        <span className="metrica-valor">{formatarMoeda(despesasMes)}</span>
-                    </div>
-                    <div className={`metrica-card metrica-saldo ${saldoRealizado >= 0 ? 'positivo' : 'negativo'}`}>
-                        <span className="metrica-label">Saldo Realizado</span>
-                        <span className="metrica-valor">{formatarMoeda(saldoRealizado)}</span>
-                    </div>
-                    <div className="metrica-card metrica-pendente">
-                        <span className="metrica-label">Total Pendente</span>
-                        <span className="metrica-valor">{formatarMoeda(totalPendente)}</span>
-                    </div>
+            <div>
+                <h3 className="mb-3 text-lg font-semibold capitalize text-text">Resumo de {nomeMes}</h3>
+                <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                    <Card>
+                        <span className="text-xs text-muted">Receitas</span>
+                        <p className="mt-1 text-xl font-semibold text-success">{formatarMoeda(receitasMes)}</p>
+                    </Card>
+                    <Card>
+                        <span className="text-xs text-muted">Despesas</span>
+                        <p className="mt-1 text-xl font-semibold text-danger">{formatarMoeda(despesasMes)}</p>
+                    </Card>
+                    <Card>
+                        <span className="text-xs text-muted">Saldo Realizado</span>
+                        <p className={`mt-1 text-xl font-semibold ${saldoRealizado >= 0 ? 'text-success' : 'text-danger'}`}>
+                            {formatarMoeda(saldoRealizado)}
+                        </p>
+                    </Card>
+                    <Card>
+                        <span className="text-xs text-muted">Total Pendente</span>
+                        <p className="mt-1 text-xl font-semibold text-warning">{formatarMoeda(totalPendente)}</p>
+                    </Card>
                 </div>
             </div>
 
-            <div className="lancamentos-recentes">
-                <h3>Últimos Lançamentos</h3>
+            <div>
+                <h3 className="mb-3 text-lg font-semibold text-text">Últimos Lançamentos</h3>
                 {lancamentosRecentes.length === 0 ? (
-                    <div className="empty-state">
-                        <div className="empty-state-icon">📝</div>
-                        <h3>Nenhum lançamento ainda</h3>
-                        <p>Registre receitas e despesas para acompanhar esta conta.</p>
-                        <div className="empty-state-actions">
-                            <button
-                                className="fh-btn fh-btn-primary"
-                                onClick={() => {
-                                    localStorage.setItem('accountId', String(id));
-                                    navigate('/cadastroTitulo');
-                                }}
-                            >
-                                + Criar Lançamento
-                            </button>
-                        </div>
+                    <div className="flex flex-col items-center gap-3 rounded-lg border border-border bg-surface p-10 text-center">
+                        <div className="text-4xl">📝</div>
+                        <h3 className="text-lg font-semibold text-text">Nenhum lançamento ainda</h3>
+                        <p className="text-sm text-muted2">Registre receitas e despesas para acompanhar esta conta.</p>
+                        <Button
+                            onClick={() => {
+                                localStorage.setItem('accountId', String(id));
+                                navigate('/cadastroTitulo');
+                            }}
+                        >
+                            + Criar Lançamento
+                        </Button>
                     </div>
                 ) : (
-                    <div className="tabela-responsiva">
-                        <table className="tabela-recentes">
-                            <thead>
-                                <tr>
-                                    <th>Descrição</th>
-                                    <th>Categoria</th>
-                                    <th>Vencimento</th>
-                                    <th>Valor</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {lancamentosRecentes.map(bill => {
-                                    const isDespesa = bill.category?.type?.toUpperCase() === 'PAYMENT';
-                                    return (
-                                        <tr key={bill.id}>
-                                            <td>{bill.description}</td>
-                                            <td>{bill.category?.name || '-'}</td>
-                                            <td>{formatarData(bill.maturity)}</td>
-                                            <td className={isDespesa ? 'valor-saida' : 'valor-entrada'}>
-                                                {formatarMoeda(bill.installmentAmount || 0)}
-                                            </td>
-                                            <td>{traduzirStatus(bill.status)}</td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
+                    <Table columns={columns} data={lancamentosRecentes} rowKey={(b) => b.id} />
                 )}
             </div>
         </div>

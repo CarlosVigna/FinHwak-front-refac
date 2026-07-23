@@ -6,7 +6,13 @@ import {
     faCircle,
     faCircleCheck
 } from '@fortawesome/free-solid-svg-icons';
-import './TrafficLight.css';
+import Card from '../../../componentes/ui/Card';
+
+const SECTION_CLASSES = {
+    red: { bg: 'bg-danger/10 border-danger', icon: 'text-danger' },
+    yellow: { bg: 'bg-warning/10 border-warning', icon: 'text-warning' },
+    green: { bg: 'bg-success/10 border-success', icon: 'text-success' },
+};
 
 const TrafficLight = ({ overdueBills, dueTodayBills, next7DaysBills, onBillClick }) => {
     const sections = [
@@ -34,49 +40,50 @@ const TrafficLight = ({ overdueBills, dueTodayBills, next7DaysBills, onBillClick
     ];
 
     return (
-        <div className="traffic-light">
-            <h3 className="traffic-light-title">Semáforo de Vencimentos</h3>
-            <div className="traffic-light-sections">
+        <Card>
+            <h3 className="mb-4 text-lg font-semibold text-text">Semáforo de Vencimentos</h3>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 {sections.map((section, index) => (
                     <div
                         key={index}
-                        className={`traffic-section traffic-section-${section.color}`}
-                        style={{ animationDelay: `${index * 0.1}s` }}
+                        className={`rounded-lg border-2 p-4 transition-transform hover:-translate-y-0.5 ${SECTION_CLASSES[section.color].bg}`}
                     >
-                        <div className="traffic-section-header">
+                        <div className="mb-3 flex items-center gap-2 border-b border-border/50 pb-2">
                             <FontAwesomeIcon
                                 icon={section.icon}
-                                className={`traffic-icon traffic-icon-${section.color}`}
+                                className={SECTION_CLASSES[section.color].icon}
                             />
-                            <span className="traffic-section-title">{section.title}</span>
-                            <span className="traffic-badge">{section.bills.length}</span>
+                            <span className="flex-1 text-sm font-semibold text-text">{section.title}</span>
+                            <span className="rounded-full bg-surface2 px-2 py-0.5 text-xs font-semibold text-text">
+                                {section.bills.length}
+                            </span>
                         </div>
-                        <div className="traffic-section-body">
+                        <div className="max-h-64 overflow-y-auto">
                             {section.bills.length === 0 ? (
-                                <p className="traffic-empty">{section.emptyMessage}</p>
+                                <p className="py-4 text-center text-sm text-muted">{section.emptyMessage}</p>
                             ) : (
-                                <ul className="traffic-list">
+                                <ul className="flex flex-col gap-2">
                                     {section.bills.slice(0, 5).map((bill, idx) => (
                                         <li
                                             key={idx}
-                                            className="traffic-item traffic-item-clickable"
                                             onClick={onBillClick}
+                                            className="flex cursor-pointer items-center justify-between rounded-md bg-surface p-3 shadow-sm transition hover:-translate-y-0.5 hover:opacity-90"
                                         >
-                                            <div className="traffic-item-info">
-                                                <span className="traffic-item-description">
+                                            <div className="flex flex-col gap-0.5">
+                                                <span className="text-sm font-medium text-text">
                                                     {bill.description}
                                                 </span>
-                                                <span className="traffic-item-date">
+                                                <span className="text-xs text-muted2">
                                                     {formatDate(bill.maturity)}
                                                 </span>
                                             </div>
-                                            <span className="traffic-item-value">
+                                            <span className="ml-4 whitespace-nowrap font-mono text-sm font-semibold text-danger">
                                                 {formatCurrency(bill.installmentAmount || bill.value)}
                                             </span>
                                         </li>
                                     ))}
                                     {section.bills.length > 5 && (
-                                        <li className="traffic-item-more">
+                                        <li className="py-2 text-center text-xs font-medium italic text-muted2">
                                             +{section.bills.length - 5} mais
                                         </li>
                                     )}
@@ -86,7 +93,7 @@ const TrafficLight = ({ overdueBills, dueTodayBills, next7DaysBills, onBillClick
                     </div>
                 ))}
             </div>
-        </div>
+        </Card>
     );
 };
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { formatCurrency, getShortMonthName } from '../utils/formatters';
+import Card from '../../../componentes/ui/Card';
 import './AnnualChart.css';
 
 const CustomizedTick = ({ x, y, payload, chartData }) => {
@@ -25,12 +26,12 @@ const CustomizedTick = ({ x, y, payload, chartData }) => {
 const AnnualChart = ({ monthData }) => {
     if (!monthData || monthData.length === 0) {
         return (
-            <div className="annual-chart">
-                <h3 className="annual-chart-title">Evolução Anual</h3>
-                <div className="annual-chart-empty">
+            <Card>
+                <h3 className="mb-4 text-lg font-semibold text-text">Evolução Anual</h3>
+                <div className="flex min-h-[250px] items-center justify-center text-muted">
                     <p>📈 Nenhum dado disponível</p>
                 </div>
-            </div>
+            </Card>
         );
     }
 
@@ -62,8 +63,8 @@ const AnnualChart = ({ monthData }) => {
     };
 
     return (
-        <div className="annual-chart">
-            <h3 className="annual-chart-title">Evolução Anual (12 Meses)</h3>
+        <Card>
+            <h3 className="mb-4 text-lg font-semibold text-text">Evolução Anual (12 Meses)</h3>
             <div className="annual-chart-container">
                 <ResponsiveContainer width="100%" height={350}>
                     <BarChart
@@ -107,7 +108,7 @@ const AnnualChart = ({ monthData }) => {
                     </BarChart>
                 </ResponsiveContainer>
             </div>
-        </div>
+        </Card>
     );
 };
 

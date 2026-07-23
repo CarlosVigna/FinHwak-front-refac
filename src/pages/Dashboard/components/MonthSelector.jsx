@@ -26,18 +26,18 @@ const MonthSelector = ({ selectedMonth, selectedYear, onMonthChange }) => {
     };
 
     return (
-        <div className="month-pill">
+        <div className="flex items-center gap-1 rounded-full border border-border bg-surface p-1">
             <button
-                className="month-pill-nav"
+                className="flex h-7 w-7 items-center justify-center rounded-full text-muted2 hover:bg-surface2 hover:text-text"
                 onClick={handlePrevMonth}
                 title="Mês anterior"
                 type="button"
             >
-                <FontAwesomeIcon icon={faChevronLeft} />
+                <FontAwesomeIcon icon={faChevronLeft} size="xs" />
             </button>
 
             <button
-                className={`month-pill-label${!isCurrentMonth ? ' month-pill-label--past' : ''}`}
+                className={`rounded-full px-3 py-1 text-sm font-medium ${!isCurrentMonth ? 'text-muted2 hover:text-text' : 'text-text'}`}
                 onClick={handleCurrentMonth}
                 title={isCurrentMonth ? undefined : 'Clique para voltar ao mês atual'}
                 type="button"
@@ -46,12 +46,12 @@ const MonthSelector = ({ selectedMonth, selectedYear, onMonthChange }) => {
             </button>
 
             <button
-                className="month-pill-nav"
+                className="flex h-7 w-7 items-center justify-center rounded-full text-muted2 hover:bg-surface2 hover:text-text"
                 onClick={handleNextMonth}
                 title="Próximo mês"
                 type="button"
             >
-                <FontAwesomeIcon icon={faChevronRight} />
+                <FontAwesomeIcon icon={faChevronRight} size="xs" />
             </button>
         </div>
     );

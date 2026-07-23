@@ -1,22 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../../componentes/Card';
+import Button from '../../componentes/ui/Button';
 import { api } from '../../services/api';
 import { useAccount } from '../../contexts/AccountContext';
 
 const WelcomeBanner = ({ onDismiss }) => (
-  <div className="welcome-banner">
-    <div className="welcome-banner-content">
-      <span className="welcome-banner-icon">🎉</span>
+  <div className="mb-6 flex items-start justify-between gap-4 rounded-lg border border-primary/20 bg-primary/5 p-4">
+    <div className="flex items-start gap-3">
+      <span className="text-2xl">🎉</span>
       <div>
-        <strong>Bem-vindo ao FinHawk!</strong>
-        <p>
+        <strong className="text-text">Bem-vindo ao FinHawk!</strong>
+        <p className="mt-1 text-sm text-muted2">
           Comece criando sua primeira conta financeira. Depois, cadastre categorias
           de receita e despesa e registre seus primeiros lançamentos.
         </p>
       </div>
     </div>
-    <button className="welcome-banner-close" onClick={onDismiss} aria-label="Fechar">
+    <button
+      onClick={onDismiss}
+      aria-label="Fechar"
+      className="shrink-0 text-muted hover:text-text"
+    >
       ✕
     </button>
   </div>
@@ -62,23 +67,29 @@ const PrimeirosPassos = ({ contas, categorias, onDismiss }) => {
 
   return (
     <div
-      className="primeiros-passos primeiros-passos--float"
+      className="fixed z-40 w-72 rounded-lg border border-border bg-surface shadow-lg"
       style={{ left: pos.x, top: pos.y }}
     >
-      <div className="primeiros-passos-header" onMouseDown={handleDragStart}>
+      <div
+        onMouseDown={handleDragStart}
+        className="flex cursor-move items-center justify-between rounded-t-lg border-b border-border bg-surface2 px-3 py-2 text-sm font-medium text-text"
+      >
         <span>🚀 Primeiros passos</span>
         <button
-          className="primeiros-passos-fechar"
           onClick={onDismiss}
           onMouseDown={(e) => e.stopPropagation()}
+          className="text-xs text-muted hover:text-text"
         >
           Fechar
         </button>
       </div>
-      <ol className="primeiros-passos-lista">
+      <ol className="flex flex-col gap-2 p-3">
         {steps.map((step, i) => (
-          <li key={i} className={`primeiros-passos-item${step.done ? ' done' : ''}`}>
-            <span className={`primeiros-passos-badge ${step.done ? 'completed' : 'pending'}`}>
+          <li key={i} className={`flex items-start gap-2 text-sm ${step.done ? 'text-muted' : 'text-text'}`}>
+            <span className={[
+              'flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs',
+              step.done ? 'bg-success/10 text-success' : 'bg-surface2 text-muted2',
+            ].join(' ')}>
               {step.done ? '✓' : i + 1}
             </span>
             {step.label}
@@ -189,48 +200,39 @@ const Contas = () => {
   };
 
   return (
-    <div className="contas-container">
-      <div className="page-topbar">
+    <div>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="fh-title">Minhas Contas</h1>
-          <p className="page-subtitle">Selecione uma conta para continuar</p>
+          <h1 className="text-2xl font-semibold text-text">Minhas Contas</h1>
+          <p className="mt-1 text-sm text-muted2">Selecione uma conta para continuar</p>
         </div>
-        <div className="page-topbar-actions">
-          <button className="fh-btn fh-btn-primary" onClick={handleCriarConta}>
-            Nova conta
-          </button>
-        </div>
+        <Button onClick={handleCriarConta}>Nova conta</Button>
       </div>
 
       {isNewUser && <WelcomeBanner onDismiss={dismissWelcome} />}
 
-      {erro && <div className="erro-mensagem">{erro}</div>}
+      {erro && (
+        <p className="mb-4 rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{erro}</p>
+      )}
       {sucesso && (
-        <div className="sucesso-mensagem">
-          {sucesso}
-        </div>
+        <p className="mb-4 rounded-md bg-success/10 px-3 py-2 text-sm text-success">{sucesso}</p>
       )}
 
       {contas.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-state-icon">🏦</div>
-          <h3>Nenhuma conta ainda</h3>
-          <p>Crie sua primeira conta para começar a organizar suas finanças.</p>
-          <div className="empty-state-actions">
-            <button className="fh-btn fh-btn-primary" onClick={handleCriarConta}>
-              + Criar Primeira Conta
-            </button>
-          </div>
+        <div className="flex flex-col items-center gap-3 rounded-lg border border-border bg-surface p-10 text-center">
+          <div className="text-4xl">🏦</div>
+          <h3 className="text-lg font-semibold text-text">Nenhuma conta ainda</h3>
+          <p className="text-sm text-muted2">Crie sua primeira conta para começar a organizar suas finanças.</p>
+          <Button onClick={handleCriarConta}>+ Criar Primeira Conta</Button>
         </div>
       ) : (
         <>
           {showChecklist && <PrimeirosPassos contas={contas} categorias={categorias} onDismiss={dismissChecklist} />}
 
-          <div className="cards-container">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {contas.map((conta) => (
               <Card
                 key={conta.id}
-                className="conta-card"
                 conta={conta}
                 onEntrar={handleEntrar}
                 onEditar={handleEditar}

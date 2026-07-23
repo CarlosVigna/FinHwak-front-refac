@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { api } from '../../../services/api';
 import PropTypes from 'prop-types';
 import {
@@ -16,11 +16,16 @@ import {
     groupByMonth
 } from '../utils/calculations';
 import AnnualChart from './AnnualChart';
+import Card from '../../../componentes/ui/Card';
+import Button from '../../../componentes/ui/Button';
+
+const TOOLTIP_STYLE = { background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text)' };
+const PIE_COLORS = ['#3b82f6', '#22c55e', '#f59e0b', '#a855f7', '#06b6d4', '#ec4899'];
 
 // ── Multi-select dropdown ─────────────────────────────────────────
 function AccountMultiSelect({ accounts, selectedIds, onChange }) {
     const [open, setOpen] = useState(false);
-    const ref = { current: null };
+    const ref = useRef(null);
     const allSelected = selectedIds.length === accounts.length;
 
     const toggle = (id) => {
@@ -44,18 +49,18 @@ function AccountMultiSelect({ accounts, selectedIds, onChange }) {
         : `${selectedIds.length} conta${selectedIds.length !== 1 ? 's' : ''} selecionada${selectedIds.length !== 1 ? 's' : ''}`;
 
     return (
-        <div className="account-multiselect" ref={(el) => { ref.current = el; }}>
+        <div className="relative" ref={ref}>
             <button
                 type="button"
-                className="account-multiselect-trigger"
                 onClick={() => setOpen(o => !o)}
+                className="flex items-center gap-2 rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-text hover:bg-surface2"
             >
                 {label}
-                <span className="account-multiselect-arrow">{open ? '▲' : '▼'}</span>
+                <span className="text-xs text-muted">{open ? '▲' : '▼'}</span>
             </button>
             {open && (
-                <div className="account-multiselect-panel">
-                    <label className="account-multiselect-item">
+                <div className="absolute right-0 z-20 mt-1 w-64 rounded-md border border-border bg-surface p-2 shadow-lg">
+                    <label className="flex items-center gap-2 rounded px-2 py-1.5 text-sm text-text hover:bg-surface2">
                         <input
                             type="checkbox"
                             checked={allSelected}
@@ -63,15 +68,15 @@ function AccountMultiSelect({ accounts, selectedIds, onChange }) {
                         />
                         <span>Todas as contas</span>
                     </label>
-                    <div className="account-multiselect-divider" />
+                    <div className="my-1 border-t border-border" />
                     {accounts.map(acc => (
-                        <label key={acc.accountId} className="account-multiselect-item">
+                        <label key={acc.accountId} className="flex items-center gap-2 rounded px-2 py-1.5 text-sm text-text hover:bg-surface2">
                             <input
                                 type="checkbox"
                                 checked={selectedIds.includes(acc.accountId)}
                                 onChange={() => toggle(acc.accountId)}
                             />
-                            <span className="account-multiselect-dot" />
+                            <span className="h-2 w-2 rounded-full bg-primary" />
                             <span>{acc.name}</span>
                         </label>
                     ))}
@@ -197,8 +202,6 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
         };
     }, [summary, selectedIds]);
 
-    const PIE_COLORS = ['#3b82f6', '#22c55e', '#f59e0b', '#a855f7', '#06b6d4', '#ec4899'];
-
     const receitasByAccount = useMemo(() => {
         if (!summary?.accounts) return [];
         return summary.accounts
@@ -215,32 +218,30 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
 
     const showConsolidated = selectedIds.length >= 2;
 
-    if (loading) return <div className="consolidated-loading">Carregando resumo consolidado...</div>;
-    if (error)   return <div className="consolidated-error">Erro: {error}</div>;
+    if (loading) return <div className="p-6 text-sm text-muted2">Carregando resumo consolidado...</div>;
+    if (error)   return <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">Erro: {error}</p>;
     if (!summary) return null;
 
+    const deltaClass = (v) => (v >= 0 ? 'text-success' : 'text-danger');
+
     return (
-        <div className="consolidated-overview">
+        <div className="flex flex-col gap-6">
             {/* Header + seletor */}
-            <div className="consolidated-header">
-                <div className="consolidated-header-row">
-                    <h2>Visão Consolidada</h2>
+            <div className="flex flex-col gap-3">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    <h2 className="text-2xl font-semibold text-text">Visão Consolidada</h2>
                     {onBackToDashboard && (
-                        <button
-                            className="fh-btn fh-btn-secondary"
-                            onClick={onBackToDashboard}
-                            title="Voltar ao dashboard"
-                        >
+                        <Button variant="outline" onClick={onBackToDashboard} title="Voltar ao dashboard">
                             ← Voltar
-                        </button>
+                        </Button>
                     )}
                 </div>
-                <p className="consolidated-tooltip">
+                <p className="text-sm text-muted2">
                     Representa os valores efetivamente recebidos e pagos registrados no FinHawk.
                     Não representa patrimônio total.
                 </p>
-                <div className="consolidated-selector-row">
-                    <span className="consolidated-selector-label">Contas exibidas</span>
+                <div className="flex items-center justify-between gap-3">
+                    <span className="text-sm font-medium text-text">Contas exibidas</span>
                     {summary.accounts && summary.accounts.length > 0 && (
                         <AccountMultiSelect
                             accounts={summary.accounts}
@@ -253,78 +254,70 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
 
             {/* C1 — 5 cards de métricas agregadas (≥ 2 contas) */}
             {showConsolidated && (
-                <div className="consolidated-metrics-grid">
-                    {billsLoading ? (
-                        <div className="consolidated-metrics-loading">Calculando métricas...</div>
-                    ) : (
-                        <>
-                            <div className="consol-metric-card">
-                                <div className="consol-metric-label">Receitas</div>
-                                <div className="consol-metric-value" style={{ color: 'var(--green)' }}>
-                                    {formatCurrency(receitas)}
+                billsLoading ? (
+                    <p className="text-sm text-muted2">Calculando métricas...</p>
+                ) : (
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+                        <Card>
+                            <div className="text-sm text-muted2">Receitas</div>
+                            <div className="mt-1 text-xl font-semibold text-success">{formatCurrency(receitas)}</div>
+                            {deltaReceitas !== null && (
+                                <div className={`mt-1 text-xs font-medium ${deltaClass(deltaReceitas)}`}>
+                                    {deltaReceitas >= 0 ? '▲' : '▼'} {Math.abs(deltaReceitas).toFixed(1)}%
                                 </div>
-                                {deltaReceitas !== null && (
-                                    <div className={`consol-metric-delta ${deltaReceitas >= 0 ? 'delta-up' : 'delta-down'}`}>
-                                        {deltaReceitas >= 0 ? '▲' : '▼'} {Math.abs(deltaReceitas).toFixed(1)}%
-                                    </div>
-                                )}
-                            </div>
-                            <div className="consol-metric-card">
-                                <div className="consol-metric-label">Despesas</div>
-                                <div className="consol-metric-value" style={{ color: 'var(--red)' }}>
-                                    {formatCurrency(despesas)}
+                            )}
+                        </Card>
+                        <Card>
+                            <div className="text-sm text-muted2">Despesas</div>
+                            <div className="mt-1 text-xl font-semibold text-danger">{formatCurrency(despesas)}</div>
+                            {deltaDespesas !== null && (
+                                <div className={`mt-1 text-xs font-medium ${deltaClass(deltaDespesas)}`}>
+                                    {deltaDespesas >= 0 ? '▲' : '▼'} {Math.abs(deltaDespesas).toFixed(1)}%
                                 </div>
-                                {deltaDespesas !== null && (
-                                    <div className={`consol-metric-delta ${deltaDespesas >= 0 ? 'delta-up' : 'delta-down'}`}>
-                                        {deltaDespesas >= 0 ? '▲' : '▼'} {Math.abs(deltaDespesas).toFixed(1)}%
-                                    </div>
-                                )}
+                            )}
+                        </Card>
+                        <Card>
+                            <div className="text-sm text-muted2">Pendente do Mês</div>
+                            <div className="mt-1 text-xl font-semibold text-warning">{formatCurrency(pendenteMes)}</div>
+                        </Card>
+                        <Card>
+                            <div className="text-sm text-muted2">Resultado Realizado</div>
+                            <div className={`mt-1 text-xl font-semibold ${saldoRealizado >= 0 ? 'text-success' : 'text-danger'}`}>
+                                {formatCurrency(saldoRealizado)}
                             </div>
-                            <div className="consol-metric-card">
-                                <div className="consol-metric-label">Pendente do Mês</div>
-                                <div className="consol-metric-value" style={{ color: 'var(--amber)' }}>
-                                    {formatCurrency(pendenteMes)}
+                            {deltaResultado !== null && (
+                                <div className={`mt-1 text-xs font-medium ${deltaClass(deltaResultado)}`}>
+                                    {deltaResultado >= 0 ? '▲' : '▼'} {Math.abs(deltaResultado).toFixed(1)}%
                                 </div>
+                            )}
+                        </Card>
+                        <Card>
+                            <div className="text-sm text-muted2">Saldo Acumulado</div>
+                            <div className={`mt-1 text-xl font-semibold ${saldoAcumulado >= 0 ? 'text-success' : 'text-danger'}`}>
+                                {formatCurrency(saldoAcumulado)}
                             </div>
-                            <div className="consol-metric-card">
-                                <div className="consol-metric-label">Resultado Realizado</div>
-                                <div className="consol-metric-value" style={{ color: saldoRealizado >= 0 ? 'var(--green)' : 'var(--red)' }}>
-                                    {formatCurrency(saldoRealizado)}
-                                </div>
-                                {deltaResultado !== null && (
-                                    <div className={`consol-metric-delta ${deltaResultado >= 0 ? 'delta-up' : 'delta-down'}`}>
-                                        {deltaResultado >= 0 ? '▲' : '▼'} {Math.abs(deltaResultado).toFixed(1)}%
-                                    </div>
-                                )}
-                            </div>
-                            <div className="consol-metric-card">
-                                <div className="consol-metric-label">Saldo Acumulado</div>
-                                <div className="consol-metric-value" style={{ color: saldoAcumulado >= 0 ? 'var(--green)' : 'var(--red)' }}>
-                                    {formatCurrency(saldoAcumulado)}
-                                </div>
-                            </div>
-                        </>
-                    )}
-                </div>
+                        </Card>
+                    </div>
+                )
             )}
 
             {/* Saldo total — apenas 1 conta selecionada */}
             {!showConsolidated && (
-                <div className="consolidated-main-card">
-                    <div className="consolidated-value">{formatCurrency(totals.patrimonio)}</div>
-                    <div className="consolidated-accounts">
+                <Card className="text-center">
+                    <div className="text-3xl font-semibold text-text">{formatCurrency(totals.patrimonio)}</div>
+                    <div className="mt-1 text-sm text-muted2">
                         {selectedIds.length} conta{selectedIds.length !== 1 ? 's' : ''} selecionada{selectedIds.length !== 1 ? 's' : ''}
                     </div>
-                </div>
+                </Card>
             )}
 
             {/* C2 — Gráfico "Impacto por conta" (≥ 2 contas) */}
             {showConsolidated && impactData.length >= 2 && (
-                <div className="fh-card">
-                    <div className="fh-card-header">
-                        <span className="fh-card-title">Impacto por conta (mês atual)</span>
+                <Card>
+                    <div className="mb-4 flex items-center gap-1.5">
+                        <span className="text-lg font-semibold text-text">Impacto por conta (mês atual)</span>
                         <span
-                            className="metric-info"
+                            className="cursor-help text-xs text-muted"
                             title="Resultado de cada conta no mês: receitas realizadas − despesas realizadas."
                         >ⓘ</span>
                     </div>
@@ -345,7 +338,7 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
                             />
                             <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />
                             <Tooltip
-                                contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text)' }}
+                                contentStyle={TOOLTIP_STYLE}
                                 formatter={(v) => [formatCurrency(v), 'Resultado']}
                             />
                             <Bar dataKey="resultado" radius={[0, 4, 4, 0]}>
@@ -355,16 +348,14 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
                             </Bar>
                         </BarChart>
                     </ResponsiveContainer>
-                </div>
+                </Card>
             )}
 
             {/* C2.5 — Donut charts por conta (≥ 2 contas) */}
             {showConsolidated && !billsLoading && (receitasByAccount.length > 0 || despesasByAccount.length > 0) && (
-                <div className="consol-pie-row">
-                    <div className="fh-card">
-                        <div className="fh-card-header">
-                            <span className="fh-card-title">Receitas por conta (mês atual)</span>
-                        </div>
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                    <Card>
+                        <div className="mb-4 text-lg font-semibold text-text">Receitas por conta (mês atual)</div>
                         {receitasByAccount.length > 0 ? (
                             <>
                                 <ResponsiveContainer width="100%" height={200}>
@@ -383,30 +374,28 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
                                             ))}
                                         </Pie>
                                         <Tooltip
-                                            contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text)' }}
+                                            contentStyle={TOOLTIP_STYLE}
                                             formatter={(v) => [formatCurrency(v), 'Receitas']}
                                         />
                                     </PieChart>
                                 </ResponsiveContainer>
-                                <div className="consol-pie-legend">
+                                <div className="mt-3 flex flex-col gap-1.5">
                                     {receitasByAccount.map((entry, i) => (
-                                        <div key={i} className="consol-pie-legend-item">
-                                            <span className="consol-pie-legend-dot" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
-                                            <span className="consol-pie-legend-name">{entry.name}</span>
-                                            <span className="consol-pie-legend-value">{formatCurrency(entry.value)}</span>
+                                        <div key={i} className="flex items-center gap-2 text-sm">
+                                            <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
+                                            <span className="flex-1 truncate text-text">{entry.name}</span>
+                                            <span className="text-muted2">{formatCurrency(entry.value)}</span>
                                         </div>
                                     ))}
                                 </div>
                             </>
                         ) : (
-                            <div className="consol-pie-empty">Sem receitas no mês</div>
+                            <div className="py-8 text-center text-sm text-muted">Sem receitas no mês</div>
                         )}
-                    </div>
+                    </Card>
 
-                    <div className="fh-card">
-                        <div className="fh-card-header">
-                            <span className="fh-card-title">Despesas por conta (mês atual)</span>
-                        </div>
+                    <Card>
+                        <div className="mb-4 text-lg font-semibold text-text">Despesas por conta (mês atual)</div>
                         {despesasByAccount.length > 0 ? (
                             <>
                                 <ResponsiveContainer width="100%" height={200}>
@@ -425,25 +414,25 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
                                             ))}
                                         </Pie>
                                         <Tooltip
-                                            contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', color: 'var(--text)' }}
+                                            contentStyle={TOOLTIP_STYLE}
                                             formatter={(v) => [formatCurrency(v), 'Despesas']}
                                         />
                                     </PieChart>
                                 </ResponsiveContainer>
-                                <div className="consol-pie-legend">
+                                <div className="mt-3 flex flex-col gap-1.5">
                                     {despesasByAccount.map((entry, i) => (
-                                        <div key={i} className="consol-pie-legend-item">
-                                            <span className="consol-pie-legend-dot" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
-                                            <span className="consol-pie-legend-name">{entry.name}</span>
-                                            <span className="consol-pie-legend-value">{formatCurrency(entry.value)}</span>
+                                        <div key={i} className="flex items-center gap-2 text-sm">
+                                            <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
+                                            <span className="flex-1 truncate text-text">{entry.name}</span>
+                                            <span className="text-muted2">{formatCurrency(entry.value)}</span>
                                         </div>
                                     ))}
                                 </div>
                             </>
                         ) : (
-                            <div className="consol-pie-empty">Sem despesas no mês</div>
+                            <div className="py-8 text-center text-sm text-muted">Sem despesas no mês</div>
                         )}
-                    </div>
+                    </Card>
                 </div>
             )}
 
@@ -453,34 +442,35 @@ const ConsolidatedOverview = ({ onSelectAccount, onBackToDashboard }) => {
             )}
 
             {/* Detalhes por conta */}
-            <div className="consolidated-list">
-                <h3>Detalhes por Conta</h3>
+            <div>
+                <h3 className="mb-3 text-lg font-semibold text-text">Detalhes por Conta</h3>
                 {summary.accounts && summary.accounts.length > 0 ? (
-                    summary.accounts
-                        .filter(acc => selectedIds.includes(acc.accountId))
-                        .map(acc => (
-                            <div key={acc.accountId} className="consolidated-account-card">
-                                <div className="consolidated-account-main">
+                    <div className="flex flex-col gap-3">
+                        {summary.accounts
+                            .filter(acc => selectedIds.includes(acc.accountId))
+                            .map(acc => (
+                                <Card key={acc.accountId} className="flex flex-wrap items-center justify-between gap-4">
                                     <div>
-                                        <div className="acc-name">{acc.name}</div>
-                                        <div className="acc-values">
-                                            <div className="acc-item">Receitas: <strong>{formatCurrency(acc.receitasRealizadas)}</strong></div>
-                                            <div className="acc-item">Despesas: <strong>{formatCurrency(acc.despesasRealizadas)}</strong></div>
-                                            <div className="acc-item">Saldo: <strong>{formatCurrency(acc.saldoRealizado)}</strong></div>
+                                        <div className="font-semibold text-text">{acc.name}</div>
+                                        <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted2">
+                                            <span>Receitas: <strong className="text-text">{formatCurrency(acc.receitasRealizadas)}</strong></span>
+                                            <span>Despesas: <strong className="text-text">{formatCurrency(acc.despesasRealizadas)}</strong></span>
+                                            <span>Saldo: <strong className="text-text">{formatCurrency(acc.saldoRealizado)}</strong></span>
                                         </div>
                                     </div>
-                                    <button
-                                        className="fh-btn fh-btn-secondary fh-btn-sm"
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
                                         onClick={() => onSelectAccount(acc.accountId)}
                                         title="Abrir dashboard desta conta"
                                     >
                                         Abrir →
-                                    </button>
-                                </div>
-                            </div>
-                        ))
+                                    </Button>
+                                </Card>
+                            ))}
+                    </div>
                 ) : (
-                    <div>Nenhuma conta selecionada.</div>
+                    <p className="text-sm text-muted2">Nenhuma conta selecionada.</p>
                 )}
             </div>
         </div>

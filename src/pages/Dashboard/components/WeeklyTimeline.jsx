@@ -1,14 +1,14 @@
 import React from 'react';
-import { formatCurrency, formatDate, getDayName } from '../utils/formatters';
+import { formatCurrency, getDayName } from '../utils/formatters';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
-import './WeeklyTimeline.css';
+import Card from '../../../componentes/ui/Card';
 
 const WeeklyTimeline = ({ weekData }) => {
     return (
-        <div className="weekly-timeline">
-            <h3 className="weekly-timeline-title">Linha do Tempo Semanal</h3>
-            <div className="timeline-container">
+        <Card>
+            <h3 className="mb-4 text-lg font-semibold text-text">Linha do Tempo Semanal</h3>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
                 {weekData.map((day, index) => {
                     const hasTransactions = day.bills.length > 0;
                     const dayName = getDayName(day.date);
@@ -18,47 +18,43 @@ const WeeklyTimeline = ({ weekData }) => {
                     return (
                         <div
                             key={index}
-                            className={`timeline-day ${isToday ? 'timeline-day-today' : ''}`}
-                            style={{ animationDelay: `${index * 0.05}s` }}
+                            className={[
+                                'flex flex-col gap-2 rounded-lg border p-3',
+                                isToday ? 'border-primary bg-primary/5' : 'border-border bg-surface',
+                            ].join(' ')}
                         >
-                            <div className="timeline-day-header">
-                                <span className="timeline-day-name">{dayName}</span>
-                                <span className="timeline-day-date">({dateNum})</span>
+                            <div className="flex items-baseline justify-between">
+                                <span className="text-sm font-semibold text-text">{dayName}</span>
+                                <span className="text-xs text-muted">({dateNum})</span>
                             </div>
 
                             {!hasTransactions ? (
-                                <div className="timeline-day-empty">
-                                    <span className="timeline-empty-icon">🎉</span>
-                                    <span className="timeline-empty-text">Sem contas</span>
+                                <div className="flex flex-col items-center gap-1 py-3 text-center">
+                                    <span className="text-lg">🎉</span>
+                                    <span className="text-xs text-muted">Sem contas</span>
                                 </div>
                             ) : (
-                                <div className="timeline-day-content">
+                                <div className="flex flex-col gap-2">
                                     {day.receitas > 0 && (
-                                        <div className="timeline-transaction timeline-transaction-income">
-                                            <FontAwesomeIcon icon={faArrowUp} className="timeline-icon" />
-                                            <span className="timeline-value">
-                                                {formatCurrency(day.receitas)}
-                                            </span>
+                                        <div className="flex items-center gap-1.5 text-sm text-success">
+                                            <FontAwesomeIcon icon={faArrowUp} size="xs" />
+                                            <span>{formatCurrency(day.receitas)}</span>
                                         </div>
                                     )}
                                     {day.despesas > 0 && (
-                                        <div className="timeline-transaction timeline-transaction-expense">
-                                            <FontAwesomeIcon icon={faArrowDown} className="timeline-icon" />
-                                            <span className="timeline-value">
-                                                {formatCurrency(day.despesas)}
-                                            </span>
+                                        <div className="flex items-center gap-1.5 text-sm text-danger">
+                                            <FontAwesomeIcon icon={faArrowDown} size="xs" />
+                                            <span>{formatCurrency(day.despesas)}</span>
                                         </div>
                                     )}
-                                    <div className="timeline-bills">
+                                    <div className="flex flex-col gap-1">
                                         {day.bills.slice(0, 3).map((bill, idx) => (
-                                            <div key={idx} className="timeline-bill">
-                                                <span className="timeline-bill-desc">
-                                                    {bill.description}
-                                                </span>
+                                            <div key={idx} className="truncate text-xs text-muted2">
+                                                {bill.description}
                                             </div>
                                         ))}
                                         {day.bills.length > 3 && (
-                                            <div className="timeline-bill-more">
+                                            <div className="text-xs italic text-muted">
                                                 +{day.bills.length - 3} mais
                                             </div>
                                         )}
@@ -69,7 +65,7 @@ const WeeklyTimeline = ({ weekData }) => {
                     );
                 })}
             </div>
-        </div>
+        </Card>
     );
 };
 

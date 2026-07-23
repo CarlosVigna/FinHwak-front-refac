@@ -29,6 +29,7 @@ import {
     groupByMonth
 } from './utils/calculations';
 import ConsolidatedOverview from './components/ConsolidatedOverview';
+import Button from '../../componentes/ui/Button';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -250,28 +251,19 @@ const Dashboard = () => {
 
     if (loading) {
         return (
-            <div className="dashboard-page">
-                <div className="dashboard-loading">
-                    <div className="loading-spinner"></div>
-                    <p>Carregando dashboard...</p>
-                </div>
+            <div className="flex flex-col items-center justify-center gap-3 py-24">
+                <div className="h-10 w-10 animate-spin rounded-full border-4 border-border border-t-primary" />
+                <p className="text-sm text-muted2">Carregando dashboard...</p>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="dashboard-page">
-                <div className="dashboard-error">
-                    <h2>❌ Erro ao carregar dashboard</h2>
-                    <p>{error}</p>
-                    <button
-                        className="fh-btn fh-btn-primary"
-                        onClick={fetchBills}
-                    >
-                        Tentar Novamente
-                    </button>
-                </div>
+            <div className="flex flex-col items-center gap-3 rounded-lg border border-danger/20 bg-danger/5 p-10 text-center">
+                <h2 className="text-lg font-semibold text-text">❌ Erro ao carregar dashboard</h2>
+                <p className="text-sm text-muted2">{error}</p>
+                <Button onClick={fetchBills}>Tentar Novamente</Button>
             </div>
         );
     }
@@ -280,58 +272,44 @@ const Dashboard = () => {
 
     if (showConsolidated || !accountId) {
         return (
-            <div className="dashboard-page">
-                <ConsolidatedOverview
-                    onSelectAccount={handleSelectAccount}
-                    onBackToDashboard={handleBackToDashboard}
-                />
-            </div>
+            <ConsolidatedOverview
+                onSelectAccount={handleSelectAccount}
+                onBackToDashboard={handleBackToDashboard}
+            />
         );
     }
 
     return (
-        <div className="dashboard-page">
-            <div className="page-header">
-                <div className="dashboard-header-row">
-                    <div>
-                        <h1 className="page-title">Dashboard Financeiro</h1>
-                        <p className="page-subtitle">Visão completa das suas finanças</p>
-                    </div>
-                    <div className="dashboard-header-actions">
-                        <MonthSelector
-                            selectedMonth={selectedMonth}
-                            selectedYear={selectedYear}
-                            onMonthChange={handleMonthChange}
-                        />
-                        <button
-                            className="fh-btn fh-btn-secondary"
-                            onClick={handleShowConsolidated}
-                            title="Exibir visão consolidada de todas as contas"
-                        >
-                            📊 Visão Consolidada
-                        </button>
-                    </div>
+        <div className="flex flex-col gap-6">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-semibold text-text">Dashboard Financeiro</h1>
+                    <p className="mt-1 text-sm text-muted2">Visão completa das suas finanças</p>
+                </div>
+                <div className="flex flex-wrap items-center gap-3">
+                    <MonthSelector
+                        selectedMonth={selectedMonth}
+                        selectedYear={selectedYear}
+                        onMonthChange={handleMonthChange}
+                    />
+                    <Button
+                        variant="outline"
+                        onClick={handleShowConsolidated}
+                        title="Exibir visão consolidada de todas as contas"
+                    >
+                        📊 Visão Consolidada
+                    </Button>
                 </div>
             </div>
 
             {bills.length === 0 ? (
-                <div className="empty-state">
-                    <div className="empty-state-icon">📊</div>
-                    <h3>Nenhum lançamento ainda</h3>
-                    <p>Adicione receitas e despesas para ver seu dashboard em ação.</p>
-                    <div className="empty-state-actions">
-                        <button
-                            className="fh-btn fh-btn-primary"
-                            onClick={() => navigate('/cadastroTitulo')}
-                        >
-                            + Novo Lançamento
-                        </button>
-                        <button
-                            className="fh-btn fh-btn-secondary"
-                            onClick={() => navigate('/cadastrarCategoria')}
-                        >
-                            Cadastrar Categoria
-                        </button>
+                <div className="flex flex-col items-center gap-3 rounded-lg border border-border bg-surface p-10 text-center">
+                    <div className="text-4xl">📊</div>
+                    <h3 className="text-lg font-semibold text-text">Nenhum lançamento ainda</h3>
+                    <p className="text-sm text-muted2">Adicione receitas e despesas para ver seu dashboard em ação.</p>
+                    <div className="flex flex-wrap justify-center gap-3">
+                        <Button onClick={() => navigate('/cadastroTitulo')}>+ Novo Lançamento</Button>
+                        <Button variant="outline" onClick={() => navigate('/cadastrarCategoria')}>Cadastrar Categoria</Button>
                     </div>
                 </div>
             ) : (
@@ -354,19 +332,15 @@ const Dashboard = () => {
                         onBillClick={handleOpenPendingBills}
                     />
 
-                    <div className="dashboard-grid">
-                        <div className="dashboard-grid-item">
-                            <CategoryChart
-                                title="Para onde vai meu dinheiro?"
-                                data={categoryData}
-                            />
-                        </div>
-                        <div className="dashboard-grid-item">
-                            <CategoryChart
-                                title="De onde vem meu dinheiro?"
-                                data={receitasCategoryData}
-                            />
-                        </div>
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                        <CategoryChart
+                            title="Para onde vai meu dinheiro?"
+                            data={categoryData}
+                        />
+                        <CategoryChart
+                            title="De onde vem meu dinheiro?"
+                            data={receitasCategoryData}
+                        />
                     </div>
 
                     <WeeklyTimeline weekData={weekData} />

@@ -8,12 +8,13 @@ import {
     faClock
 } from '@fortawesome/free-solid-svg-icons';
 import { useTooltipsEnabled } from '../../../hooks/useTooltipsEnabled';
+import Card from '../../../componentes/ui/Card';
 
 const DeltaBadge = ({ delta }) => {
     if (delta === 0) return null;
     const positive = delta > 0;
     return (
-        <span className={`summary-card-delta ${positive ? 'delta-up' : 'delta-down'}`}>
+        <span className={`text-xs font-medium ${positive ? 'text-success' : 'text-danger'}`}>
             {positive ? '↑' : '↓'} {formatCurrency(Math.abs(delta))} vs mês anterior
         </span>
     );
@@ -23,12 +24,16 @@ function InfoTooltip({ text }) {
     const [show, setShow] = useState(false);
     return (
         <span
-            className="metric-info-wrap"
+            className="relative inline-flex"
             onMouseEnter={() => setShow(true)}
             onMouseLeave={() => setShow(false)}
         >
-            <span className="metric-info">ⓘ</span>
-            {show && <div className="metric-tooltip">{text}</div>}
+            <span className="cursor-help text-xs text-muted">ⓘ</span>
+            {show && (
+                <div className="absolute bottom-full left-1/2 z-10 mb-2 w-48 -translate-x-1/2 rounded-md bg-surface2 p-2 text-xs text-text shadow-lg">
+                    {text}
+                </div>
+            )}
         </span>
     );
 }
@@ -39,6 +44,13 @@ const TOOLTIPS = {
     'Pendente do Mês': 'Lançamentos deste mês que ainda não foram pagos ou recebidos.',
     'Resultado Realizado': 'Receitas menos despesas já efetivadas neste mês. A seta compara este valor com o resultado do mês anterior.',
     'Saldo Acumulado': 'Soma de todos os resultados mensais desde o primeiro lançamento registrado na conta.',
+};
+
+const COLOR_CLASSES = {
+    success: { icon: 'bg-success/10 text-success', value: 'text-success' },
+    danger: { icon: 'bg-danger/10 text-danger', value: 'text-danger' },
+    warning: { icon: 'bg-warning/10 text-warning', value: 'text-warning' },
+    blue: { icon: 'bg-info/10 text-info', value: 'text-text' },
 };
 
 const SummaryCards = ({
@@ -57,85 +69,71 @@ const SummaryCards = ({
     const realColor    = saldoRealizado  >= 0 ? 'success' : 'danger';
     const acumColor    = saldoAcumulado  >= 0 ? 'success' : 'danger';
 
-    const iconToken = {
-        success: { bg: 'var(--green-soft)', color: 'var(--green)' },
-        danger:  { bg: 'var(--red-soft)',   color: 'var(--red)' },
-        warning: { bg: 'var(--amber-soft)', color: 'var(--amber)' },
-        blue:    { bg: 'var(--blue-soft)',  color: 'var(--blue)' },
-    };
-
     const cards = [
         {
             title: 'Receitas',
             value: receitas,
             icon: faArrowTrendUp,
-            color: 'success',
-            icon_: iconToken.success,
+            iconColor: 'success',
+            valueColor: 'success',
             delta: deltaReceitas
         },
         {
             title: 'Despesas',
             value: despesas,
             icon: faArrowTrendDown,
-            color: 'danger',
-            icon_: iconToken.danger,
+            iconColor: 'danger',
+            valueColor: 'danger',
             delta: deltaDespesas
         },
         {
             title: 'Pendente do Mês',
             value: pendenteMes,
             icon: faClock,
-            color: pendingColor,
-            icon_: iconToken[pendingColor],
+            iconColor: pendingColor,
+            valueColor: pendingColor,
             delta: null
         },
         {
             title: 'Resultado Realizado',
             value: saldoRealizado,
             icon: faWallet,
-            color: realColor,
-            icon_: iconToken.blue,
+            iconColor: 'blue',
+            valueColor: realColor,
             delta: deltaResultado
         },
         {
             title: 'Saldo Acumulado',
             value: saldoAcumulado,
             icon: faWallet,
-            color: acumColor,
-            icon_: iconToken[acumColor],
+            iconColor: acumColor,
+            valueColor: acumColor,
             delta: null
         }
     ];
 
     return (
-        <div className="summary-cards">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {cards.map((card, index) => (
-                <div
-                    key={index}
-                    className={`summary-card summary-card-${card.color}`}
-                    style={{ animationDelay: `${index * 0.08}s` }}
-                >
-                    <div className="summary-card-header">
-                        <div className="summary-card-title-row">
-                            <span className="summary-card-title">{card.title}</span>
+                <Card key={index} className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                            <span className="text-sm text-muted2">{card.title}</span>
                             {tooltipsEnabled && TOOLTIPS[card.title] && (
                                 <InfoTooltip text={TOOLTIPS[card.title]} />
                             )}
                         </div>
-                        <div
-                            className="summary-card-icon"
-                            style={{ background: card.icon_.bg, color: card.icon_.color }}
-                        >
-                            <FontAwesomeIcon icon={card.icon} />
+                        <div className={`flex h-8 w-8 items-center justify-center rounded-full ${COLOR_CLASSES[card.iconColor].icon}`}>
+                            <FontAwesomeIcon icon={card.icon} size="sm" />
                         </div>
                     </div>
-                    <div className="summary-card-body">
-                        <span className={`summary-card-value ${card.color}`}>
+                    <div className="flex flex-col gap-1">
+                        <span className={`text-xl font-semibold ${COLOR_CLASSES[card.valueColor].value}`}>
                             {formatCurrency(card.value)}
                         </span>
                         {card.delta != null && <DeltaBadge delta={card.delta} />}
                     </div>
-                </div>
+                </Card>
             ))}
         </div>
     );

@@ -1,40 +1,9 @@
-/* Category Chart Styles */
-
-.category-chart {
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-    margin-bottom: 2rem;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.6s ease-out 0.3s forwards;
-}
-
-.category-chart-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 0 0 1.5rem 0;
-}
+/* Category Chart — apenas o que estiliza o recharts (SVG/tooltip do grafico).
+   Layout de card/titulo/empty-state migrado para Tailwind + ui/Card. */
 
 .category-chart-container {
     width: 100%;
     min-height: 300px;
-}
-
-.category-chart-empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 250px;
-    color: var(--text-muted);
-    font-size: 1rem;
-}
-
-.category-chart-empty p {
-    margin: 0;
 }
 
 /* Custom Tooltip */
@@ -69,17 +38,7 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-    .category-chart {
-        padding: 1.25rem;
-    }
-
     .category-chart-container {
         min-height: 250px;
-    }
-}
-
-@media (max-width: 480px) {
-    .category-chart-title {
-        font-size: 1.1rem;
     }
 }

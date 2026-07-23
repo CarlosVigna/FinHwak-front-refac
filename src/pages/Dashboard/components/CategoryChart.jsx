@@ -1,6 +1,7 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { formatCurrency, formatPercentage } from '../utils/formatters';
+import Card from '../../../componentes/ui/Card';
 import './CategoryChart.css';
 
 const COLORS = [
@@ -19,12 +20,12 @@ const COLORS = [
 const CategoryChart = ({ data, title }) => {
     if (!data || data.length === 0) {
         return (
-            <div className="category-chart">
-                <h3 className="category-chart-title">{title}</h3>
-                <div className="category-chart-empty">
+            <Card>
+                <h3 className="mb-4 text-lg font-semibold text-text">{title}</h3>
+                <div className="flex min-h-[250px] items-center justify-center text-muted">
                     <p>📊 Nenhuma movimentação encontrada</p>
                 </div>
-            </div>
+            </Card>
         );
     }
 
@@ -66,8 +67,8 @@ const CategoryChart = ({ data, title }) => {
     };
 
     return (
-        <div className="category-chart">
-            <h3 className="category-chart-title">{title}</h3>
+        <Card>
+            <h3 className="mb-4 text-lg font-semibold text-text">{title}</h3>
             <div className="category-chart-container">
                 <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
@@ -103,7 +104,7 @@ const CategoryChart = ({ data, title }) => {
                     </PieChart>
                 </ResponsiveContainer>
             </div>
-        </div>
+        </Card>
     );
 };
 

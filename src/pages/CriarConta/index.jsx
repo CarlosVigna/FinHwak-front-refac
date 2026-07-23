@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
+import Input from '../../componentes/ui/Input';
+import Button from '../../componentes/ui/Button';
 
 const CriarConta = () => {
     const [name, setName] = useState('');
@@ -8,8 +10,6 @@ const CriarConta = () => {
     const navigate = useNavigate();
     const [error, setError] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-
- 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -45,51 +45,45 @@ const CriarConta = () => {
     };
 
     return (
-        <div className="criar-conta-container">
-            <div className="fh-page-header">
-                <h1 className="fh-title">Criar Nova <span>Conta</span></h1>
-                <p className="fh-subtitle">Preencha os dados para adicionar uma conta financeira.</p>
+        <div className="mx-auto max-w-lg">
+            <div className="mb-6">
+                <h1 className="text-2xl font-semibold text-text">Criar Nova Conta</h1>
+                <p className="mt-1 text-sm text-muted2">Preencha os dados para adicionar uma conta financeira.</p>
             </div>
-            <form onSubmit={handleSubmit}>
-                
-                <div className="form-group">
-                    <label>Nome da Conta:</label>
-                    <input
-                        type="text"
-                        className="form-control no-inner-shadow"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="Ex: Nubank, Carteira, Banco do Brasil..."
-                        required
-                    />
-                </div>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <Input
+                    label="Nome da Conta:"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Ex: Nubank, Carteira, Banco do Brasil..."
+                    required
+                />
 
-                <div className="form-group">
-                    <label>URL da Foto (Opcional):</label>
-                    <input
-                        type="text"
-                        className="form-control no-inner-shadow"
-                        value={photoUrl}
-                        onChange={(e) => setPhotoUrl(e.target.value)}
-                        placeholder="Cole o link de uma imagem/logo"
-                    />
-                </div>
+                <Input
+                    label="URL da Foto (Opcional):"
+                    type="text"
+                    value={photoUrl}
+                    onChange={(e) => setPhotoUrl(e.target.value)}
+                    placeholder="Cole o link de uma imagem/logo"
+                />
 
+                {error && (
+                    <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{error}</p>
+                )}
 
-                {error && <div className="erro-mensagem">{error}</div>}
-                
-                <div className="botoes-container">
-                    <button type="submit" className="fh-btn fh-btn-primary" disabled={isSubmitting}>
+                <div className="flex gap-3">
+                    <Button type="submit" disabled={isSubmitting}>
                         {isSubmitting ? 'Criando...' : 'Criar Conta'}
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                         type="button"
-                        className="fh-btn fh-btn-secondary"
+                        variant="outline"
                         onClick={() => navigate('/contas')}
                         disabled={isSubmitting}
                     >
                         Cancelar
-                    </button>
+                    </Button>
                 </div>
             </form>
         </div>

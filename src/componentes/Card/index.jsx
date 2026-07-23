@@ -1,7 +1,9 @@
 import React from 'react';
 import imagemPadrao from '../../assets/imagens/conta-padrao.png';
+import UiCard from '../ui/Card';
+import Button from '../ui/Button';
 
-const Card = ({ conta, onEntrar, onEditar, onExcluir, className }) => {
+const Card = ({ conta, onEntrar, onEditar, onExcluir, className = '' }) => {
 
     const handleImageError = (e) => {
         e.target.src = imagemPadrao;
@@ -15,31 +17,28 @@ const Card = ({ conta, onEntrar, onEditar, onExcluir, className }) => {
     };
 
     return (
-        <div className={`card ${className || ''}`}>
-            <div className="card-header">
+        <UiCard className={`flex flex-col gap-4 ${className}`}>
+            <div className="flex items-center gap-3">
                 <img
-                    className='imagem-card'
+                    className="h-12 w-12 rounded-md object-cover"
                     src={conta.photoUrl || imagemPadrao}
-                    alt='Imagem da conta'
+                    alt="Imagem da conta"
                     onError={handleImageError}
                 />
-                <h1>{conta.name}</h1>
+                <h1 className="text-lg font-semibold text-text">{conta.name}</h1>
             </div>
 
-            <div className="card-content">
-
-                <div className="info-proprietario">
-                    <strong>Proprietário:</strong>
-                    <p>{getOwnerName()}</p>
-                </div>
+            <div className="text-sm">
+                <strong className="text-text">Proprietário:</strong>
+                <p className="text-muted2">{getOwnerName()}</p>
             </div>
 
-            <div className="card-botoes">
-                <button className="fh-btn fh-btn-primary" onClick={() => onEntrar(conta.id)}>Entrar</button>
-                <button className="fh-btn fh-btn-secondary" onClick={() => onEditar(conta.id)}>Editar</button>
-                <button className="fh-btn fh-btn-danger" onClick={() => onExcluir(conta.id)}>Excluir</button>
+            <div className="flex flex-wrap gap-2">
+                <Button size="sm" onClick={() => onEntrar(conta.id)}>Entrar</Button>
+                <Button size="sm" variant="outline" onClick={() => onEditar(conta.id)}>Editar</Button>
+                <Button size="sm" variant="danger" onClick={() => onExcluir(conta.id)}>Excluir</Button>
             </div>
-        </div>
+        </UiCard>
     );
 };
 
