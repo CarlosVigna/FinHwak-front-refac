@@ -2,6 +2,44 @@
    FINHAWK — DESIGN TOKENS
    ============================================================ */
 
+@import "tailwindcss";
+
+/* Ativa dark: casando com o mecanismo de tema existente (data-theme
+   setado em document.documentElement via hooks/useTheme.js), em vez
+   do padrão .dark do Tailwind. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  /* Marca MaxHub (fixas) */
+  --color-primary: #0f1f3d;
+  --color-primary-light: #1e3a6e;
+  --color-secondary: #f97316;
+
+  /* Semânticos — espelham as CSS vars de theme.css, reagem ao tema */
+  --color-success: var(--green);
+  --color-danger: var(--red);
+  --color-warning: var(--amber);
+  --color-info: var(--blue);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface2);
+  --color-border: var(--border);
+  --color-border2: var(--border2);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-muted2: var(--muted2);
+
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+  --text-3xl: 36px;
+}
+
 *, *::before, *::after { box-sizing: border-box; }
 
 html { font-size: 14px; }
