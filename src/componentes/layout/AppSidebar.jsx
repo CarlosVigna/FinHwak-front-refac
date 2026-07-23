@@ -2,9 +2,8 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import {
     FiGrid, FiArrowUpCircle, FiArrowDownCircle, FiAlertCircle, FiCheckSquare,
     FiPlusCircle, FiCheckCircle, FiDollarSign, FiCreditCard, FiTag, FiSettings,
-    FiSun, FiMoon, FiChevronDown,
+    FiChevronDown,
 } from 'react-icons/fi';
-import { useTheme } from '../../hooks/useTheme';
 import { useAccount } from '../../contexts/AccountContext';
 import FinHawkIcon from '../FinHawkIcon';
 
@@ -80,7 +79,6 @@ function NavItem({ to, label, Icon, locked, onLockedClick, onClick }) {
 
 export default function AppSidebar({ isMobileOpen, onCloseMobile }) {
     const navigate = useNavigate();
-    const { theme, toggleTheme } = useTheme();
     const { accountId, accountName, clearAccount } = useAccount();
     const hasAccount = !!accountId;
 
@@ -150,17 +148,6 @@ export default function AppSidebar({ isMobileOpen, onCloseMobile }) {
                         </div>
                     ))}
                 </nav>
-
-                <div className="border-t border-border p-3">
-                    <button
-                        type="button"
-                        onClick={toggleTheme}
-                        className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted2 hover:bg-surface2 hover:text-text"
-                    >
-                        {theme === 'dark' ? <FiSun className="shrink-0" /> : <FiMoon className="shrink-0" />}
-                        {theme === 'dark' ? 'Modo claro' : 'Modo escuro'}
-                    </button>
-                </div>
             </aside>
         </>
     );
