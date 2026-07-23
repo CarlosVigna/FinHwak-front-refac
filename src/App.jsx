@@ -6,7 +6,7 @@ import AccountRoute from './pages/Login/AccountRoute';
 import ErrorBoundary from './componentes/ErrorBoundary';
 
 import LandingPage from './pages/LandingPage';
-import MenuHome from './componentes/MenuHome';
+import AppLayout from './componentes/layout/AppLayout';
 import Footer from './componentes/Footer';
 import PlanModal from './componentes/PlanModal';
 import AuthTabs from './pages/AuthTabs';
@@ -56,13 +56,9 @@ function App() {
   }
 
   // ── Rotas privadas — com sidebar e app-layout ──
-  return (
-    <div className="app-layout">
-      {isAuthenticated && <MenuHome />}
-      <div className={`app-main${!isAuthenticated ? ' app-main-full' : ''}`}>
-        <main>
-          <ErrorBoundary>
-          <Routes>
+  const privateRoutes = (
+    <ErrorBoundary>
+      <Routes>
             <Route
               path="/contas"
               element={<PrivateRoute><Contas /></PrivateRoute>}
@@ -119,13 +115,20 @@ function App() {
               path="/configuracoes"
               element={<PrivateRoute><Configuracoes /></PrivateRoute>}
             />
-          </Routes>
-          </ErrorBoundary>
-        </main>
+      </Routes>
+    </ErrorBoundary>
+  );
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-bg">
+        <main className="p-4 lg:p-6">{privateRoutes}</main>
         <Footer />
       </div>
-    </div>
-  );
+    );
+  }
+
+  return <AppLayout>{privateRoutes}</AppLayout>;
 }
 
 function AppWrapper() {

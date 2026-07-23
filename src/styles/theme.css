@@ -4,6 +4,18 @@
 
 @import "tailwindcss";
 
+/* CSS legado importado na layer "base" do Tailwind (não na layer
+   "utilities"). Regras soltas fora de layer (ex.: `a { color }`)
+   sempre vencem utilitários do Tailwind, não importa a especificidade
+   -- cascade layers têm prioridade sobre specificity. Isso garante
+   que className="text-muted2" etc funcione nos componentes novos
+   mesmo com esses arquivos ainda carregados. Remover conforme forem
+   migrados na Parte 5. */
+@import "./layout.css" layer(base);
+@import "./components.css" layer(base);
+@import "./forms.css" layer(base);
+@import "./tables.css" layer(base);
+
 /* Ativa dark: casando com o mecanismo de tema existente (data-theme
    setado em document.documentElement via hooks/useTheme.js), em vez
    do padrão .dark do Tailwind. */
@@ -39,6 +51,8 @@
   --text-2xl: 28px;
   --text-3xl: 36px;
 }
+
+@layer base {
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -245,3 +259,5 @@ option {
   background: var(--surface2);
   color: var(--text);
 }
+
+} /* fim @layer base */
