@@ -190,7 +190,6 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
             }
 
             setSucesso(tituloParaEditar ? 'Atualizado com sucesso!' : 'Cadastrado com sucesso!');
-            if (!tituloParaEditar) localStorage.setItem('finhawk-first-bill', 'true');
 
             if (!tituloParaEditar && markChecklist === true && location?.state?.checklistItemId) {
                 const month = location.state.selectedMonth || new Date().toISOString().slice(0, 7);

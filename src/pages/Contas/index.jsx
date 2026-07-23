@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../../componentes/Card';
 import Button from '../../componentes/ui/Button';
@@ -27,82 +27,8 @@ const WelcomeBanner = ({ onDismiss }) => (
   </div>
 );
 
-const PrimeirosPassos = ({ contas, categorias, onDismiss }) => {
-  const [pos, setPos] = useState({ x: 20, y: 80 });
-  const drag = useRef({ active: false, startX: 0, startY: 0, initX: 0, initY: 0 });
-
-  useEffect(() => {
-    const onMove = (e) => {
-      if (!drag.current.active) return;
-      setPos({
-        x: drag.current.initX + e.clientX - drag.current.startX,
-        y: drag.current.initY + e.clientY - drag.current.startY,
-      });
-    };
-    const onUp = () => { drag.current.active = false; };
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
-    return () => {
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseup', onUp);
-    };
-  }, []);
-
-  const handleDragStart = (e) => {
-    drag.current = { active: true, startX: e.clientX, startY: e.clientY, initX: pos.x, initY: pos.y };
-    e.preventDefault();
-  };
-
-  const step1 = contas.length > 0;
-  const step2 = localStorage.getItem('finhawk-account-entered') === 'true';
-  const step3 = categorias.length > 0;
-  const step4 = localStorage.getItem('finhawk-first-bill') === 'true';
-
-  const steps = [
-    { done: step1, label: <>Criar uma conta financeira</> },
-    { done: step2, label: <>Clique em <strong>Entrar</strong> em uma conta para selecioná-la</> },
-    { done: step3, label: <>Cadastre suas categorias de receita e despesa</> },
-    { done: step4, label: <>Registre seus primeiros lançamentos e explore o Dashboard</> },
-  ];
-
-  return (
-    <div
-      className="fixed z-40 w-72 rounded-lg border border-border bg-surface shadow-lg"
-      style={{ left: pos.x, top: pos.y }}
-    >
-      <div
-        onMouseDown={handleDragStart}
-        className="flex cursor-move items-center justify-between rounded-t-lg border-b border-border bg-surface2 px-3 py-2 text-sm font-medium text-text"
-      >
-        <span>🚀 Primeiros passos</span>
-        <button
-          onClick={onDismiss}
-          onMouseDown={(e) => e.stopPropagation()}
-          className="text-xs text-muted hover:text-text"
-        >
-          Fechar
-        </button>
-      </div>
-      <ol className="flex flex-col gap-2 p-3">
-        {steps.map((step, i) => (
-          <li key={i} className={`flex items-start gap-2 text-sm ${step.done ? 'text-muted' : 'text-text'}`}>
-            <span className={[
-              'flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs',
-              step.done ? 'bg-success/10 text-success' : 'bg-surface2 text-muted2',
-            ].join(' ')}>
-              {step.done ? '✓' : i + 1}
-            </span>
-            {step.label}
-          </li>
-        ))}
-      </ol>
-    </div>
-  );
-};
-
 const Contas = () => {
   const [contas, setContas] = useState([]);
-  const [categorias, setCategorias] = useState([]);
   const [erro, setErro] = useState(null);
   const [sucesso, setSucesso] = useState('');
   const navigate = useNavigate();
@@ -110,9 +36,6 @@ const Contas = () => {
 
   const [isNewUser, setIsNewUser] = useState(
     () => localStorage.getItem('finhawk-new-user') === 'true'
-  );
-  const [showChecklist, setShowChecklist] = useState(
-    () => localStorage.getItem('finhawk-onboarding-done') !== 'true'
   );
 
   useEffect(() => {
@@ -122,14 +45,6 @@ const Contas = () => {
         if (!response.ok) throw new Error('Erro ao carregar contas.');
         const data = await response.json();
         setContas(data);
-
-        if (data.length > 0) {
-          const catRes = await api.get(`/category/account/${data[0].id}`);
-          if (catRes.ok) {
-            const catData = await catRes.json();
-            setCategorias(catData);
-          }
-        }
       } catch (error) {
         setErro('Erro ao carregar contas: ' + error.message);
         console.error('Erro ao buscar contas:', error);
@@ -144,15 +59,9 @@ const Contas = () => {
     setIsNewUser(false);
   };
 
-  const dismissChecklist = () => {
-    localStorage.setItem('finhawk-onboarding-done', 'true');
-    setShowChecklist(false);
-  };
-
   const handleEntrar = (idConta) => {
     const conta = contas.find(c => c.id === idConta);
     setAccount(String(idConta), conta?.name || '');
-    localStorage.setItem('finhawk-account-entered', 'true');
     navigate('/dashboard');
   };
 
@@ -226,21 +135,17 @@ const Contas = () => {
           <Button onClick={handleCriarConta}>+ Criar Primeira Conta</Button>
         </div>
       ) : (
-        <>
-          {showChecklist && <PrimeirosPassos contas={contas} categorias={categorias} onDismiss={dismissChecklist} />}
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {contas.map((conta) => (
-              <Card
-                key={conta.id}
-                conta={conta}
-                onEntrar={handleEntrar}
-                onEditar={handleEditar}
-                onExcluir={handleExcluir}
-              />
-            ))}
-          </div>
-        </>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {contas.map((conta) => (
+            <Card
+              key={conta.id}
+              conta={conta}
+              onEntrar={handleEntrar}
+              onEditar={handleEditar}
+              onExcluir={handleExcluir}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
