@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Formulario from '../../componentes/Formulario';
+import Input from '../../componentes/ui/Input';
+import Button from '../../componentes/ui/Button';
 import { useAuth } from './AuthContext';
 
 const Login = () => {
@@ -23,7 +24,8 @@ const Login = () => {
         });
     };
 
-    const handleLogin = async () => {
+    const handleLogin = async (e) => {
+        e.preventDefault();
         const { email, password } = valores;
 
         if (!email || !password) {
@@ -67,36 +69,49 @@ const Login = () => {
         }
     };
 
-    const camposLogin = [
-        { label: 'Email:', placeholder: 'Digite seu e-mail', type: 'email', name: 'email' },
-        { label: 'Senha:', placeholder: 'Digite sua senha', type: 'password', name: 'password' },
-    ];
-
     return (
         <>
-            <Formulario
-                titulo="Entrar"
-                campos={camposLogin}
-                botaoTexto={isLoading ? 'Entrando...' : 'Entrar'}
-                className="fh-btn fh-btn-primary"
-                handleInputChange={handleInputChange}
-                valores={valores}
-                onSubmit={handleLogin}
-                disabled={isLoading}
-                customClass="auth-card login-card"
-                layout="vertical"
-                erro={erro}
-            />
-            <div className="auth-extra-links">
-                <Link to="/esqueci-senha" className="btn-link">Esqueci minha senha</Link>
+            <form onSubmit={handleLogin} className="flex flex-col gap-4">
+                <h2 className="text-xl font-semibold text-text">Entrar</h2>
+
+                {erro && (
+                    <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{erro}</p>
+                )}
+
+                <Input
+                    label="Email:"
+                    type="email"
+                    name="email"
+                    placeholder="Digite seu e-mail"
+                    autoComplete="email"
+                    value={valores.email}
+                    onChange={handleInputChange}
+                />
+                <Input
+                    label="Senha:"
+                    type="password"
+                    name="password"
+                    placeholder="Digite sua senha"
+                    autoComplete="current-password"
+                    value={valores.password}
+                    onChange={handleInputChange}
+                />
+
+                <Button type="submit" disabled={isLoading} className="w-full">
+                    {isLoading ? 'Entrando...' : 'Entrar'}
+                </Button>
+            </form>
+
+            <div className="mt-4 text-sm">
+                <Link to="/esqueci-senha" className="text-primary hover:underline">Esqueci minha senha</Link>
             </div>
-            <div className="auth-extra-links" style={{ marginTop: '8px' }}>
+            <div className="mt-2 text-sm text-muted2">
                 Ao continuar, você concorda com nossos{' '}
-                <Link to="/termos" className="btn-link">Termos de Uso</Link>
+                <Link to="/termos" className="text-primary hover:underline">Termos de Uso</Link>
                 {' '}e{' '}
-                <Link to="/privacidade" className="btn-link">Política de Privacidade</Link>
+                <Link to="/privacidade" className="text-primary hover:underline">Política de Privacidade</Link>
             </div>
-            <p className="login-notice">
+            <p className="mt-4 text-xs text-muted">
                 O servidor pode levar alguns segundos para responder na primeira requisição.
             </p>
         </>

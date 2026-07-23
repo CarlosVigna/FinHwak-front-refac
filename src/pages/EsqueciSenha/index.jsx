@@ -1,5 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import Input from '../../componentes/ui/Input';
+import Button from '../../componentes/ui/Button';
+import Card from '../../componentes/ui/Card';
+import FinHawkIcon from '../../componentes/FinHawkIcon';
 
 const EsqueciSenha = () => {
     const [email, setEmail] = useState('');
@@ -37,75 +41,55 @@ const EsqueciSenha = () => {
     };
 
     return (
-        <div className="auth-page">
-            <section className="auth-brand">
-                <div className="auth-brand-content">
-                    <h1 className="auth-brand-title">
-                        Fin<span>Hawk</span>
-                    </h1>
-                    <p className="auth-brand-subtitle">
-                        Controle financeiro inteligente para organizar contas, receitas, despesas e relatorios em um unico lugar.
-                    </p>
-                    <div className="auth-features">
-                        <div className="auth-feature">Dashboard financeiro</div>
-                        <div className="auth-feature">Controle de contas</div>
-                        <div className="auth-feature">Relatorios e indicadores</div>
-                        <div className="auth-feature">Ambiente seguro</div>
-                    </div>
+        <div className="flex min-h-screen items-center justify-center px-4 py-10">
+            <Card className="w-full max-w-sm">
+                <div className="mb-6 flex items-center gap-2">
+                    <FinHawkIcon size={28} />
+                    <span className="text-lg font-semibold text-text">FinHawk</span>
                 </div>
-            </section>
 
-            <section className="auth-card-container">
-                <div className="auth-tabs-card">
-                    <div className="auth-header">
-                        <h1 className="brand">FinHawk</h1>
+                {sent ? (
+                    <div>
+                        <p className="rounded-md bg-success/10 px-3 py-2 text-sm text-success">
+                            Se o e-mail informado estiver cadastrado, você receberá um link em breve.
+                        </p>
+                        <div className="mt-4 text-sm">
+                            <Link to="/login" className="text-primary hover:underline">Voltar para o login</Link>
+                        </div>
                     </div>
+                ) : (
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                        <div>
+                            <h2 className="text-xl font-semibold text-text">Recuperar senha</h2>
+                            <p className="mt-1 text-sm text-muted2">
+                                Informe o e-mail cadastrado e enviaremos um link para redefinir sua senha.
+                            </p>
+                        </div>
 
-                    <div className="auth-content">
-                        {sent ? (
-                            <div>
-                                <div className="success-message">
-                                    Se o e-mail informado estiver cadastrado, você receberá um link em breve.
-                                </div>
-                                <div className="auth-extra-links">
-                                    <Link to="/login" className="btn-link">Voltar para o login</Link>
-                                </div>
-                            </div>
-                        ) : (
-                            <form onSubmit={handleSubmit}>
-                                <h2 style={{ margin: '0 0 8px' }}>Recuperar senha</h2>
-                                <p style={{ color: 'var(--text-secondary)', margin: '0 0 20px', fontSize: '0.875rem' }}>
-                                    Informe o e-mail cadastrado e enviaremos um link para redefinir sua senha.
-                                </p>
+                        <Input
+                            label="E-mail"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Digite seu e-mail"
+                            disabled={loading}
+                            autoComplete="email"
+                        />
 
-                                <div className="campo-formulario">
-                                    <label>E-mail</label>
-                                    <input
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="Digite seu e-mail"
-                                        disabled={loading}
-                                        autoComplete="email"
-                                    />
-                                </div>
-
-                                {erro && <div className="error-message">{erro}</div>}
-
-                                <div className="botoes-formulario" style={{ marginTop: '20px' }}>
-                                    <button type="submit" className="fh-btn fh-btn-primary" disabled={loading}>
-                                        {loading ? 'Enviando...' : 'Enviar link de recuperação'}
-                                    </button>
-                                </div>
-
-                                <div className="auth-extra-links">
-                                    <Link to="/login" className="btn-link">Voltar para o login</Link>
-                                </div>
-                            </form>
+                        {erro && (
+                            <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{erro}</p>
                         )}
-                    </div>
-                </div>
-            </section>
+
+                        <Button type="submit" disabled={loading} className="w-full">
+                            {loading ? 'Enviando...' : 'Enviar link de recuperação'}
+                        </Button>
+
+                        <div className="text-sm">
+                            <Link to="/login" className="text-primary hover:underline">Voltar para o login</Link>
+                        </div>
+                    </form>
+                )}
+            </Card>
         </div>
     );
 };

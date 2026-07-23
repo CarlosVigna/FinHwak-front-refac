@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Formulario from '../../componentes/Formulario';
+import Input from '../../componentes/ui/Input';
+import Button from '../../componentes/ui/Button';
 import { useAuth } from '../Login/AuthContext';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -77,34 +78,65 @@ function CadastroUsuario() {
         }
     };
 
-    const camposCadastro = [
-        { label: "Nome:", placeholder: "Digite seu nome", type: "text", name: "nome" },
-        { label: "Email:", placeholder: "Digite seu e-mail", type: "email", name: "email" },
-        { label: "Senha:", placeholder: "Digite sua senha", type: "password", name: "senha" },
-        { label: "Confirme sua senha:", placeholder: "Repita sua senha", type: "password", name: "confirmarSenha" }
-    ];
-
     return (
-        <div className="container-cadastro">
-            <Formulario
-                titulo="Cadastro de Usuário"
-                campos={camposCadastro}
-                botaoTexto={loading ? "Criando conta..." : "Enviar Cadastro"}
-                className="fh-btn fh-btn-primary"
-                handleInputChange={handleInputChange}
-                valores={valores}
-                onSubmit={handleCadastro}
-                layout="vertical"
-                customClass="auth-card cadastro-usuario"
-                erro={erro}
-                sucesso={sucesso}
-                disabled={loading}
-            />
-            <div className="auth-extra-links" style={{ marginTop: '12px' }}>
+        <div>
+            <form onSubmit={handleCadastro} className="flex flex-col gap-4">
+                <h2 className="text-xl font-semibold text-text">Cadastro de Usuário</h2>
+
+                {erro && (
+                    <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{erro}</p>
+                )}
+                {sucesso && (
+                    <p className="rounded-md bg-success/10 px-3 py-2 text-sm text-success">{sucesso}</p>
+                )}
+
+                <Input
+                    label="Nome:"
+                    type="text"
+                    name="nome"
+                    placeholder="Digite seu nome"
+                    autoComplete="name"
+                    value={valores.nome}
+                    onChange={handleInputChange}
+                />
+                <Input
+                    label="Email:"
+                    type="email"
+                    name="email"
+                    placeholder="Digite seu e-mail"
+                    autoComplete="email"
+                    value={valores.email}
+                    onChange={handleInputChange}
+                />
+                <Input
+                    label="Senha:"
+                    type="password"
+                    name="senha"
+                    placeholder="Digite sua senha"
+                    autoComplete="new-password"
+                    value={valores.senha}
+                    onChange={handleInputChange}
+                />
+                <Input
+                    label="Confirme sua senha:"
+                    type="password"
+                    name="confirmarSenha"
+                    placeholder="Repita sua senha"
+                    autoComplete="new-password"
+                    value={valores.confirmarSenha}
+                    onChange={handleInputChange}
+                />
+
+                <Button type="submit" disabled={loading} className="w-full">
+                    {loading ? "Criando conta..." : "Enviar Cadastro"}
+                </Button>
+            </form>
+
+            <div className="mt-3 text-sm text-muted2">
                 Ao criar uma conta, você concorda com nossos{' '}
-                <Link to="/termos" className="btn-link">Termos de Uso</Link>
+                <Link to="/termos" className="text-primary hover:underline">Termos de Uso</Link>
                 {' '}e{' '}
-                <Link to="/privacidade" className="btn-link">Política de Privacidade</Link>
+                <Link to="/privacidade" className="text-primary hover:underline">Política de Privacidade</Link>
             </div>
         </div>
     );

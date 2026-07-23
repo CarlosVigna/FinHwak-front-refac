@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import Input from '../../componentes/ui/Input';
+import Button from '../../componentes/ui/Button';
+import Card from '../../componentes/ui/Card';
+import FinHawkIcon from '../../componentes/FinHawkIcon';
 
 const ResetSenha = () => {
     const [searchParams] = useSearchParams();
@@ -71,91 +75,65 @@ const ResetSenha = () => {
     if (!token) return null;
 
     return (
-        <div className="auth-page">
-            <section className="auth-brand">
-                <div className="auth-brand-content">
-                    <h1 className="auth-brand-title">
-                        Fin<span>Hawk</span>
-                    </h1>
-                    <p className="auth-brand-subtitle">
-                        Controle financeiro inteligente para organizar contas, receitas, despesas e relatorios em um unico lugar.
+        <div className="flex min-h-screen items-center justify-center px-4 py-10">
+            <Card className="w-full max-w-sm">
+                <div className="mb-6 flex items-center gap-2">
+                    <FinHawkIcon size={28} />
+                    <span className="text-lg font-semibold text-text">FinHawk</span>
+                </div>
+
+                {sucesso ? (
+                    <p className="rounded-md bg-success/10 px-3 py-2 text-sm text-success">
+                        Senha redefinida com sucesso! Redirecionando para o login...
                     </p>
-                    <div className="auth-features">
-                        <div className="auth-feature">Dashboard financeiro</div>
-                        <div className="auth-feature">Controle de contas</div>
-                        <div className="auth-feature">Relatorios e indicadores</div>
-                        <div className="auth-feature">Ambiente seguro</div>
-                    </div>
-                </div>
-            </section>
+                ) : (
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                        <div>
+                            <h2 className="text-xl font-semibold text-text">Redefinir senha</h2>
+                            <p className="mt-1 text-sm text-muted2">
+                                Escolha uma nova senha para sua conta.
+                            </p>
+                        </div>
 
-            <section className="auth-card-container">
-                <div className="auth-tabs-card">
-                    <div className="auth-header">
-                        <h1 className="brand">FinHawk</h1>
-                    </div>
+                        <Input
+                            label="Nova Senha"
+                            type="password"
+                            value={novaSenha}
+                            onChange={(e) => setNovaSenha(e.target.value)}
+                            placeholder="Mínimo 6 caracteres"
+                            disabled={loading}
+                            autoComplete="new-password"
+                        />
 
-                    <div className="auth-content">
-                        {sucesso ? (
-                            <div>
-                                <div className="success-message">
-                                    Senha redefinida com sucesso! Redirecionando para o login...
-                                </div>
-                            </div>
-                        ) : (
-                            <form onSubmit={handleSubmit}>
-                                <h2 style={{ margin: '0 0 8px' }}>Redefinir senha</h2>
-                                <p style={{ color: 'var(--text-secondary)', margin: '0 0 20px', fontSize: '0.875rem' }}>
-                                    Escolha uma nova senha para sua conta.
-                                </p>
+                        <Input
+                            label="Confirmar Nova Senha"
+                            type="password"
+                            value={confirmarSenha}
+                            onChange={(e) => setConfirmarSenha(e.target.value)}
+                            placeholder="Repita a nova senha"
+                            disabled={loading}
+                            autoComplete="new-password"
+                        />
 
-                                <div className="campo-formulario">
-                                    <label>Nova Senha</label>
-                                    <input
-                                        type="password"
-                                        value={novaSenha}
-                                        onChange={(e) => setNovaSenha(e.target.value)}
-                                        placeholder="Mínimo 6 caracteres"
-                                        disabled={loading}
-                                        autoComplete="new-password"
-                                    />
-                                </div>
-
-                                <div className="campo-formulario">
-                                    <label>Confirmar Nova Senha</label>
-                                    <input
-                                        type="password"
-                                        value={confirmarSenha}
-                                        onChange={(e) => setConfirmarSenha(e.target.value)}
-                                        placeholder="Repita a nova senha"
-                                        disabled={loading}
-                                        autoComplete="new-password"
-                                    />
-                                </div>
-
-                                {erro && (
-                                    <div className="error-message">
-                                        {erro}
-                                        {erro.includes('inválido ou expirado') && (
-                                            <> — <Link to="/esqueci-senha" className="btn-link">Solicitar novo link</Link></>
-                                        )}
-                                    </div>
+                        {erro && (
+                            <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">
+                                {erro}
+                                {erro.includes('inválido ou expirado') && (
+                                    <> — <Link to="/esqueci-senha" className="underline">Solicitar novo link</Link></>
                                 )}
-
-                                <div className="botoes-formulario" style={{ marginTop: '20px' }}>
-                                    <button type="submit" className="fh-btn fh-btn-primary" disabled={loading}>
-                                        {loading ? 'Redefinindo...' : 'Redefinir Senha'}
-                                    </button>
-                                </div>
-
-                                <div className="auth-extra-links">
-                                    <Link to="/login" className="btn-link">Voltar para o login</Link>
-                                </div>
-                            </form>
+                            </p>
                         )}
-                    </div>
-                </div>
-            </section>
+
+                        <Button type="submit" disabled={loading} className="w-full">
+                            {loading ? 'Redefinindo...' : 'Redefinir Senha'}
+                        </Button>
+
+                        <div className="text-sm">
+                            <Link to="/login" className="text-primary hover:underline">Voltar para o login</Link>
+                        </div>
+                    </form>
+                )}
+            </Card>
         </div>
     );
 };
