@@ -1,15 +1,14 @@
 import { Link } from 'react-router-dom';
-import '../../pages/LandingPage/LandingPage.css';
 
 const Termos = () => (
-    <div className="legal-page">
-        <div className="legal-nav">
-            <Link to="/">← Voltar para o início</Link>
+    <div className="mx-auto max-w-2xl px-4 py-10 text-text">
+        <div className="mb-6">
+            <Link to="/" className="text-sm text-primary hover:underline">← Voltar para o início</Link>
         </div>
 
-        <div className="legal-content">
+        <div className="flex flex-col gap-4 [&_h1]:text-2xl [&_h1]:font-semibold [&_h2]:mt-6 [&_h2]:text-lg [&_h2]:font-semibold [&_p]:text-muted2 [&_li]:text-muted2 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-1">
             <h1>Termos de Uso</h1>
-            <span className="legal-date">Atualizado em 12 de junho de 2026</span>
+            <span className="text-sm text-muted">Atualizado em 12 de junho de 2026</span>
 
             <h2>1. Objeto</h2>
             <p>
@@ -37,13 +36,13 @@ const Termos = () => (
             <p>
                 O usuário é responsável por todas as ações realizadas em sua conta. Em caso de suspeita de
                 acesso não autorizado, recomenda-se alterar a senha imediatamente em{' '}
-                <strong>Configurações → Alterar Senha</strong> e entrar em contato pelo e-mail de suporte.
+                <strong className="text-text">Configurações → Alterar Senha</strong> e entrar em contato pelo e-mail de suporte.
             </p>
 
             <h2>5. Exclusão de Conta</h2>
             <p>
                 O usuário pode excluir sua conta a qualquer momento em{' '}
-                <strong>Configurações → Privacidade e Dados → Excluir Minha Conta</strong>.
+                <strong className="text-text">Configurações → Privacidade e Dados → Excluir Minha Conta</strong>.
             </p>
             <p>
                 A exclusão é permanente e irreversível: todos os dados (contas, categorias, lançamentos,
@@ -56,11 +55,11 @@ const Termos = () => (
                 consultoria financeira ou de investimentos. O desenvolvedor não se responsabiliza por
                 decisões financeiras tomadas com base nas informações registradas na plataforma.
             </p>
-            <p>Para dúvidas ou sugestões: <strong>garcia.carlosfilho@gmail.com</strong></p>
+            <p>Para dúvidas ou sugestões: <strong className="text-text">garcia.carlosfilho@gmail.com</strong></p>
 
-            <div className="legal-footer-links">
-                <Link to="/privacidade">Ver Política de Privacidade</Link>
-                <Link to="/">Voltar ao início</Link>
+            <div className="mt-6 flex gap-4 border-t border-border pt-4 text-sm">
+                <Link to="/privacidade" className="text-primary hover:underline">Ver Política de Privacidade</Link>
+                <Link to="/" className="text-primary hover:underline">Voltar ao início</Link>
             </div>
         </div>
     </div>

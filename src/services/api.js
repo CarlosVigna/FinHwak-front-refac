@@ -78,12 +78,6 @@ async function request(path, options = {}, _retry = false) {
         }
     }
 
-    if (response.status === 402) {
-        const body = await response.json().catch(() => ({}));
-        window.dispatchEvent(new CustomEvent('plan-limit', { detail: body }));
-        throw new Error(body.message || 'Limite do plano gratuito atingido.');
-    }
-
     return response;
 }
 

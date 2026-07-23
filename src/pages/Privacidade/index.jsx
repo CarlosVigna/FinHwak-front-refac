@@ -1,15 +1,14 @@
 import { Link } from 'react-router-dom';
-import '../../pages/LandingPage/LandingPage.css';
 
 const Privacidade = () => (
-    <div className="legal-page">
-        <div className="legal-nav">
-            <Link to="/">← Voltar para o início</Link>
+    <div className="mx-auto max-w-2xl px-4 py-10 text-text">
+        <div className="mb-6">
+            <Link to="/" className="text-sm text-primary hover:underline">← Voltar para o início</Link>
         </div>
 
-        <div className="legal-content">
+        <div className="flex flex-col gap-4 [&_h1]:text-2xl [&_h1]:font-semibold [&_h2]:mt-6 [&_h2]:text-lg [&_h2]:font-semibold [&_p]:text-muted2 [&_li]:text-muted2 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-1">
             <h1>Política de Privacidade</h1>
-            <span className="legal-date">Atualizado em 12 de junho de 2026</span>
+            <span className="text-sm text-muted">Atualizado em 12 de junho de 2026</span>
 
             <h2>1. Dados Coletados</h2>
             <p>O FinHawk coleta apenas os dados estritamente necessários para a prestação do serviço:</p>
@@ -57,15 +56,15 @@ const Privacidade = () => (
             </p>
             <ul>
                 <li>
-                    <strong>Alterar seus dados pessoais:</strong>{' '}
+                    <strong className="text-text">Alterar seus dados pessoais:</strong>{' '}
                     Configurações → Dados Pessoais
                 </li>
                 <li>
-                    <strong>Alterar sua senha:</strong>{' '}
+                    <strong className="text-text">Alterar sua senha:</strong>{' '}
                     Configurações → Alterar Senha
                 </li>
                 <li>
-                    <strong>Excluir sua conta e todos os dados:</strong>{' '}
+                    <strong className="text-text">Excluir sua conta e todos os dados:</strong>{' '}
                     Configurações → Privacidade e Dados → Excluir Minha Conta
                 </li>
                 <li>Solicitar informações adicionais pelo e-mail abaixo</li>
@@ -74,12 +73,12 @@ const Privacidade = () => (
             <h2>6. Contato</h2>
             <p>
                 Para dúvidas ou solicitações relacionadas a esta política, entre em contato:{' '}
-                <strong>garcia.carlosfilho@gmail.com</strong>
+                <strong className="text-text">garcia.carlosfilho@gmail.com</strong>
             </p>
 
-            <div className="legal-footer-links">
-                <Link to="/termos">Ver Termos de Uso</Link>
-                <Link to="/">Voltar ao início</Link>
+            <div className="mt-6 flex gap-4 border-t border-border pt-4 text-sm">
+                <Link to="/termos" className="text-primary hover:underline">Ver Termos de Uso</Link>
+                <Link to="/" className="text-primary hover:underline">Voltar ao início</Link>
             </div>
         </div>
     </div>

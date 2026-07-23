@@ -1,14 +1,12 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth, AuthProvider } from './pages/Login/AuthContext';
 import { AccountProvider } from './contexts/AccountContext';
 import PrivateRoute from './pages/Login/PrivateRoute';
 import AccountRoute from './pages/Login/AccountRoute';
 import ErrorBoundary from './componentes/ErrorBoundary';
 
-import LandingPage from './pages/LandingPage';
 import AppLayout from './componentes/layout/AppLayout';
 import Footer from './componentes/Footer';
-import PlanModal from './componentes/PlanModal';
 import AuthTabs from './pages/AuthTabs';
 import EsqueciSenha from './pages/EsqueciSenha';
 import ResetSenha from './pages/ResetSenha';
@@ -44,7 +42,7 @@ function App() {
   if (isPublicPath) {
     return (
       <Routes>
-        <Route path="/"              element={<LandingPage />} />
+        <Route path="/"              element={<Navigate to="/login" replace />} />
         <Route path="/login"         element={<AuthTabs />} />
         <Route path="/cadastro"      element={<AuthTabs initialTab="cadastro" />} />
         <Route path="/esqueci-senha" element={<EsqueciSenha />} />
@@ -137,7 +135,6 @@ function AppWrapper() {
       <AccountProvider>
         <Router>
           <App />
-          <PlanModal />
         </Router>
       </AccountProvider>
     </AuthProvider>
