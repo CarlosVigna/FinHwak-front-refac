@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Overrides locais de env -- .env (config publica, VITE_*) continua
+# rastreado de proposito, mas nenhum override local deve ser commitado
+.env.local
+.env.*.local
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
