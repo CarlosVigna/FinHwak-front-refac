@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { api } from '../../services/api';
 import { translateError } from '../../utils/errorMessages';
@@ -20,7 +20,7 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
     const location = useLocation();
     const [categorias, setCategorias] = useState([]);
     const [loadingCategorias, setLoadingCategorias] = useState(true);
-    const [checklistSuggestion, setChecklistSuggestion] = useState(null);
+    const [, setChecklistSuggestion] = useState(null);
 
     const [valores, setValores] = useState({
         description: '',
@@ -239,7 +239,7 @@ const FormularioTransacao = ({ tituloParaEditar, onSave, onCancel, tipoTransacao
                 {location?.state?.fromChecklist && !tituloParaEditar && markChecklist === null && (
                     <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
                         <p className="text-sm text-text">
-                            Deseja marcar <strong>"{location.state.description}"</strong> do checklist como concluído após salvar?
+                            Deseja marcar <strong>&quot;{location.state.description}&quot;</strong> do checklist como concluído após salvar?
                         </p>
                         <div className="mt-3 flex gap-2">
                             <Button type="button" size="sm" onClick={() => setMarkChecklist(true)}>

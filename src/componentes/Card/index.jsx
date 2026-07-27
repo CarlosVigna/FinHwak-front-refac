@@ -1,4 +1,3 @@
-import React from 'react';
 import imagemPadrao from '../../assets/imagens/conta-padrao.png';
 import UiCard from '../ui/Card';
 import Button from '../ui/Button';

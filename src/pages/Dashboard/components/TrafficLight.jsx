@@ -1,4 +1,3 @@
-import React from 'react';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { api } from '../../services/api';
 import { translateError } from '../../utils/errorMessages';

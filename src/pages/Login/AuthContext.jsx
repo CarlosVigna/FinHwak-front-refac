@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useCallback, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useCallback, useEffect, useMemo, useState } from 'react';
 import { setUnauthorizedHandler, api } from '../../services/api';
 
 const AuthContext = createContext();

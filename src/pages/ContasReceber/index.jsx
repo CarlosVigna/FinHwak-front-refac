@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaClock, FaChevronDown, FaChevronRight } from 'react-icons/fa';
 import { generateReportPDF, formatPeriodLabel } from '../../utils/pdfExport';

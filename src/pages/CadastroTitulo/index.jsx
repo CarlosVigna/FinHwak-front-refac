@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import FormularioTransacao from '../../componentes/FormularioTransacao';
 import ListaTitulo from '../../componentes/ListaTitulo';
 import Button from '../../componentes/ui/Button';

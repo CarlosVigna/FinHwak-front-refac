@@ -27,7 +27,7 @@ const Termos = () => (
 
             <h2>3. Disponibilidade do Serviço</h2>
             <p>
-                O FinHawk é disponibilizado "no estado em que se encontra", sem garantia de disponibilidade
+                O FinHawk é disponibilizado &quot;no estado em que se encontra&quot;, sem garantia de disponibilidade
                 ininterrupta. Podem ocorrer indisponibilidades temporárias para manutenção, atualizações ou
                 por motivos de força maior, sem que isso gere qualquer direito a indenização.
             </p>

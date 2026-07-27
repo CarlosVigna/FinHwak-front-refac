@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaTrash, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import { api } from '../../services/api';

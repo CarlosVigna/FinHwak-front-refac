@@ -1,4 +1,3 @@
-import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { formatCurrency, formatPercentage } from '../utils/formatters';
 import Card from '../../../componentes/ui/Card';
@@ -96,7 +95,7 @@ const CategoryChart = ({ data, title }) => {
                         <Legend
                             verticalAlign="bottom"
                             height={36}
-                            formatter={(value, entry) => {
+                            formatter={(value) => {
                                 const item = data.find(d => d.name === value);
                                 return `${value} (${formatPercentage(item?.percentage || 0)})`;
                             }}

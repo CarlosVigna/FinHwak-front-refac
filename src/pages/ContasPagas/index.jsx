@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { FaCheckCircle, FaChevronDown, FaChevronRight } from 'react-icons/fa';
 import { generateReportPDF, formatPeriodLabel } from '../../utils/pdfExport';
 import { api } from '../../services/api';
