@@ -10,6 +10,7 @@ import Card from '../../componentes/ui/Card';
 import Badge from '../../componentes/ui/Badge';
 import Table from '../../componentes/ui/Table';
 import Modal from '../../componentes/ui/Modal';
+import CalendarView from './CalendarView';
 
 const DAYS_OF_WEEK = [
   { value: 'MONDAY', label: 'Seg' },
@@ -359,12 +360,24 @@ const Agenda = () => {
         >
           Hábitos
         </button>
+        <button
+          type="button"
+          onClick={() => setTab('calendar')}
+          className={[
+            'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
+            tab === 'calendar' ? 'border-primary text-primary dark:text-info' : 'border-transparent text-muted2 hover:text-text',
+          ].join(' ')}
+        >
+          Calendário
+        </button>
       </div>
 
       {erro && <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{erro}</p>}
       {sucesso && <p className="rounded-md bg-success/10 px-3 py-2 text-sm text-success">{sucesso}</p>}
 
-      {tab === 'events' ? (
+      {tab === 'calendar' ? (
+        <CalendarView events={events} habits={habits} />
+      ) : tab === 'events' ? (
         <>
           <Card>
             <h1 className="mb-4 text-2xl font-semibold text-text">Novo Evento Pontual</h1>

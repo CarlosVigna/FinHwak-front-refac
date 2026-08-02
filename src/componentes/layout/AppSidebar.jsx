@@ -12,11 +12,11 @@ const SECTIONS = [
         label: 'OPERAÇÃO',
         items: [
             { to: '/dashboard', label: 'Dashboard', Icon: FiGrid },
+            { to: '/agenda', label: 'Agenda', Icon: FiCalendar },
             { to: '/relContasPagar', label: 'Contas a Pagar', Icon: FiArrowUpCircle },
             { to: '/relContasReceber', label: 'Contas a Receber', Icon: FiArrowDownCircle },
             { to: '/contas-pendentes', label: 'Pendências', Icon: FiAlertCircle },
             { to: '/checklist-mensal', label: 'Checklist Mensal', Icon: FiCheckSquare },
-            { to: '/agenda', label: 'Agenda', Icon: FiCalendar },
         ],
     },
     {
