@@ -18,6 +18,7 @@ const TRANSLATIONS = [
     [/category must belong to the same account/i, 'A categoria precisa pertencer à mesma conta.'],
     [/category not found/i, 'Categoria não encontrada.'],
     [/checklist item not found/i, 'Item do checklist não encontrado.'],
+    [/agenda event not found/i, 'Evento da agenda não encontrado.'],
     [/email already registered/i, 'Este e-mail já está cadastrado.'],
     [/user not found/i, 'Usuário não encontrado.'],
     [/backup version invalid/i, 'Arquivo de backup inválido. Selecione um arquivo gerado pelo FinHawk.'],

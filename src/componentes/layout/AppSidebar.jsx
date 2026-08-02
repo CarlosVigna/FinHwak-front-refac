@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import {
     FiGrid, FiArrowUpCircle, FiArrowDownCircle, FiAlertCircle, FiCheckSquare,
     FiPlusCircle, FiCheckCircle, FiDollarSign, FiCreditCard, FiTag, FiSettings,
-    FiChevronDown,
+    FiChevronDown, FiCalendar,
 } from 'react-icons/fi';
 import { useAccount } from '../../contexts/AccountContext';
 import FinHawkIcon from '../FinHawkIcon';
@@ -16,6 +16,7 @@ const SECTIONS = [
             { to: '/relContasReceber', label: 'Contas a Receber', Icon: FiArrowDownCircle },
             { to: '/contas-pendentes', label: 'Pendências', Icon: FiAlertCircle },
             { to: '/checklist-mensal', label: 'Checklist Mensal', Icon: FiCheckSquare },
+            { to: '/agenda', label: 'Agenda', Icon: FiCalendar },
         ],
     },
     {

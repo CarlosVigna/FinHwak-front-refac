@@ -31,6 +31,7 @@ const ContasPagas = lazy(() => import('./pages/ContasPagas'));
 const ContasPendentes = lazy(() => import('./pages/ContasPendentes'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const ChecklistMensal = lazy(() => import('./pages/ChecklistMensal/index.jsx'));
+const Agenda = lazy(() => import('./pages/Agenda/index.jsx'));
 const Configuracoes = lazy(() => import('./pages/Configuracoes'));
 
 function RouteFallback() {
@@ -125,6 +126,10 @@ function App() {
             <Route
               path="/checklist-mensal"
               element={<PrivateRoute><AccountRoute><ChecklistMensal /></AccountRoute></PrivateRoute>}
+            />
+            <Route
+              path="/agenda"
+              element={<PrivateRoute><AccountRoute><Agenda /></AccountRoute></PrivateRoute>}
             />
             <Route
               path="/configuracoes"
