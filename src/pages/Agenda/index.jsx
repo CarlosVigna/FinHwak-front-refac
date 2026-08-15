@@ -64,6 +64,7 @@ const Agenda = () => {
   const [loading, setLoading] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
   const [editingEvent, setEditingEvent] = useState(null); // objeto do evento/habito em edição, ou null
+  const [notifyLoading, setNotifyLoading] = useState(null); // 'today' | 'week' | 'open-bills' | null
 
   // ===== Formulário: novo evento pontual =====
   const [evTitle, setEvTitle] = useState('');
@@ -110,6 +111,20 @@ const Agenda = () => {
   useEffect(() => {
     fetchAll();
   }, [fetchAll]);
+
+  const handleNotify = async (key, path) => {
+    setNotifyLoading(key);
+    try {
+      const response = await api.post(path, {});
+      if (!response.ok) throw new Error(await response.text() || 'Erro ao enviar.');
+      showSuccess('Enviado! Confere o WhatsApp 📱');
+    } catch (error) {
+      console.error(error);
+      showError(error.message);
+    } finally {
+      setNotifyLoading(null);
+    }
+  };
 
   const resetEventForm = () => {
     setEvTitle('');
@@ -339,6 +354,33 @@ const Agenda = () => {
 
   return (
     <div className="flex flex-col gap-6">
+      <div className="flex flex-wrap gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={notifyLoading === 'today'}
+          onClick={() => handleNotify('today', '/agenda/notify/today')}
+        >
+          {notifyLoading === 'today' ? 'Enviando...' : '📆 Resumo de hoje'}
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={notifyLoading === 'week'}
+          onClick={() => handleNotify('week', '/agenda/notify/week')}
+        >
+          {notifyLoading === 'week' ? 'Enviando...' : '📅 Resumo da semana'}
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={notifyLoading === 'open-bills'}
+          onClick={() => handleNotify('open-bills', '/agenda/notify/open-bills')}
+        >
+          {notifyLoading === 'open-bills' ? 'Enviando...' : '💰 Tudo em aberto'}
+        </Button>
+      </div>
+
       <div className="flex gap-2 border-b border-border">
         <button
           type="button"
