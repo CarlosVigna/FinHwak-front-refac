@@ -227,22 +227,25 @@ const Agenda = () => {
     }
   };
 
-  const handleMarkHabit = async (habitId, status) => {
-    const current = completions.get(habitId);
+  // Generico pra evento pontual e habito -- o backend (AgendaEventCompletion)
+  // nao distingue tipo, so registra "feito/pulado numa data" pra qualquer
+  // AgendaEvent.
+  const handleMarkCompletion = async (agendaEventId, status) => {
+    const current = completions.get(agendaEventId);
     try {
       if (current === status) {
         // clicar de novo no mesmo status desmarca (volta a pendente)
-        const response = await api.delete(`/agenda/${habitId}/completion/${todayStr()}`);
-        if (!response.ok) throw new Error('Erro ao desmarcar hábito.');
+        const response = await api.delete(`/agenda/${agendaEventId}/completion/${todayStr()}`);
+        if (!response.ok) throw new Error('Erro ao desmarcar.');
         setCompletions((prev) => {
           const next = new Map(prev);
-          next.delete(habitId);
+          next.delete(agendaEventId);
           return next;
         });
       } else {
-        const response = await api.post(`/agenda/${habitId}/completion`, { eventDate: todayStr(), status });
-        if (!response.ok) throw new Error('Erro ao marcar hábito.');
-        setCompletions((prev) => new Map(prev).set(habitId, status));
+        const response = await api.post(`/agenda/${agendaEventId}/completion`, { eventDate: todayStr(), status });
+        if (!response.ok) throw new Error('Erro ao marcar.');
+        setCompletions((prev) => new Map(prev).set(agendaEventId, status));
       }
       setErro('');
     } catch (error) {
@@ -278,7 +281,9 @@ const Agenda = () => {
   const eventColumns = [
     { header: 'Título', render: (item) => (
         <div>
-          <div className="text-text">{item.title}</div>
+          <div className={completions.get(item.id) === 'DONE' ? 'text-muted line-through' : 'text-text'}>
+            {item.title}
+          </div>
           {item.description && <div className="text-xs text-muted">{item.description}</div>}
         </div>
       ) },
@@ -288,6 +293,21 @@ const Agenda = () => {
         const dt = new Date(item.eventDateTime);
         return `${dt.toLocaleDateString('pt-BR')} às ${dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
       },
+    },
+    {
+      header: 'Status',
+      render: (item) => completions.get(item.id) === 'DONE'
+        ? <Badge variant="success">Concluído</Badge>
+        : (
+          <Button
+            size="sm"
+            variant="outline"
+            title="Marcar como feito"
+            onClick={() => handleMarkCompletion(item.id, 'DONE')}
+          >
+            <FaCheckCircle />
+          </Button>
+        ),
     },
     {
       header: 'Ações',
@@ -319,7 +339,7 @@ const Agenda = () => {
               size="sm"
               variant={completions.get(item.id) === 'DONE' ? 'primary' : 'outline'}
               title="Marcar como feito hoje"
-              onClick={() => handleMarkHabit(item.id, 'DONE')}
+              onClick={() => handleMarkCompletion(item.id, 'DONE')}
             >
               <FaCheckCircle />
             </Button>
@@ -327,7 +347,7 @@ const Agenda = () => {
               size="sm"
               variant={completions.get(item.id) === 'SKIPPED' ? 'danger' : 'outline'}
               title="Marcar como pulado hoje"
-              onClick={() => handleMarkHabit(item.id, 'SKIPPED')}
+              onClick={() => handleMarkCompletion(item.id, 'SKIPPED')}
             >
               <FaTimesCircle />
             </Button>
