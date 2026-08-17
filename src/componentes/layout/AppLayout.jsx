@@ -2,6 +2,7 @@ import { useState } from 'react';
 import AppSidebar from './AppSidebar';
 import AppHeader from './AppHeader';
 import Footer from '../Footer';
+import RolloverCheckIn from './RolloverCheckIn';
 
 export default function AppLayout({ children }) {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -17,6 +18,8 @@ export default function AppLayout({ children }) {
                 </main>
                 <Footer />
             </div>
+
+            <RolloverCheckIn />
         </div>
     );
 }
