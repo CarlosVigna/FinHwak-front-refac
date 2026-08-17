@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { FaTrash, FaCheckCircle, FaTimesCircle, FaPauseCircle, FaPlayCircle, FaEdit } from 'react-icons/fa';
+import { FaTrash, FaCheckCircle, FaTimesCircle, FaPauseCircle, FaPlayCircle, FaEdit, FaPlus, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { api } from '../../services/api';
 import { useAccount } from '../../contexts/AccountContext';
 import { translateError } from '../../utils/errorMessages';
@@ -30,6 +30,21 @@ const DAY_TYPES = [
 ];
 
 const todayStr = () => new Date().toISOString().slice(0, 10);
+
+// Formata uma data local (nao UTC) como YYYY-MM-DD -- mesmo padrao usado em
+// CalendarView.jsx (toDateKey), pra navegacao dia-a-dia da aba Eventos.
+const toDateKey = (date) => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+};
+
+const shiftDateKey = (dateKey, deltaDays) => {
+  const d = new Date(`${dateKey}T00:00:00`);
+  d.setDate(d.getDate() + deltaDays);
+  return toDateKey(d);
+};
 
 function DaysOfWeekPicker({ value = [], onChange }) {
   const toggle = (day) => {
@@ -136,14 +151,10 @@ const Agenda = () => {
   const [completions, setCompletions] = useState(new Map()); // agendaEventId -> status
   const [loading, setLoading] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
-  const [editingEvent, setEditingEvent] = useState(null); // objeto do evento/habito em edição, ou null
+  // { kind: 'event' | 'habit', mode: 'create' | 'edit', item: objeto ou null } | null
+  const [formModal, setFormModal] = useState(null);
   const [notifyLoading, setNotifyLoading] = useState(null); // 'today' | 'week' | 'open-bills' | null
-
-  // ===== Formulário: novo evento pontual =====
-  const [evTitle, setEvTitle] = useState('');
-  const [evDescription, setEvDescription] = useState('');
-  const [evDate, setEvDate] = useState('');
-  const [evTime, setEvTime] = useState('');
+  const [selectedEventDate, setSelectedEventDate] = useState(todayStr());
 
   // ===== Formulário: novo hábito =====
   const [hbTitle, setHbTitle] = useState('');
@@ -201,13 +212,6 @@ const Agenda = () => {
     }
   };
 
-  const resetEventForm = () => {
-    setEvTitle('');
-    setEvDescription('');
-    setEvDate('');
-    setEvTime('');
-  };
-
   const resetHabitForm = () => {
     setHbTitle('');
     setHbDescription('');
@@ -218,24 +222,18 @@ const Agenda = () => {
     setHbTime('');
   };
 
-  const handleCreateEvent = async (e) => {
-    e.preventDefault();
-    if (!evTitle || !evDate || !evTime) {
-      showError('Preencha título, data e hora.');
-      return;
-    }
+  // Usado pelo AgendaFormModal em modo 'create' (evento ou habito) -- payload
+  // ja vem pronto do modal, so falta accountId/type e o POST.
+  const handleCreateAgenda = async (payload, kind) => {
     try {
-      const payload = {
-        title: evTitle,
-        description: evDescription || null,
+      const response = await api.post('/agenda', {
+        ...payload,
         accountId: Number(accountId),
-        type: 'ONE_TIME',
-        eventDateTime: `${evDate}T${evTime}`,
-      };
-      const response = await api.post('/agenda', payload);
-      if (!response.ok) throw new Error(await response.text() || 'Erro ao criar evento.');
-      resetEventForm();
-      showSuccess('Evento criado!');
+        type: kind === 'event' ? 'ONE_TIME' : 'HABIT',
+      });
+      if (!response.ok) throw new Error(await response.text() || 'Erro ao criar.');
+      showSuccess(kind === 'event' ? 'Evento criado!' : 'Hábito criado!');
+      setFormModal(null);
       fetchAll();
     } catch (error) {
       console.error(error);
@@ -284,7 +282,7 @@ const Agenda = () => {
       const response = await api.put(`/agenda/${id}`, payload);
       if (!response.ok) throw new Error(await response.text() || 'Erro ao atualizar.');
       showSuccess('Atualizado!');
-      setEditingEvent(null);
+      setFormModal(null);
       fetchAll();
     } catch (error) {
       console.error(error);
@@ -360,43 +358,6 @@ const Agenda = () => {
     </div>
   );
 
-  const eventColumns = [
-    { header: 'Título', render: (item) => (
-        <div>
-          <div className={completions.get(item.id) === 'DONE' ? 'text-muted line-through' : 'text-text'}>
-            {item.title}
-          </div>
-          {item.description && <div className="text-xs text-muted">{item.description}</div>}
-        </div>
-      ) },
-    {
-      header: 'Data e hora',
-      render: (item) => {
-        const dt = new Date(item.eventDateTime);
-        return `${dt.toLocaleDateString('pt-BR')} às ${dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
-      },
-    },
-    {
-      header: 'Status',
-      render: (item) => completions.get(item.id) === 'DONE'
-        ? <Badge variant="success">Concluído</Badge>
-        : (
-          <Button
-            size="sm"
-            variant="outline"
-            title="Marcar como feito"
-            onClick={() => handleMarkCompletion(item.id, 'DONE')}
-          >
-            <FaCheckCircle />
-          </Button>
-        ),
-    },
-    {
-      header: 'Ações',
-      render: (item) => renderDeleteActions(item.id, () => setEditingEvent({ ...item, kind: 'event' })),
-    },
-  ];
-
   const habitColumns = [
     { header: 'Título', render: (item) => (
         <div>
@@ -456,7 +417,7 @@ const Agenda = () => {
           >
             {item.active ? <FaPauseCircle /> : <FaPlayCircle />}
           </Button>
-          {renderDeleteActions(item.id, () => setEditingEvent({ ...item, kind: 'habit' }))}
+          {renderDeleteActions(item.id, () => setFormModal({ kind: 'habit', mode: 'edit', item }))}
         </div>
       ),
     },
@@ -530,28 +491,19 @@ const Agenda = () => {
       {tab === 'calendar' ? (
         <CalendarView events={events} habits={habits} />
       ) : tab === 'events' ? (
-        <>
-          <Card>
-            <h1 className="mb-4 text-2xl font-semibold text-text">Novo Evento Pontual</h1>
-            <form onSubmit={handleCreateEvent} className="flex flex-col gap-4">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <Input label="Título" value={evTitle} onChange={(e) => setEvTitle(e.target.value)} placeholder="Ex: Consulta médica" />
-                <Input label="Descrição (opcional)" value={evDescription} onChange={(e) => setEvDescription(e.target.value)} placeholder="Detalhes" />
-                <Input label="Data" type="date" value={evDate} onChange={(e) => setEvDate(e.target.value)} />
-                <Input label="Hora" type="time" value={evTime} onChange={(e) => setEvTime(e.target.value)} />
-              </div>
-              <div>
-                <Button type="submit">Adicionar Evento</Button>
-              </div>
-            </form>
-          </Card>
-
-          {loading ? (
-            <p className="text-sm text-muted2">Carregando...</p>
-          ) : (
-            <Table columns={eventColumns} data={events} rowKey={(i) => i.id} emptyMessage="Nenhum evento pontual cadastrado." />
-          )}
-        </>
+        <EventsDayView
+          events={events}
+          completions={completions}
+          loading={loading}
+          selectedDate={selectedEventDate}
+          onShiftDate={(delta) => setSelectedEventDate(shiftDateKey(selectedEventDate, delta))}
+          onGoToday={() => setSelectedEventDate(todayStr())}
+          onMarkCompletion={handleMarkCompletion}
+          onEdit={(item) => setFormModal({ kind: 'event', mode: 'edit', item })}
+          deletingId={deletingId}
+          onRequestDelete={setDeletingId}
+          onDelete={handleDelete}
+        />
       ) : (
         <>
           <Card>
@@ -595,27 +547,134 @@ const Agenda = () => {
         </>
       )}
 
-      {editingEvent && (
-        <EditModal
-          item={editingEvent}
-          onClose={() => setEditingEvent(null)}
-          onSave={(payload) => handleUpdate(editingEvent.id, payload)}
+      {tab === 'events' && (
+        <button
+          type="button"
+          onClick={() => setFormModal({ kind: 'event', mode: 'create', item: null })}
+          title="Novo evento"
+          aria-label="Novo evento"
+          className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-colors hover:bg-primary-light"
+        >
+          <FaPlus size={20} />
+        </button>
+      )}
+
+      {formModal && (
+        <AgendaFormModal
+          kind={formModal.kind}
+          mode={formModal.mode}
+          item={formModal.item}
+          defaultDate={selectedEventDate}
+          onClose={() => setFormModal(null)}
+          onSave={(payload) => (formModal.mode === 'create'
+            ? handleCreateAgenda(payload, formModal.kind)
+            : handleUpdate(formModal.item.id, payload))}
         />
       )}
     </div>
   );
 };
 
-function EditModal({ item, onClose, onSave }) {
-  const isHabit = item.kind === 'habit';
-  const [title, setTitle] = useState(item.title);
-  const [description, setDescription] = useState(item.description || '');
-  const [date, setDate] = useState(!isHabit ? item.eventDateTime?.slice(0, 10) : '');
-  const [time, setTime] = useState(!isHabit ? item.eventDateTime?.slice(11, 16) : (item.timeOfDay?.slice(0, 5) || ''));
-  const [mode, setMode] = useState(item.dayTypeTags?.length > 0 ? 'dayType' : 'frequency');
-  const [frequency, setFrequency] = useState(item.recurrenceFrequency || 'DAILY');
-  const [daysOfWeek, setDaysOfWeek] = useState(item.daysOfWeek || []);
-  const [dayTypeTags, setDayTypeTags] = useState(item.dayTypeTags || []);
+function EventsDayView({
+  events, completions, loading, selectedDate, onShiftDate, onGoToday,
+  onMarkCompletion, onEdit, deletingId, onRequestDelete, onDelete,
+}) {
+  const heroLabel = new Date(`${selectedDate}T00:00:00`).toLocaleDateString('pt-BR', {
+    weekday: 'long', day: '2-digit', month: 'long',
+  });
+  const isToday = selectedDate === todayStr();
+
+  const dayEvents = events
+    .filter((ev) => ev.eventDateTime?.slice(0, 10) === selectedDate)
+    .slice()
+    .sort((a, b) => a.eventDateTime.localeCompare(b.eventDateTime));
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Card>
+        <div className="flex items-center justify-between">
+          <Button size="sm" variant="outline" onClick={() => onShiftDate(-1)} title="Dia anterior">
+            <FaChevronLeft />
+          </Button>
+          <div className="text-center">
+            <div className="text-xl font-semibold capitalize text-text">{heroLabel}</div>
+            {isToday ? (
+              <Badge variant="info">Hoje</Badge>
+            ) : (
+              <button type="button" onClick={onGoToday} className="text-xs text-primary hover:underline dark:text-info">
+                Voltar pra hoje
+              </button>
+            )}
+          </div>
+          <Button size="sm" variant="outline" onClick={() => onShiftDate(1)} title="Próximo dia">
+            <FaChevronRight />
+          </Button>
+        </div>
+      </Card>
+
+      {loading ? (
+        <p className="text-sm text-muted2">Carregando...</p>
+      ) : dayEvents.length === 0 ? (
+        <p className="py-6 text-center text-sm text-muted2">Nada agendado pra esse dia.</p>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {dayEvents.map((item) => {
+            const done = completions.get(item.id) === 'DONE';
+            return (
+              <Card key={item.id} className="flex items-center gap-3">
+                <div className="w-14 shrink-0 text-sm font-medium text-muted2">
+                  {item.eventDateTime.slice(11, 16)}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className={done ? 'truncate text-muted line-through' : 'truncate font-medium text-text'}>
+                    {item.title}
+                  </div>
+                  {item.description && <div className="truncate text-xs text-muted">{item.description}</div>}
+                </div>
+                {done ? (
+                  <Badge variant="success">Concluído</Badge>
+                ) : (
+                  <Button size="sm" variant="outline" title="Marcar como feito" onClick={() => onMarkCompletion(item.id, 'DONE')}>
+                    <FaCheckCircle />
+                  </Button>
+                )}
+                <Button size="sm" variant="outline" title="Editar" onClick={() => onEdit(item)}>
+                  <FaEdit />
+                </Button>
+                {deletingId === item.id ? (
+                  <>
+                    <Button size="sm" variant="primary" title="Confirmar exclusão" onClick={() => onDelete(item.id)}>
+                      <FaCheckCircle />
+                    </Button>
+                    <Button size="sm" variant="outline" title="Cancelar" onClick={() => onRequestDelete(null)}>
+                      ✕
+                    </Button>
+                  </>
+                ) : (
+                  <Button size="sm" variant="danger" title="Apagar" onClick={() => onRequestDelete(item.id)}>
+                    <FaTrash />
+                  </Button>
+                )}
+              </Card>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AgendaFormModal({ kind, mode, item, defaultDate, onClose, onSave }) {
+  const isHabit = kind === 'habit';
+  const isCreate = mode === 'create';
+  const [title, setTitle] = useState(item?.title || '');
+  const [description, setDescription] = useState(item?.description || '');
+  const [date, setDate] = useState(!isHabit ? (item?.eventDateTime?.slice(0, 10) || defaultDate || '') : '');
+  const [time, setTime] = useState(!isHabit ? (item?.eventDateTime?.slice(11, 16) || '') : (item?.timeOfDay?.slice(0, 5) || ''));
+  const [habitMode, setHabitMode] = useState(item?.dayTypeTags?.length > 0 ? 'dayType' : 'frequency');
+  const [frequency, setFrequency] = useState(item?.recurrenceFrequency || 'DAILY');
+  const [daysOfWeek, setDaysOfWeek] = useState(item?.daysOfWeek || []);
+  const [dayTypeTags, setDayTypeTags] = useState(item?.dayTypeTags || []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -624,9 +683,9 @@ function EditModal({ item, onClose, onSave }) {
         title,
         description: description || null,
         timeOfDay: time,
-        recurrenceFrequency: mode === 'frequency' ? frequency : null,
-        daysOfWeek: mode === 'frequency' && frequency === 'WEEKLY' ? daysOfWeek : null,
-        dayTypeTags: mode === 'dayType' ? dayTypeTags : [],
+        recurrenceFrequency: habitMode === 'frequency' ? frequency : null,
+        daysOfWeek: habitMode === 'frequency' && frequency === 'WEEKLY' ? daysOfWeek : null,
+        dayTypeTags: habitMode === 'dayType' ? dayTypeTags : [],
       });
     } else {
       onSave({
@@ -637,16 +696,21 @@ function EditModal({ item, onClose, onSave }) {
     }
   };
 
+  const titles = {
+    event: isCreate ? 'Novo Evento' : 'Editar Evento',
+    habit: isCreate ? 'Novo Hábito' : 'Editar Hábito',
+  };
+
   return (
-    <Modal isOpen onClose={onClose} title={isHabit ? 'Editar Hábito' : 'Editar Evento'}>
+    <Modal isOpen onClose={onClose} title={titles[isHabit ? 'habit' : 'event']}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <Input label="Título" value={title} onChange={(e) => setTitle(e.target.value)} />
+        <Input label="Título" value={title} onChange={(e) => setTitle(e.target.value)} required />
         <Input label="Descrição (opcional)" value={description} onChange={(e) => setDescription(e.target.value)} />
         {isHabit ? (
           <>
-            <HabitScheduleModeToggle mode={mode} onChange={setMode} />
-            {mode === 'dayType' && <DayTypePicker value={dayTypeTags} onChange={setDayTypeTags} />}
-            {mode === 'frequency' && (
+            <HabitScheduleModeToggle mode={habitMode} onChange={setHabitMode} />
+            {habitMode === 'dayType' && <DayTypePicker value={dayTypeTags} onChange={setDayTypeTags} />}
+            {habitMode === 'frequency' && (
               <>
                 <Select
                   label="Frequência"
@@ -660,12 +724,12 @@ function EditModal({ item, onClose, onSave }) {
                 {frequency === 'WEEKLY' && <DaysOfWeekPicker value={daysOfWeek} onChange={setDaysOfWeek} />}
               </>
             )}
-            <Input label="Horário do lembrete" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+            <Input label="Horário do lembrete" type="time" value={time} onChange={(e) => setTime(e.target.value)} required />
           </>
         ) : (
           <div className="grid grid-cols-2 gap-4">
-            <Input label="Data" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-            <Input label="Hora" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+            <Input label="Data" type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+            <Input label="Hora" type="time" value={time} onChange={(e) => setTime(e.target.value)} required />
           </div>
         )}
         <div className="flex justify-end gap-2">
