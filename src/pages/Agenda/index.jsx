@@ -11,6 +11,7 @@ import Badge from '../../componentes/ui/Badge';
 import Table from '../../componentes/ui/Table';
 import Modal from '../../componentes/ui/Modal';
 import CalendarView from './CalendarView';
+import { habitOccursOn } from '../../utils/dayType';
 
 const DAYS_OF_WEEK = [
   { value: 'MONDAY', label: 'Seg' },
@@ -156,15 +157,6 @@ const Agenda = () => {
   const [notifyLoading, setNotifyLoading] = useState(null); // 'today' | 'week' | 'open-bills' | null
   const [selectedEventDate, setSelectedEventDate] = useState(todayStr());
 
-  // ===== Formulário: novo hábito =====
-  const [hbTitle, setHbTitle] = useState('');
-  const [hbDescription, setHbDescription] = useState('');
-  const [hbMode, setHbMode] = useState('frequency'); // 'frequency' | 'dayType'
-  const [hbFrequency, setHbFrequency] = useState('DAILY');
-  const [hbDaysOfWeek, setHbDaysOfWeek] = useState([]);
-  const [hbDayTypeTags, setHbDayTypeTags] = useState([]);
-  const [hbTime, setHbTime] = useState('');
-
   const showError = (message) => setErro(translateError(message));
   const showSuccess = (message) => {
     setSucesso(message);
@@ -212,16 +204,6 @@ const Agenda = () => {
     }
   };
 
-  const resetHabitForm = () => {
-    setHbTitle('');
-    setHbDescription('');
-    setHbMode('frequency');
-    setHbFrequency('DAILY');
-    setHbDaysOfWeek([]);
-    setHbDayTypeTags([]);
-    setHbTime('');
-  };
-
   // Usado pelo AgendaFormModal em modo 'create' (evento ou habito) -- payload
   // ja vem pronto do modal, so falta accountId/type e o POST.
   const handleCreateAgenda = async (payload, kind) => {
@@ -234,42 +216,6 @@ const Agenda = () => {
       if (!response.ok) throw new Error(await response.text() || 'Erro ao criar.');
       showSuccess(kind === 'event' ? 'Evento criado!' : 'Hábito criado!');
       setFormModal(null);
-      fetchAll();
-    } catch (error) {
-      console.error(error);
-      showError(error.message);
-    }
-  };
-
-  const handleCreateHabit = async (e) => {
-    e.preventDefault();
-    if (!hbTitle || !hbTime) {
-      showError('Preencha título e horário.');
-      return;
-    }
-    if (hbMode === 'dayType' && hbDayTypeTags.length === 0) {
-      showError('Selecione ao menos uma etiqueta de tipo de dia.');
-      return;
-    }
-    if (hbMode === 'frequency' && hbFrequency === 'WEEKLY' && hbDaysOfWeek.length === 0) {
-      showError('Selecione ao menos um dia da semana.');
-      return;
-    }
-    try {
-      const payload = {
-        title: hbTitle,
-        description: hbDescription || null,
-        accountId: Number(accountId),
-        type: 'HABIT',
-        timeOfDay: hbTime,
-        recurrenceFrequency: hbMode === 'frequency' ? hbFrequency : null,
-        daysOfWeek: hbMode === 'frequency' && hbFrequency === 'WEEKLY' ? hbDaysOfWeek : null,
-        dayTypeTags: hbMode === 'dayType' ? hbDayTypeTags : [],
-      };
-      const response = await api.post('/agenda', payload);
-      if (!response.ok) throw new Error(await response.text() || 'Erro ao criar hábito.');
-      resetHabitForm();
-      showSuccess('Hábito criado!');
       fetchAll();
     } catch (error) {
       console.error(error);
@@ -506,53 +452,36 @@ const Agenda = () => {
         />
       ) : (
         <>
-          <Card>
-            <h1 className="mb-4 text-2xl font-semibold text-text">Novo Hábito</h1>
-            <form onSubmit={handleCreateHabit} className="flex flex-col gap-4">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <Input label="Título" value={hbTitle} onChange={(e) => setHbTitle(e.target.value)} placeholder="Ex: Tomar remédio" />
-                <Input label="Descrição (opcional)" value={hbDescription} onChange={(e) => setHbDescription(e.target.value)} placeholder="Detalhes" />
-                <Input label="Horário do lembrete" type="time" value={hbTime} onChange={(e) => setHbTime(e.target.value)} />
-              </div>
-              <HabitScheduleModeToggle mode={hbMode} onChange={setHbMode} />
-              {hbMode === 'frequency' ? (
-                <>
-                  <Select
-                    label="Frequência"
-                    value={hbFrequency}
-                    onChange={(e) => setHbFrequency(e.target.value)}
-                    options={[
-                      { value: 'DAILY', label: 'Diário' },
-                      { value: 'WEEKLY', label: 'Semanal' },
-                    ]}
-                  />
-                  {hbFrequency === 'WEEKLY' && (
-                    <DaysOfWeekPicker value={hbDaysOfWeek} onChange={setHbDaysOfWeek} />
-                  )}
-                </>
-              ) : (
-                <DayTypePicker value={hbDayTypeTags} onChange={setHbDayTypeTags} />
-              )}
-              <div>
-                <Button type="submit">Adicionar Hábito</Button>
-              </div>
-            </form>
-          </Card>
+          <div>
+            <h2 className="mb-2 text-lg font-semibold text-text">Hábitos de hoje</h2>
+            {loading ? (
+              <p className="text-sm text-muted2">Carregando...</p>
+            ) : (
+              <HabitsTodayChecklist
+                habits={habits}
+                completions={completions}
+                onMarkCompletion={handleMarkCompletion}
+              />
+            )}
+          </div>
 
-          {loading ? (
-            <p className="text-sm text-muted2">Carregando...</p>
-          ) : (
-            <Table columns={habitColumns} data={habits} rowKey={(i) => i.id} emptyMessage="Nenhum hábito cadastrado." />
-          )}
+          <div>
+            <h2 className="mb-2 text-lg font-semibold text-text">Todos os hábitos</h2>
+            {loading ? (
+              <p className="text-sm text-muted2">Carregando...</p>
+            ) : (
+              <Table columns={habitColumns} data={habits} rowKey={(i) => i.id} emptyMessage="Nenhum hábito cadastrado." />
+            )}
+          </div>
         </>
       )}
 
-      {tab === 'events' && (
+      {(tab === 'events' || tab === 'habits') && (
         <button
           type="button"
-          onClick={() => setFormModal({ kind: 'event', mode: 'create', item: null })}
-          title="Novo evento"
-          aria-label="Novo evento"
+          onClick={() => setFormModal({ kind: tab === 'events' ? 'event' : 'habit', mode: 'create', item: null })}
+          title={tab === 'events' ? 'Novo evento' : 'Novo hábito'}
+          aria-label={tab === 'events' ? 'Novo evento' : 'Novo hábito'}
           className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-colors hover:bg-primary-light"
         >
           <FaPlus size={20} />
@@ -660,6 +589,59 @@ function EventsDayView({
           })}
         </div>
       )}
+    </div>
+  );
+}
+
+// Checklist grande, pensado pra marcar rapido: a linha inteira e o botao
+// (nao um botaozinho no canto), ticado fica visualmente obvio (mesmo padrao
+// verde/riscado ja usado no resto da agenda). So lista habitos que ocorrem
+// hoje (DayTypeService.habitOccursOn espelhado em utils/dayType.js) e estao
+// ativos -- gerenciar os demais (pausados, outros dias) fica na tabela
+// "Todos os hábitos" abaixo.
+function HabitsTodayChecklist({ habits, completions, onMarkCompletion }) {
+  const today = new Date();
+  const todayHabits = habits.filter((h) => h.active && habitOccursOn(h, today));
+
+  if (todayHabits.length === 0) {
+    return <p className="py-6 text-center text-sm text-muted2">Nenhum hábito pra hoje. 🎉</p>;
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      {todayHabits.map((h) => {
+        const done = completions.get(h.id) === 'DONE';
+        return (
+          <button
+            key={h.id}
+            type="button"
+            onClick={() => onMarkCompletion(h.id, 'DONE')}
+            className={[
+              'flex items-center gap-3 rounded-lg border px-4 py-4 text-left transition-colors',
+              done ? 'border-success bg-success/10' : 'border-border bg-surface hover:bg-surface2',
+            ].join(' ')}
+          >
+            <span className={[
+              'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 text-white',
+              done ? 'border-success bg-success' : 'border-border bg-transparent',
+            ].join(' ')}
+            >
+              {done && <FaCheckCircle />}
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className={done ? 'font-medium text-muted line-through' : 'font-medium text-text'}>
+                {h.title}
+              </div>
+              <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                {(h.dayTypeTags || []).map((t) => (
+                  <Badge key={t} variant="info">{DAY_TYPES.find((x) => x.value === t)?.label}</Badge>
+                ))}
+                {h.timeOfDay && <span className="text-xs text-muted">às {h.timeOfDay.slice(0, 5)}</span>}
+              </div>
+            </div>
+          </button>
+        );
+      })}
     </div>
   );
 }
