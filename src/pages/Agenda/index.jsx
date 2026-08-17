@@ -143,19 +143,25 @@ function HabitScheduleModeToggle({ mode, onChange }) {
 
 const Agenda = () => {
   const { accountId } = useAccount();
-  const [tab, setTab] = useState('events'); // 'events' | 'habits'
+  const [tab, setTab] = useState('events'); // 'events' | 'habits' | 'goals' | 'calendar'
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState('');
 
   const [events, setEvents] = useState([]);
   const [habits, setHabits] = useState([]);
+  const [goals, setGoals] = useState([]);
   const [completions, setCompletions] = useState(new Map()); // agendaEventId -> status
   const [loading, setLoading] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
-  // { kind: 'event' | 'habit', mode: 'create' | 'edit', item: objeto ou null } | null
+  // { kind: 'event' | 'habit' | 'goal', mode: 'create' | 'edit', item: objeto ou null } | null
   const [formModal, setFormModal] = useState(null);
   const [notifyLoading, setNotifyLoading] = useState(null); // 'today' | 'week' | 'open-bills' | null
   const [selectedEventDate, setSelectedEventDate] = useState(todayStr());
+
+  const changeTab = (nextTab) => {
+    setDeletingId(null); // evita confirmar exclusao de um item de outra aba por engano
+    setTab(nextTab);
+  };
 
   const showError = (message) => setErro(translateError(message));
   const showSuccess = (message) => {
@@ -167,15 +173,17 @@ const Agenda = () => {
     if (!accountId || accountId === 'null') return;
     try {
       setLoading(true);
-      const [evRes, hbRes, compRes] = await Promise.all([
+      const [evRes, hbRes, compRes, goalRes] = await Promise.all([
         api.get(`/agenda/account/${accountId}?type=ONE_TIME`),
         api.get(`/agenda/account/${accountId}?type=HABIT`),
         api.get(`/agenda/account/${accountId}/completions?date=${todayStr()}`),
+        api.get(`/weekly-goal/account/${accountId}/current`),
       ]);
-      if (!evRes.ok || !hbRes.ok || !compRes.ok) throw new Error('Erro ao carregar a agenda.');
-      const [evData, hbData, compData] = await Promise.all([evRes.json(), hbRes.json(), compRes.json()]);
+      if (!evRes.ok || !hbRes.ok || !compRes.ok || !goalRes.ok) throw new Error('Erro ao carregar a agenda.');
+      const [evData, hbData, compData, goalData] = await Promise.all([evRes.json(), hbRes.json(), compRes.json(), goalRes.json()]);
       setEvents(evData);
       setHabits(hbData);
+      setGoals(goalData);
       setCompletions(new Map(compData.map((c) => [c.agendaEventId, c.status])));
       setErro('');
     } catch (error) {
@@ -216,6 +224,43 @@ const Agenda = () => {
       if (!response.ok) throw new Error(await response.text() || 'Erro ao criar.');
       showSuccess(kind === 'event' ? 'Evento criado!' : 'Hábito criado!');
       setFormModal(null);
+      fetchAll();
+    } catch (error) {
+      console.error(error);
+      showError(error.message);
+    }
+  };
+
+  const handleCreateGoal = async (payload) => {
+    try {
+      const response = await api.post('/weekly-goal', { ...payload, accountId: Number(accountId) });
+      if (!response.ok) throw new Error(await response.text() || 'Erro ao criar meta.');
+      showSuccess('Meta criada!');
+      setFormModal(null);
+      fetchAll();
+    } catch (error) {
+      console.error(error);
+      showError(error.message);
+    }
+  };
+
+  const handleToggleGoal = async (id, completed) => {
+    try {
+      const response = await api.patch(`/weekly-goal/${id}/completed`, { completed });
+      if (!response.ok) throw new Error('Erro ao atualizar meta.');
+      fetchAll();
+    } catch (error) {
+      console.error(error);
+      showError(error.message);
+    }
+  };
+
+  const handleDeleteGoal = async (id) => {
+    try {
+      const response = await api.delete(`/weekly-goal/${id}`);
+      if (!response.ok) throw new Error('Erro ao apagar meta.');
+      setDeletingId(null);
+      showSuccess('Apagada!');
       fetchAll();
     } catch (error) {
       console.error(error);
@@ -401,7 +446,7 @@ const Agenda = () => {
       <div className="flex gap-2 border-b border-border">
         <button
           type="button"
-          onClick={() => setTab('events')}
+          onClick={() => changeTab('events')}
           className={[
             'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
             tab === 'events' ? 'border-primary text-primary dark:text-info' : 'border-transparent text-muted2 hover:text-text',
@@ -411,7 +456,7 @@ const Agenda = () => {
         </button>
         <button
           type="button"
-          onClick={() => setTab('habits')}
+          onClick={() => changeTab('habits')}
           className={[
             'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
             tab === 'habits' ? 'border-primary text-primary dark:text-info' : 'border-transparent text-muted2 hover:text-text',
@@ -421,7 +466,17 @@ const Agenda = () => {
         </button>
         <button
           type="button"
-          onClick={() => setTab('calendar')}
+          onClick={() => changeTab('goals')}
+          className={[
+            'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
+            tab === 'goals' ? 'border-primary text-primary dark:text-info' : 'border-transparent text-muted2 hover:text-text',
+          ].join(' ')}
+        >
+          Metas
+        </button>
+        <button
+          type="button"
+          onClick={() => changeTab('calendar')}
           className={[
             'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
             tab === 'calendar' ? 'border-primary text-primary dark:text-info' : 'border-transparent text-muted2 hover:text-text',
@@ -450,7 +505,7 @@ const Agenda = () => {
           onRequestDelete={setDeletingId}
           onDelete={handleDelete}
         />
-      ) : (
+      ) : tab === 'habits' ? (
         <>
           <div>
             <h2 className="mb-2 text-lg font-semibold text-text">Hábitos de hoje</h2>
@@ -474,21 +529,41 @@ const Agenda = () => {
             )}
           </div>
         </>
+      ) : (
+        <GoalsView
+          goals={goals}
+          loading={loading}
+          deletingId={deletingId}
+          onToggle={handleToggleGoal}
+          onRequestDelete={setDeletingId}
+          onDelete={handleDeleteGoal}
+        />
       )}
 
-      {(tab === 'events' || tab === 'habits') && (
+      {(tab === 'events' || tab === 'habits' || tab === 'goals') && (
         <button
           type="button"
-          onClick={() => setFormModal({ kind: tab === 'events' ? 'event' : 'habit', mode: 'create', item: null })}
-          title={tab === 'events' ? 'Novo evento' : 'Novo hábito'}
-          aria-label={tab === 'events' ? 'Novo evento' : 'Novo hábito'}
+          onClick={() => setFormModal({
+            kind: tab === 'events' ? 'event' : tab === 'habits' ? 'habit' : 'goal',
+            mode: 'create',
+            item: null,
+          })}
+          title={tab === 'events' ? 'Novo evento' : tab === 'habits' ? 'Novo hábito' : 'Nova meta'}
+          aria-label={tab === 'events' ? 'Novo evento' : tab === 'habits' ? 'Novo hábito' : 'Nova meta'}
           className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-colors hover:bg-primary-light"
         >
           <FaPlus size={20} />
         </button>
       )}
 
-      {formModal && (
+      {formModal && formModal.kind === 'goal' && (
+        <GoalFormModal
+          onClose={() => setFormModal(null)}
+          onSave={(payload) => handleCreateGoal(payload)}
+        />
+      )}
+
+      {formModal && formModal.kind !== 'goal' && (
         <AgendaFormModal
           kind={formModal.kind}
           mode={formModal.mode}
@@ -643,6 +718,76 @@ function HabitsTodayChecklist({ habits, completions, onMarkCompletion }) {
         );
       })}
     </div>
+  );
+}
+
+// So titulo + feito/nao-feito, sem contador (decisao ja fechada) -- lista
+// simples de checkbox, sempre "a semana atual" (sem seletor de periodo).
+function GoalsView({ goals, loading, deletingId, onToggle, onRequestDelete, onDelete }) {
+  if (loading) {
+    return <p className="text-sm text-muted2">Carregando...</p>;
+  }
+
+  if (goals.length === 0) {
+    return <p className="py-6 text-center text-sm text-muted2">Nenhuma meta pra essa semana ainda.</p>;
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      {goals.map((g) => (
+        <Card key={g.id} className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => onToggle(g.id, !g.completed)}
+            title={g.completed ? 'Marcar como não feita' : 'Marcar como feita'}
+            className={[
+              'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 text-white',
+              g.completed ? 'border-success bg-success' : 'border-border bg-transparent',
+            ].join(' ')}
+          >
+            {g.completed && <FaCheckCircle />}
+          </button>
+          <div className={g.completed ? 'flex-1 text-muted line-through' : 'flex-1 font-medium text-text'}>
+            {g.title}
+          </div>
+          {deletingId === g.id ? (
+            <>
+              <Button size="sm" variant="primary" title="Confirmar exclusão" onClick={() => onDelete(g.id)}>
+                <FaCheckCircle />
+              </Button>
+              <Button size="sm" variant="outline" title="Cancelar" onClick={() => onRequestDelete(null)}>
+                ✕
+              </Button>
+            </>
+          ) : (
+            <Button size="sm" variant="danger" title="Apagar" onClick={() => onRequestDelete(g.id)}>
+              <FaTrash />
+            </Button>
+          )}
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+function GoalFormModal({ onClose, onSave }) {
+  const [title, setTitle] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave({ title });
+  };
+
+  return (
+    <Modal isOpen onClose={onClose} title="Nova Meta da Semana">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <Input label="Título" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Treinar 3x" required />
+        <div className="flex justify-end gap-2">
+          <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
+          <Button type="submit">Salvar</Button>
+        </div>
+      </form>
+    </Modal>
   );
 }
 
