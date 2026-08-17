@@ -2,9 +2,9 @@ import { useState, useMemo } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import Card from '../../componentes/ui/Card';
 import Button from '../../componentes/ui/Button';
+import { habitOccursOn } from '../../utils/dayType';
 
 const WEEKDAY_LABELS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-const DAY_OF_WEEK_JS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
 const MONTH_LABELS = [
   'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
@@ -57,12 +57,9 @@ export default function CalendarView({ events, habits }) {
 
     days.forEach((d) => {
       const key = toDateKey(d);
-      const weekday = DAY_OF_WEEK_JS[d.getDay()];
       habits.forEach((h) => {
         if (!h.active) return;
-        const occurs = h.recurrenceFrequency === 'DAILY'
-          || (h.recurrenceFrequency === 'WEEKLY' && (h.daysOfWeek || []).includes(weekday));
-        if (occurs) ensure(key).habits.push(h);
+        if (habitOccursOn(h, d)) ensure(key).habits.push(h);
       });
     });
 

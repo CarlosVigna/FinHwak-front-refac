@@ -22,6 +22,13 @@ const DAYS_OF_WEEK = [
   { value: 'SUNDAY', label: 'Dom' },
 ];
 
+const DAY_TYPES = [
+  { value: 'PLANTAO', label: '🌙 Plantão' },
+  { value: 'FOLGA', label: '🏖️ Folga' },
+  { value: 'ENTREGA', label: '🚚 Entrega' },
+  { value: 'FIM_DE_SEMANA', label: '🎉 Fim de semana' },
+];
+
 const todayStr = () => new Date().toISOString().slice(0, 10);
 
 function DaysOfWeekPicker({ value = [], onChange }) {
@@ -52,6 +59,72 @@ function DaysOfWeekPicker({ value = [], onChange }) {
   );
 }
 
+function DayTypePicker({ value = [], onChange }) {
+  const toggle = (type) => {
+    onChange(value.includes(type) ? value.filter((d) => d !== type) : [...value, type]);
+  };
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-sm font-medium text-text">Etiquetas de tipo de dia</span>
+      <div className="flex flex-wrap gap-1.5">
+        {DAY_TYPES.map((d) => (
+          <button
+            key={d.value}
+            type="button"
+            onClick={() => toggle(d.value)}
+            className={[
+              'rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors',
+              value.includes(d.value)
+                ? 'border-primary bg-primary text-white'
+                : 'border-border bg-surface text-muted2 hover:bg-surface2',
+            ].join(' ')}
+          >
+            {d.label}
+          </button>
+        ))}
+      </div>
+      <span className="text-xs text-muted">Ocorre em todo dia que bater com qualquer uma das etiquetas escolhidas.</span>
+    </div>
+  );
+}
+
+// Alterna entre os dois jeitos de definir quando um habito ocorre --
+// frequencia simples (Diario/Semanal) OU etiqueta de tipo de dia (Plantao/
+// Folga/Entrega/Fim de semana), nunca os dois ao mesmo tempo.
+function HabitScheduleModeToggle({ mode, onChange }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-sm font-medium text-text">Quando ocorre</span>
+      <div className="flex gap-1.5">
+        <button
+          type="button"
+          onClick={() => onChange('frequency')}
+          className={[
+            'rounded-md border px-3 py-1.5 text-xs font-medium transition-colors',
+            mode === 'frequency'
+              ? 'border-primary bg-primary text-white'
+              : 'border-border bg-surface text-muted2 hover:bg-surface2',
+          ].join(' ')}
+        >
+          Frequência simples
+        </button>
+        <button
+          type="button"
+          onClick={() => onChange('dayType')}
+          className={[
+            'rounded-md border px-3 py-1.5 text-xs font-medium transition-colors',
+            mode === 'dayType'
+              ? 'border-primary bg-primary text-white'
+              : 'border-border bg-surface text-muted2 hover:bg-surface2',
+          ].join(' ')}
+        >
+          Tipo de dia
+        </button>
+      </div>
+    </div>
+  );
+}
+
 const Agenda = () => {
   const { accountId } = useAccount();
   const [tab, setTab] = useState('events'); // 'events' | 'habits'
@@ -75,8 +148,10 @@ const Agenda = () => {
   // ===== Formulário: novo hábito =====
   const [hbTitle, setHbTitle] = useState('');
   const [hbDescription, setHbDescription] = useState('');
+  const [hbMode, setHbMode] = useState('frequency'); // 'frequency' | 'dayType'
   const [hbFrequency, setHbFrequency] = useState('DAILY');
   const [hbDaysOfWeek, setHbDaysOfWeek] = useState([]);
+  const [hbDayTypeTags, setHbDayTypeTags] = useState([]);
   const [hbTime, setHbTime] = useState('');
 
   const showError = (message) => setErro(translateError(message));
@@ -136,8 +211,10 @@ const Agenda = () => {
   const resetHabitForm = () => {
     setHbTitle('');
     setHbDescription('');
+    setHbMode('frequency');
     setHbFrequency('DAILY');
     setHbDaysOfWeek([]);
+    setHbDayTypeTags([]);
     setHbTime('');
   };
 
@@ -172,7 +249,11 @@ const Agenda = () => {
       showError('Preencha título e horário.');
       return;
     }
-    if (hbFrequency === 'WEEKLY' && hbDaysOfWeek.length === 0) {
+    if (hbMode === 'dayType' && hbDayTypeTags.length === 0) {
+      showError('Selecione ao menos uma etiqueta de tipo de dia.');
+      return;
+    }
+    if (hbMode === 'frequency' && hbFrequency === 'WEEKLY' && hbDaysOfWeek.length === 0) {
       showError('Selecione ao menos um dia da semana.');
       return;
     }
@@ -182,9 +263,10 @@ const Agenda = () => {
         description: hbDescription || null,
         accountId: Number(accountId),
         type: 'HABIT',
-        recurrenceFrequency: hbFrequency,
-        daysOfWeek: hbFrequency === 'WEEKLY' ? hbDaysOfWeek : null,
         timeOfDay: hbTime,
+        recurrenceFrequency: hbMode === 'frequency' ? hbFrequency : null,
+        daysOfWeek: hbMode === 'frequency' && hbFrequency === 'WEEKLY' ? hbDaysOfWeek : null,
+        dayTypeTags: hbMode === 'dayType' ? hbDayTypeTags : [],
       };
       const response = await api.post('/agenda', payload);
       if (!response.ok) throw new Error(await response.text() || 'Erro ao criar hábito.');
@@ -324,9 +406,17 @@ const Agenda = () => {
       ) },
     {
       header: 'Frequência',
-      render: (item) => item.recurrenceFrequency === 'WEEKLY'
-        ? (item.daysOfWeek || []).map((d) => DAYS_OF_WEEK.find((x) => x.value === d)?.label).join(', ')
-        : 'Diário',
+      render: (item) => (item.dayTypeTags || []).length > 0
+        ? (
+          <div className="flex flex-wrap gap-1">
+            {item.dayTypeTags.map((t) => (
+              <Badge key={t} variant="info">{DAY_TYPES.find((x) => x.value === t)?.label}</Badge>
+            ))}
+          </div>
+        )
+        : item.recurrenceFrequency === 'WEEKLY'
+          ? (item.daysOfWeek || []).map((d) => DAYS_OF_WEEK.find((x) => x.value === d)?.label).join(', ')
+          : 'Diário',
     },
     { header: 'Horário', render: (item) => item.timeOfDay?.slice(0, 5) },
     {
@@ -470,19 +560,26 @@ const Agenda = () => {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Input label="Título" value={hbTitle} onChange={(e) => setHbTitle(e.target.value)} placeholder="Ex: Tomar remédio" />
                 <Input label="Descrição (opcional)" value={hbDescription} onChange={(e) => setHbDescription(e.target.value)} placeholder="Detalhes" />
-                <Select
-                  label="Frequência"
-                  value={hbFrequency}
-                  onChange={(e) => setHbFrequency(e.target.value)}
-                  options={[
-                    { value: 'DAILY', label: 'Diário' },
-                    { value: 'WEEKLY', label: 'Semanal' },
-                  ]}
-                />
                 <Input label="Horário do lembrete" type="time" value={hbTime} onChange={(e) => setHbTime(e.target.value)} />
               </div>
-              {hbFrequency === 'WEEKLY' && (
-                <DaysOfWeekPicker value={hbDaysOfWeek} onChange={setHbDaysOfWeek} />
+              <HabitScheduleModeToggle mode={hbMode} onChange={setHbMode} />
+              {hbMode === 'frequency' ? (
+                <>
+                  <Select
+                    label="Frequência"
+                    value={hbFrequency}
+                    onChange={(e) => setHbFrequency(e.target.value)}
+                    options={[
+                      { value: 'DAILY', label: 'Diário' },
+                      { value: 'WEEKLY', label: 'Semanal' },
+                    ]}
+                  />
+                  {hbFrequency === 'WEEKLY' && (
+                    <DaysOfWeekPicker value={hbDaysOfWeek} onChange={setHbDaysOfWeek} />
+                  )}
+                </>
+              ) : (
+                <DayTypePicker value={hbDayTypeTags} onChange={setHbDayTypeTags} />
               )}
               <div>
                 <Button type="submit">Adicionar Hábito</Button>
@@ -515,8 +612,10 @@ function EditModal({ item, onClose, onSave }) {
   const [description, setDescription] = useState(item.description || '');
   const [date, setDate] = useState(!isHabit ? item.eventDateTime?.slice(0, 10) : '');
   const [time, setTime] = useState(!isHabit ? item.eventDateTime?.slice(11, 16) : (item.timeOfDay?.slice(0, 5) || ''));
+  const [mode, setMode] = useState(item.dayTypeTags?.length > 0 ? 'dayType' : 'frequency');
   const [frequency, setFrequency] = useState(item.recurrenceFrequency || 'DAILY');
   const [daysOfWeek, setDaysOfWeek] = useState(item.daysOfWeek || []);
+  const [dayTypeTags, setDayTypeTags] = useState(item.dayTypeTags || []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -524,9 +623,10 @@ function EditModal({ item, onClose, onSave }) {
       onSave({
         title,
         description: description || null,
-        recurrenceFrequency: frequency,
-        daysOfWeek: frequency === 'WEEKLY' ? daysOfWeek : null,
         timeOfDay: time,
+        recurrenceFrequency: mode === 'frequency' ? frequency : null,
+        daysOfWeek: mode === 'frequency' && frequency === 'WEEKLY' ? daysOfWeek : null,
+        dayTypeTags: mode === 'dayType' ? dayTypeTags : [],
       });
     } else {
       onSave({
@@ -544,16 +644,22 @@ function EditModal({ item, onClose, onSave }) {
         <Input label="Descrição (opcional)" value={description} onChange={(e) => setDescription(e.target.value)} />
         {isHabit ? (
           <>
-            <Select
-              label="Frequência"
-              value={frequency}
-              onChange={(e) => setFrequency(e.target.value)}
-              options={[
-                { value: 'DAILY', label: 'Diário' },
-                { value: 'WEEKLY', label: 'Semanal' },
-              ]}
-            />
-            {frequency === 'WEEKLY' && <DaysOfWeekPicker value={daysOfWeek} onChange={setDaysOfWeek} />}
+            <HabitScheduleModeToggle mode={mode} onChange={setMode} />
+            {mode === 'dayType' && <DayTypePicker value={dayTypeTags} onChange={setDayTypeTags} />}
+            {mode === 'frequency' && (
+              <>
+                <Select
+                  label="Frequência"
+                  value={frequency}
+                  onChange={(e) => setFrequency(e.target.value)}
+                  options={[
+                    { value: 'DAILY', label: 'Diário' },
+                    { value: 'WEEKLY', label: 'Semanal' },
+                  ]}
+                />
+                {frequency === 'WEEKLY' && <DaysOfWeekPicker value={daysOfWeek} onChange={setDaysOfWeek} />}
+              </>
+            )}
             <Input label="Horário do lembrete" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
           </>
         ) : (
