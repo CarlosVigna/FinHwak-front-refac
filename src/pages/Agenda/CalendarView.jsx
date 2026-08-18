@@ -3,19 +3,13 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import Card from '../../componentes/ui/Card';
 import Button from '../../componentes/ui/Button';
 import { habitOccursOn } from '../../utils/dayType';
+import { toDateKey } from '../../utils/dateKey';
 
 const WEEKDAY_LABELS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 const MONTH_LABELS = [
   'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
 ];
-
-const toDateKey = (date) => {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-};
 
 function buildMonthGrid(monthDate) {
   const year = monthDate.getFullYear();

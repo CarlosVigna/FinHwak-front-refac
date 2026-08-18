@@ -12,6 +12,7 @@ import Table from '../../componentes/ui/Table';
 import Modal from '../../componentes/ui/Modal';
 import CalendarView from './CalendarView';
 import { habitOccursOn } from '../../utils/dayType';
+import { toDateKey, todayStr } from '../../utils/dateKey';
 
 const DAYS_OF_WEEK = [
   { value: 'MONDAY', label: 'Seg' },
@@ -29,17 +30,6 @@ const DAY_TYPES = [
   { value: 'ENTREGA', label: '🚚 Entrega' },
   { value: 'FIM_DE_SEMANA', label: '🎉 Fim de semana' },
 ];
-
-const todayStr = () => new Date().toISOString().slice(0, 10);
-
-// Formata uma data local (nao UTC) como YYYY-MM-DD -- mesmo padrao usado em
-// CalendarView.jsx (toDateKey), pra navegacao dia-a-dia da aba Eventos.
-const toDateKey = (date) => {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-};
 
 const shiftDateKey = (dateKey, deltaDays) => {
   const d = new Date(`${dateKey}T00:00:00`);
