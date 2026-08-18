@@ -131,6 +131,48 @@ function HabitScheduleModeToggle({ mode, onChange }) {
   );
 }
 
+// Destaque no topo da Agenda -- o revezamento automatico e so uma base, na
+// pratica o usuario troca de plantao com frequencia e precisa poder
+// corrigir na hora. value: 'PLANTAO' | 'FOLGA' | null (null enquanto
+// carrega). Clicar na opcao que NAO esta selecionada salva o override;
+// clicar na ja selecionada nao faz nada (nao ha "remover override" nesta
+// versao -- se quiser voltar ao automatico, so escolher o valor que o
+// calculo automatico já daria).
+function DayTypeToggle({ value, saving, onChange }) {
+  if (!value) {
+    return null;
+  }
+
+  const options = [
+    { value: 'PLANTAO', label: '🌙 Plantão' },
+    { value: 'FOLGA', label: '🏖️ Folga' },
+  ];
+
+  return (
+    <Card className="flex flex-wrap items-center justify-between gap-3">
+      <span className="text-sm font-medium text-text">Hoje é dia de:</span>
+      <div className="flex gap-1.5">
+        {options.map((opt) => (
+          <button
+            key={opt.value}
+            type="button"
+            disabled={saving}
+            onClick={() => opt.value !== value && onChange(opt.value)}
+            className={[
+              'rounded-full border px-4 py-1.5 text-sm font-medium transition-colors disabled:opacity-50',
+              opt.value === value
+                ? 'border-primary bg-primary text-white'
+                : 'border-border bg-surface text-muted2 hover:bg-surface2',
+            ].join(' ')}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
 const Agenda = () => {
   const { accountId } = useAccount();
   const [tab, setTab] = useState('events'); // 'events' | 'habits' | 'goals' | 'calendar'
@@ -147,6 +189,8 @@ const Agenda = () => {
   const [formModal, setFormModal] = useState(null);
   const [notifyLoading, setNotifyLoading] = useState(null); // 'today' | 'week' | 'open-bills' | null
   const [selectedEventDate, setSelectedEventDate] = useState(todayStr());
+  const [todayDayType, setTodayDayType] = useState(null); // { date, dayTypes, overridden } | null
+  const [dayTypeSaving, setDayTypeSaving] = useState(false);
 
   const changeTab = (nextTab) => {
     setDeletingId(null); // evita confirmar exclusao de um item de outra aba por engano
@@ -163,18 +207,22 @@ const Agenda = () => {
     if (!accountId || accountId === 'null') return;
     try {
       setLoading(true);
-      const [evRes, hbRes, compRes, goalRes] = await Promise.all([
+      const [evRes, hbRes, compRes, goalRes, dayTypeRes] = await Promise.all([
         api.get(`/agenda/account/${accountId}?type=ONE_TIME`),
         api.get(`/agenda/account/${accountId}?type=HABIT`),
         api.get(`/agenda/account/${accountId}/completions?date=${todayStr()}`),
         api.get(`/weekly-goal/account/${accountId}/current`),
+        api.get(`/agenda/account/${accountId}/day-type?date=${todayStr()}`),
       ]);
-      if (!evRes.ok || !hbRes.ok || !compRes.ok || !goalRes.ok) throw new Error('Erro ao carregar a agenda.');
-      const [evData, hbData, compData, goalData] = await Promise.all([evRes.json(), hbRes.json(), compRes.json(), goalRes.json()]);
+      if (!evRes.ok || !hbRes.ok || !compRes.ok || !goalRes.ok || !dayTypeRes.ok) throw new Error('Erro ao carregar a agenda.');
+      const [evData, hbData, compData, goalData, dayTypeData] = await Promise.all([
+        evRes.json(), hbRes.json(), compRes.json(), goalRes.json(), dayTypeRes.json(),
+      ]);
       setEvents(evData);
       setHabits(hbData);
       setGoals(goalData);
       setCompletions(new Map(compData.map((c) => [c.agendaEventId, c.status])));
+      setTodayDayType(dayTypeData);
       setErro('');
     } catch (error) {
       console.error(error);
@@ -187,6 +235,29 @@ const Agenda = () => {
   useEffect(() => {
     fetchAll();
   }, [fetchAll]);
+
+  // Troca o tipo de dia (plantao/folga) de hoje na hora -- atualiza o
+  // estado local direto da resposta (sem precisar de fetchAll/reload), o
+  // que ja refaz a lista de habitos de hoje sozinho (HabitsTodayChecklist
+  // recebe o valor efetivo como prop e recalcula no proximo render).
+  const handleSetDayType = async (dayType) => {
+    setDayTypeSaving(true);
+    try {
+      const response = await api.put(`/agenda/account/${accountId}/day-type-override`, {
+        date: todayStr(),
+        dayType,
+      });
+      if (!response.ok) throw new Error(await response.text() || 'Erro ao salvar tipo de dia.');
+      const data = await response.json();
+      setTodayDayType(data);
+      setErro('');
+    } catch (error) {
+      console.error(error);
+      showError(error.message);
+    } finally {
+      setDayTypeSaving(false);
+    }
+  };
 
   const handleNotify = async (key, path) => {
     setNotifyLoading(key);
@@ -404,8 +475,12 @@ const Agenda = () => {
     },
   ];
 
+  const onCallToday = todayDayType?.dayTypes.find((t) => t === 'PLANTAO' || t === 'FOLGA') || null;
+
   return (
     <div className="flex flex-col gap-6">
+      <DayTypeToggle value={onCallToday} saving={dayTypeSaving} onChange={handleSetDayType} />
+
       <div className="flex flex-wrap gap-2">
         <Button
           size="sm"
@@ -506,6 +581,7 @@ const Agenda = () => {
                 habits={habits}
                 completions={completions}
                 onMarkCompletion={handleMarkCompletion}
+                onCallOverride={onCallToday}
               />
             )}
           </div>
@@ -663,10 +739,12 @@ function EventsDayView({
 // verde/riscado ja usado no resto da agenda). So lista habitos que ocorrem
 // hoje (DayTypeService.habitOccursOn espelhado em utils/dayType.js) e estao
 // ativos -- gerenciar os demais (pausados, outros dias) fica na tabela
-// "Todos os hábitos" abaixo.
-function HabitsTodayChecklist({ habits, completions, onMarkCompletion }) {
+// "Todos os hábitos" abaixo. onCallOverride: valor efetivo de plantao/folga
+// vindo do backend (calculado ou escolhido manualmente) -- tem prioridade
+// sobre o calculo local, pra Parte 2 (escolha manual do tipo de dia).
+function HabitsTodayChecklist({ habits, completions, onMarkCompletion, onCallOverride }) {
   const today = new Date();
-  const todayHabits = habits.filter((h) => h.active && habitOccursOn(h, today));
+  const todayHabits = habits.filter((h) => h.active && habitOccursOn(h, today, onCallOverride));
 
   if (todayHabits.length === 0) {
     return <p className="py-6 text-center text-sm text-muted2">Nenhum hábito pra hoje. 🎉</p>;

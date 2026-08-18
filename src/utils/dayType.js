@@ -20,14 +20,23 @@ function floorMod(n, m) {
 }
 
 // date: objeto Date (hora do dia ignorada, so a data importa).
-export function calculateDayTypes(date) {
-  const diff = daysBetween(PLANTAO_ANCHOR, date);
-  const isPlantao = floorMod(diff, 2) === 0;
+// overrideDayType: 'PLANTAO' | 'FOLGA' (opcional) -- valor efetivo vindo do
+// backend (calculado ou escolhido manualmente, ver DayTypeService), tem
+// prioridade sobre o calculo local. ENTREGA/FIM_DE_SEMANA nunca e
+// sobrescrito, sempre calculado pelo dia da semana.
+export function calculateDayTypes(date, overrideDayType) {
   const dayOfWeek = DAY_OF_WEEK_JS[date.getDay()];
   const isWeekend = dayOfWeek === 'SATURDAY' || dayOfWeek === 'SUNDAY';
 
+  let onCallTag = overrideDayType;
+  if (!onCallTag) {
+    const diff = daysBetween(PLANTAO_ANCHOR, date);
+    const isPlantao = floorMod(diff, 2) === 0;
+    onCallTag = isPlantao ? 'PLANTAO' : 'FOLGA';
+  }
+
   return [
-    isPlantao ? 'PLANTAO' : 'FOLGA',
+    onCallTag,
     isWeekend ? 'FIM_DE_SEMANA' : 'ENTREGA',
   ];
 }
@@ -35,9 +44,9 @@ export function calculateDayTypes(date) {
 // Mesma logica de com.carlos.finhawk_refac.service.DayTypeService.habitOccursOn:
 // etiqueta de tipo de dia tem prioridade (logica OU) quando preenchida,
 // senao usa a frequencia DAILY/WEEKLY antiga.
-export function habitOccursOn(habit, date) {
+export function habitOccursOn(habit, date, overrideDayType) {
   if (habit.dayTypeTags && habit.dayTypeTags.length > 0) {
-    const todayTypes = calculateDayTypes(date);
+    const todayTypes = calculateDayTypes(date, overrideDayType);
     return habit.dayTypeTags.some((tag) => todayTypes.includes(tag));
   }
 
