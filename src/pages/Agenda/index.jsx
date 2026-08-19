@@ -591,7 +591,12 @@ const Agenda = () => {
             {loading ? (
               <p className="text-sm text-muted2">Carregando...</p>
             ) : (
-              <Table columns={habitColumns} data={habits} rowKey={(i) => i.id} emptyMessage="Nenhum hábito cadastrado." />
+              <Table
+                columns={habitColumns}
+                data={habits.slice().sort((a, b) => (a.timeOfDay || '').localeCompare(b.timeOfDay || ''))}
+                rowKey={(i) => i.id}
+                emptyMessage="Nenhum hábito cadastrado."
+              />
             )}
           </div>
         </>
@@ -744,7 +749,10 @@ function EventsDayView({
 // sobre o calculo local, pra Parte 2 (escolha manual do tipo de dia).
 function HabitsTodayChecklist({ habits, completions, onMarkCompletion, onCallOverride }) {
   const today = new Date();
-  const todayHabits = habits.filter((h) => h.active && habitOccursOn(h, today, onCallOverride));
+  const todayHabits = habits
+    .filter((h) => h.active && habitOccursOn(h, today, onCallOverride))
+    .slice()
+    .sort((a, b) => (a.timeOfDay || '').localeCompare(b.timeOfDay || ''));
 
   if (todayHabits.length === 0) {
     return <p className="py-6 text-center text-sm text-muted2">Nenhum hábito pra hoje. 🎉</p>;
