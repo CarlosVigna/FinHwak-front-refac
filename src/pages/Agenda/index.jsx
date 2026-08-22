@@ -10,6 +10,7 @@ import Card from '../../componentes/ui/Card';
 import Badge from '../../componentes/ui/Badge';
 import Table from '../../componentes/ui/Table';
 import Modal from '../../componentes/ui/Modal';
+import Textarea from '../../componentes/ui/Textarea';
 import CalendarView from './CalendarView';
 import { habitOccursOn } from '../../utils/dayType';
 import { toDateKey, todayStr } from '../../utils/dateKey';
@@ -297,6 +298,19 @@ const Agenda = () => {
       const response = await api.post('/weekly-goal', { ...payload, accountId: Number(accountId) });
       if (!response.ok) throw new Error(await response.text() || 'Erro ao criar meta.');
       showSuccess('Meta criada!');
+      setFormModal(null);
+      fetchAll();
+    } catch (error) {
+      console.error(error);
+      showError(error.message);
+    }
+  };
+
+  const handleUpdateGoal = async (id, payload) => {
+    try {
+      const response = await api.put(`/weekly-goal/${id}`, { ...payload, accountId: Number(accountId) });
+      if (!response.ok) throw new Error(await response.text() || 'Erro ao atualizar meta.');
+      showSuccess('Meta atualizada!');
       setFormModal(null);
       fetchAll();
     } catch (error) {
@@ -606,6 +620,7 @@ const Agenda = () => {
           loading={loading}
           deletingId={deletingId}
           onToggle={handleToggleGoal}
+          onEdit={(item) => setFormModal({ kind: 'goal', mode: 'edit', item })}
           onRequestDelete={setDeletingId}
           onDelete={handleDeleteGoal}
         />
@@ -629,8 +644,12 @@ const Agenda = () => {
 
       {formModal && formModal.kind === 'goal' && (
         <GoalFormModal
+          mode={formModal.mode}
+          item={formModal.item}
           onClose={() => setFormModal(null)}
-          onSave={(payload) => handleCreateGoal(payload)}
+          onSave={(payload) => (formModal.mode === 'create'
+            ? handleCreateGoal(payload)
+            : handleUpdateGoal(formModal.item.id, payload))}
         />
       )}
 
@@ -799,7 +818,7 @@ function HabitsTodayChecklist({ habits, completions, onMarkCompletion, onCallOve
 
 // So titulo + feito/nao-feito, sem contador (decisao ja fechada) -- lista
 // simples de checkbox, sempre "a semana atual" (sem seletor de periodo).
-function GoalsView({ goals, loading, deletingId, onToggle, onRequestDelete, onDelete }) {
+function GoalsView({ goals, loading, deletingId, onToggle, onEdit, onRequestDelete, onDelete }) {
   if (loading) {
     return <p className="text-sm text-muted2">Carregando...</p>;
   }
@@ -823,9 +842,17 @@ function GoalsView({ goals, loading, deletingId, onToggle, onRequestDelete, onDe
           >
             {g.completed && <FaCheckCircle />}
           </button>
-          <div className={g.completed ? 'flex-1 text-muted line-through' : 'flex-1 font-medium text-text'}>
-            {g.title}
+          <div className="min-w-0 flex-1">
+            <div className={g.completed ? 'text-muted line-through' : 'font-medium text-text'}>
+              {g.title}
+            </div>
+            {g.description && (
+              <div className="whitespace-pre-wrap text-xs text-muted">{g.description}</div>
+            )}
           </div>
+          <Button size="sm" variant="outline" title="Editar" onClick={() => onEdit(g)}>
+            <FaEdit />
+          </Button>
           {deletingId === g.id ? (
             <>
               <Button size="sm" variant="primary" title="Confirmar exclusão" onClick={() => onDelete(g.id)}>
@@ -846,18 +873,26 @@ function GoalsView({ goals, loading, deletingId, onToggle, onRequestDelete, onDe
   );
 }
 
-function GoalFormModal({ onClose, onSave }) {
-  const [title, setTitle] = useState('');
+function GoalFormModal({ mode, item, onClose, onSave }) {
+  const isCreate = mode === 'create';
+  const [title, setTitle] = useState(item?.title || '');
+  const [description, setDescription] = useState(item?.description || '');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave({ title });
+    onSave({ title, description: description || null });
   };
 
   return (
-    <Modal isOpen onClose={onClose} title="Nova Meta da Semana">
+    <Modal isOpen onClose={onClose} title={isCreate ? 'Nova Meta da Semana' : 'Editar Meta da Semana'}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <Input label="Título" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Treinar 3x" required />
+        <Textarea
+          label="Descrição (opcional)"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Detalhes da meta"
+        />
         <div className="flex justify-end gap-2">
           <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
           <Button type="submit">Salvar</Button>
